@@ -1,0 +1,3356 @@
+[
+  {
+    "type": 3,
+    "distance": 0.1,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 4,
+      "y": 0,
+      "commands": [
+        {
+          "x": 4,
+          "y": 7,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 12,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.1,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 2,
+      "y": 0,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 9,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.1,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 8,
+      "y": 0,
+      "commands": [
+        {
+          "x": 8,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 12,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.1,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 10,
+      "y": 0,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.22,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.22,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 4,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.235,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.235,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 4,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.255,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 5,
+      "commands": [
+        {
+          "x": 5,
+          "y": 5,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.255,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 6,
+      "commands": [
+        {
+          "x": 5,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.27,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 5,
+      "commands": [
+        {
+          "x": 5,
+          "y": 5,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 5,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.27,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 6,
+      "commands": [
+        {
+          "x": 5,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.27,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 6,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": -2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.41000000000000003,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.41800000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.42600000000000005,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.43400000000000005,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.534,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.539,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.5690000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.5700000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.5800000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.5850000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6150000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6160000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6260000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6310000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6610000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6620000000000001,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6720000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.6770000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7070000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7080000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7180000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7230000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7530000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7540000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7640000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7690000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.7990000000000003,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.8000000000000003,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.9500000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.9700000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 5,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 0.9900000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0100000000000002,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 5,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0300000000000002,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0500000000000003,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 4,
+      "y": 0,
+      "commands": [
+        {
+          "x": 4,
+          "y": 2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 4,
+          "y": -2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0500000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 5,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0700000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.0900000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 5,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.1100000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 7,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.1300000000000003,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 8,
+      "y": 0,
+      "commands": [
+        {
+          "x": 8,
+          "y": 2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 8,
+          "y": -2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.1300000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 5,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.1800000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 1,
+      "y": 0,
+      "commands": [
+        {
+          "x": 4,
+          "y": 4,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.1900000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 11,
+      "y": 0,
+      "commands": [
+        {
+          "x": 8,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.2000000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 1,
+      "y": 0,
+      "commands": [
+        {
+          "x": 4,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.2100000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 11,
+      "y": 0,
+      "commands": [
+        {
+          "x": 8,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.3300000000000005,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 2,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": -2,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.3350000000000004,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 10,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.3450000000000004,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 0,
+      "y": 6,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": -2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.3500000000000003,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 12,
+      "y": 6,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5300000000000002,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 2,
+      "y": 0,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5300000000000002,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5600000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 10,
+      "y": 0,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5600000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 9,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5900000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 2,
+      "y": 0,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.5900000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6200000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 10,
+      "y": 0,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6200000000000003,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 9,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 9,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6500000000000004,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 2,
+      "y": 0,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6500000000000004,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 3,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6900000000000004,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 4,
+          "y": 5,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.6950000000000003,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 8,
+          "y": 5,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.7000000000000002,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 4,
+          "y": 5,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.705,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 8,
+          "y": 5,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.835,
+    "spawnEvent": {
+      "type": "sln",
+      "x": 0,
+      "y": 3,
+      "commands": [
+        {
+          "x": 2,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": -2,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8399999999999999,
+    "spawnEvent": {
+      "type": "sln",
+      "x": 12,
+      "y": 3,
+      "commands": [
+        {
+          "x": 10,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8499999999999999,
+    "spawnEvent": {
+      "type": "sln",
+      "x": 0,
+      "y": 6,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": -2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8549999999999998,
+    "spawnEvent": {
+      "type": "sln",
+      "x": 12,
+      "y": 6,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8799999999999997,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 2,
+      "y": 12,
+      "commands": [
+        {
+          "x": 3,
+          "y": 4,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8849999999999996,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 10,
+      "y": 12,
+      "commands": [
+        {
+          "x": 9,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8899999999999995,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 2,
+      "y": 12,
+      "commands": [
+        {
+          "x": 3,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8949999999999994,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 10,
+      "y": 12,
+      "commands": [
+        {
+          "x": 9,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.8999999999999992,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 2,
+      "y": 12,
+      "commands": [
+        {
+          "x": 3,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.9049999999999991,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 10,
+      "y": 12,
+      "commands": [
+        {
+          "x": 9,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.909999999999999,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 2,
+      "y": 12,
+      "commands": [
+        {
+          "x": 3,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 1.914999999999999,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 10,
+      "y": 12,
+      "commands": [
+        {
+          "x": 9,
+          "y": 4,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.114999999999999,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 7,
+      "commands": [
+        {
+          "x": 3,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.114999999999999,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 7,
+      "commands": [
+        {
+          "x": 9,
+          "y": 6,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1249999999999987,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1249999999999987,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1349999999999985,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 4,
+      "commands": [
+        {
+          "x": 4,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1349999999999985,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 4,
+      "commands": [
+        {
+          "x": 8,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1449999999999982,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 5,
+      "y": 0,
+      "commands": [
+        {
+          "x": 5,
+          "y": 1,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.1449999999999982,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 7,
+      "y": 0,
+      "commands": [
+        {
+          "x": 7,
+          "y": 1,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.2649999999999983,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "fire": true,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "fire": false,
+          "move": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.2849999999999984,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3049999999999984,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3249999999999984,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3449999999999984,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3649999999999984,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3849999999999985,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 0,
+      "y": 6,
+      "commands": [
+        {
+          "x": 2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": -2,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.3849999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4049999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4249999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4449999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4649999999999985,
+    "spawnEvent": {
+      "type": "sls",
+      "x": 12,
+      "y": 6,
+      "commands": [
+        {
+          "x": 10,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4649999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 3,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4849999999999985,
+    "spawnEvent": {
+      "type": "smn",
+      "x": 9,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 7,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "timer": 0,
+          "move": true,
+          "fire": true
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 1,
+          "move": false,
+          "fire": false
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.4849999999999985,
+    "spawnEvent": {
+      "type": "mln",
+      "x": 6,
+      "y": 0,
+      "commands": [
+        {
+          "x": 6,
+          "y": 2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 10,
+          "fire": false,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "timer": 20,
+          "fire": true,
+          "move": false
+        },
+        {
+          "x": 6,
+          "y": -2,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.5149999999999983,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "fire": false,
+          "move": true,
+          "timer": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.524999999999998,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.534999999999998,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 0,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  },
+  {
+    "type": 3,
+    "distance": 2.5449999999999977,
+    "spawnEvent": {
+      "type": "msn",
+      "x": 12,
+      "y": 2,
+      "commands": [
+        {
+          "x": 6,
+          "y": 3,
+          "timer": 0,
+          "move": true,
+          "fire": false
+        },
+        {
+          "x": 12,
+          "y": 0,
+          "timer": 1,
+          "move": false,
+          "fire": true
+        }
+      ]
+    }
+  }
+]
