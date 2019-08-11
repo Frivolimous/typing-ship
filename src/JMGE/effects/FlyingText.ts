@@ -1,15 +1,18 @@
-import * as JMBL from "../JMBL";
+import * as _ from 'lodash';
+import { JMTween } from '../JMTween';
 
-export class FlyingText extends PIXI.Text{
-	constructor(s:string,style:PIXI.TextStyleOptions,x:number,y:number,parent?:PIXI.Container){
-		super(s,JMBL.utils.default(style,{fontSize:15,fontWeight:'bold',dropShadow:true,fill:0xffffff,dropShadowDistance:2}));
-		this.anchor.set(0.5,0.5);
+export class FlyingText extends PIXI.Text {
+  constructor(s: string, style: PIXI.TextStyleOptions, x: number, y: number, parent?: PIXI.Container) {
+    super(s, _.defaults(style, { fontSize: 15, fontWeight: 'bold', dropShadow: true, fill: 0xffffff, dropShadowDistance: 2 }));
+    this.anchor.set(0.5, 0.5);
 
-    this.position.set(x,y);
-    
-		if (parent) parent.addChild(this);
-		
-		JMBL.tween.to(this,60,{delay:20,alpha:0});
-		JMBL.tween.to(this,80,{y:(this.y-20)},{onComplete:()=>this.destroy()});
-	}
+    this.position.set(x, y);
+
+    if (parent) parent.addChild(this);
+
+    new JMTween<FlyingText>(this).wait(20).to({ alpha: 0}, 60).start();
+    new JMTween<FlyingText>(this).to({ y: this.y - 20 }, 80).onComplete(() => {
+      this.destroy();
+    }).start();
+  }
 }

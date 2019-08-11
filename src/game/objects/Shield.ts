@@ -1,23 +1,23 @@
-import * as JMBL from '../../JMGE/JMBL';
+import { JMTween } from '../../JMGE/JMTween';
 
-export class Shield extends PIXI.Graphics{
-  constructor(){
+export class Shield extends PIXI.Graphics {
+  constructor() {
     super();
-    this.beginFill(0x00aaff,0.5);
-    this.drawCircle(0,0,100);
-    this.alpha=0;
+    this.beginFill(0x00aaff, 0.5);
+    this.drawCircle(0, 0, 100);
+    this.alpha = 0;
   }
 
-  fadeIn(alpha:number=1){
-    this.alpha=0;
-    JMBL.tween.to(this,13,{alpha});
+  public fadeIn(alpha: number = 1) {
+    this.alpha = 0;
+    new JMTween<Shield>(this).to({ alpha }, 13).start();
   }
 
-  fadeTo(alpha:number){
-    JMBL.tween.to(this,13,{alpha});
+  public fadeTo(alpha: number) {
+    new JMTween<Shield>(this).to({ alpha }, 13).start();
   }
 
-  fadeOut(){
-    JMBL.tween.to(this,13,{alpha:0},{onComplete:()=>this.parent.removeChild(this)});
+  public fadeOut() {
+    new JMTween<Shield>(this).to({ alpha: 0 }, 13).onComplete( () => this.parent.removeChild(this)).start();
   }
 }

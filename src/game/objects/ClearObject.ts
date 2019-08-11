@@ -1,13 +1,13 @@
-import { GameSprite } from "./GameSprite";
-import { ActionType } from "../data/Misc";
+import { GameSprite } from './GameSprite';
+import { ActionType } from '../data/Misc';
 
-export class ClearObject extends GameSprite{
+export class ClearObject extends GameSprite {
 
-  constructor(wordSize:number,onWordComplete:()=>void){
+  constructor(wordSize: number, onWordComplete: () => void) {
     super();
 
     this.addWord(wordSize);
-    this.onWordComplete=onWordComplete;
-    this.killBy=ActionType.INSTANT;
+    this.onWordComplete = onWordComplete;
+    this.killBy = ActionType.INSTANT;
   }
 }

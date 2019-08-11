@@ -1,8 +1,8 @@
-import { BaseObject } from "./BaseObject";
-import { Shield } from "./Shield";
-import { Turret } from "./Turret";
+import { BaseObject } from './BaseObject';
+import { Shield } from './Shield';
+import { Turret } from './Turret';
 
-export enum Animation{
+export enum Animation {
   IDLE,
   FIRE,
   CHARGE,
@@ -25,42 +25,42 @@ export enum Animation{
   EOUT,
 }
 
-export class GameSprite extends BaseObject{
-  vX:number=0;
-  vY:number=0;
-  vT:number=0;
-  n:number;
-  a:number;
-  value:number;
-  killBy:number;
-  turnRate:number;
-  shieldOn:boolean;
-  turret:Turret;
-  halt:boolean;
-  viewSource:any;
-  fires:number;
-  walkMult:number=1;
-  legFrame:number=0;
-  torsoFrame:number=0;
-  frame:number=0;
-  cAnim:Animation=Animation.IDLE;
-  health:number=1;
-  shieldView:Shield=new Shield();
-  firePoint:PIXI.Point=new PIXI.Point(0,0);
+export class GameSprite extends BaseObject {
+  public vX: number = 0;
+  public vY: number = 0;
+  public vT: number = 0;
+  public n: number;
+  public a: number;
+  public value: number;
+  public killBy: number;
+  public turnRate: number;
+  public shieldOn: boolean;
+  public turret: Turret;
+  public halt: boolean;
+  public viewSource: any;
+  public fires: number;
+  public walkMult: number = 1;
+  public legFrame: number = 0;
+  public torsoFrame: number = 0;
+  public frame: number = 0;
+  public cAnim: Animation = Animation.IDLE;
+  public health: number = 1;
+  public shieldView: Shield = new Shield();
+  public firePoint: PIXI.Point = new PIXI.Point(0, 0);
 
-  constructor(){
+  constructor() {
     super();
     this.addChild(this.shieldView);
   }
 
-  getFirePoint():PIXI.Point{
-    let cos=Math.cos(this.rotation);
-		let sin=Math.sin(this.rotation);
-		let x=this.x+this.firePoint.x*cos-this.firePoint.y*sin;
-    let y=this.y+this.firePoint.x*sin+this.firePoint.y*cos;
-    return new PIXI.Point(x,y);
+  public getFirePoint(): PIXI.Point {
+    let cos = Math.cos(this.rotation);
+    let sin = Math.sin(this.rotation);
+    let x = this.x + this.firePoint.x * cos - this.firePoint.y * sin;
+    let y = this.y + this.firePoint.x * sin + this.firePoint.y * cos;
+    return new PIXI.Point(x, y);
   }
-  
+
   // public init(){
   //   this.config=config;
 
@@ -75,22 +75,21 @@ export class GameSprite extends BaseObject{
   //     this.rotation=0;
   //   }else{
   //     //Facade.spriteC.update(this,0);
-      
+
   //     //view.y=-0.5*view.height;
   //     //view.x=0.5*view.width;
   //     this.n=config.n;
   //     this.rotation=config.n*180/Math.PI;
   //   }
-    
+
   //   // if (display!=null) display.gotoAndStop(1);
-    
-    
+
   //   this.turnRate=config.a/7;
   //   this.addWord();
   //   this.priority=config.p;
   // }
-  
-  update=(speed:number)=>{
+
+  public update = (speed: number) => {
     return;
     // if (this.moreUpdate()){
     //   this.vT+=((this.halt)?0:this.a)-this.vT*0.1;
@@ -104,49 +103,49 @@ export class GameSprite extends BaseObject{
     //     this.y+=this.vY;
     //   }
     //   return;
-    // }				
+    // }
     // return;
   }
-  
-  public moreUpdate():boolean{
+
+  public moreUpdate(): boolean {
     return true;
   }
-  
-  public homeTarget(_target:BaseObject){
-    var tDiff:number=Math.atan2(_target.y-this.y,_target.x-this.x)-this.n;
-    while (tDiff<(0-Math.PI)){
-      tDiff+=2*Math.PI;
+
+  public homeTarget(_target: BaseObject) {
+    let tDiff: number = Math.atan2(_target.y - this.y, _target.x - this.x) - this.n;
+    while (tDiff < (0 - Math.PI)) {
+      tDiff += 2 * Math.PI;
     }
-    while (tDiff>Math.PI){
-      tDiff-=2*Math.PI;
+    while (tDiff > Math.PI) {
+      tDiff -= 2 * Math.PI;
     }
-    
-    if (tDiff>0){
-      this.n+=(tDiff>this.turnRate)?this.turnRate:tDiff;
-    }else if (tDiff<0){
-      this.n+=(tDiff<-this.turnRate)?(0-this.turnRate):tDiff;
-    }else{
+
+    if (tDiff > 0) {
+      this.n += (tDiff > this.turnRate) ? this.turnRate : tDiff;
+    } else if (tDiff < 0) {
+      this.n += (tDiff < -this.turnRate) ? (0 - this.turnRate) : tDiff;
+    } else {
       return;
     }
   }
 
-  addShield(alpha:number=1){
-    this.shieldOn=true;
+  public addShield(alpha: number = 1) {
+    this.shieldOn = true;
     this.shieldView.fadeIn(alpha);
   }
 
-  shieldTo(alpha:number){
-    this.shieldOn=true;
+  public shieldTo(alpha: number) {
+    this.shieldOn = true;
     this.shieldView.fadeTo(alpha);
   }
 
-  removeShield(){
-    if (this.shieldOn){
-      this.shieldOn=false;
+  public removeShield() {
+    if (this.shieldOn) {
+      this.shieldOn = false;
       this.shieldView.fadeOut();
     }
   }
-  
+
   // public getFirePoint(_local:boolean=false):PIXI.Point{
   //   //var m:Point=new Point(display.torso.x+display.torso.anim.x+display.torso.anim.firePoint.x,display.torso.y+display.torso.anim.y+display.torso.anim.firePoint.y);
   //   var m=new PIXI.Point(0,0);

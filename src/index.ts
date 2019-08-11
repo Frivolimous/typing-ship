@@ -1,107 +1,108 @@
 import * as JMBL from './JMGE/JMBL';
-import { TextureData } from './GraphicData';
+import { TextureData } from './TextureData';
 import { MenuUI } from './menus/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
 import { ScoreTracker } from './utils/ScoreTracker';
 
-new class Facade{
-	app:any;
-	stageBorders:JMBL.Rect;
-	private _Resolution=CONFIG.INIT.RESOLUTION;
-	static exists:Boolean=false;
+new class Facade {
+  private static exists = false;
 
-	currentModule:any;
+  public app: any;
+  public stageBorders: JMBL.Rect;
+  public currentModule: any;
 
-	// windowToLocal=(e:any):PIXI.Point=>{
-	// 	return new PIXI.Point((e.x+this.stageBorders.x)*this._Resolution,(e.y+this.stageBorders.y)*this._Resolution);
-	// }
+  private _Resolution = CONFIG.INIT.RESOLUTION;
 
-	// disableGameInput(b:Boolean=true){
-	// 	if (b){
-	// 		this.inputM.mouseEnabled=false;
-	// 	}else{
-	// 		this.inputM.mouseEnabled=true;
-	// 	}
-	// }
+  // windowToLocal=(e:any):PIXI.Point=>{
+  // 	return new PIXI.Point((e.x+this.stageBorders.x)*this._Resolution,(e.y+this.stageBorders.y)*this._Resolution);
+  // }
 
-	constructor(){
-		if (Facade.exists) throw "Cannot instatiate more than one Facade Singleton.";
-		Facade.exists=true;
-		try{
-			document.createEvent("TouchEvent");
-			JMBL.setInteractionMode("mobile");
-		}catch(e){
+  // disableGameInput(b:Boolean=true){
+  // 	if (b){
+  // 		this.inputM.mouseEnabled=false;
+  // 	}else{
+  // 		this.inputM.mouseEnabled=true;
+  // 	}
+  // }
 
-		}
-		
-		this.stageBorders=new JMBL.Rect(0,0,CONFIG.INIT.SCREEN_WIDTH/this._Resolution,CONFIG.INIT.SCREEN_HEIGHT/this._Resolution);
-		this.app = new PIXI.Application(this.stageBorders.width,this.stageBorders.height,{
-			backgroundColor:0xff0000,
-			antialias:true,
-			resolution:this._Resolution,
-			roundPixels:true,
-		});
-		(document.getElementById("game-canvas") as any).append(this.app.view);
+  constructor() {
+    if (Facade.exists) throw new Error('Cannot instatiate more than one Facade Singleton.');
+    Facade.exists = true;
+    try {
+      document.createEvent('TouchEvent');
+      JMBL.setInteractionMode('mobile');
+    } catch (e) {
 
-		// if (this.app){
-		// 	let test=PIXI.Sprite.fromImage("./Bitmaps/a ship sprite sheet.png")
-		// 	this.app.stage.addChild(test);
-		// 	return;
-		// }
-		this.stageBorders.width*=this._Resolution;
-		this.stageBorders.height*=this._Resolution;
+    }
 
-		this.app.stage.scale.x=1/this._Resolution;
-		this.app.stage.scale.y=1/this._Resolution;
-		this.stageBorders.x=this.app.view.offsetLeft;
-		this.stageBorders.y=this.app.view.offsetTop;
-		this.app.stage.interactive=true;
+    this.stageBorders = new JMBL.Rect(0, 0, CONFIG.INIT.SCREEN_WIDTH / this._Resolution, CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
+    this.app = new PIXI.Application(this.stageBorders.width, this.stageBorders.height, {
+      backgroundColor: 0xff0000,
+      antialias: true,
+      resolution: this._Resolution,
+      roundPixels: true,
+    });
+    (document.getElementById('game-canvas') as any).append(this.app.view);
 
-		let _background=new PIXI.Graphics();
-		_background.beginFill(CONFIG.INIT.BACKGROUND_COLOR);
-		_background.drawRect(0,0,this.stageBorders.width,this.stageBorders.height);
-		this.app.stage.addChild(_background);
+    // if (this.app){
+    // 	let test=PIXI.Sprite.fromImage('./Bitmaps/a ship sprite sheet.png')
+    // 	this.app.stage.addChild(test);
+    // 	return;
+    // }
+    this.stageBorders.width *= this._Resolution;
+    this.stageBorders.height *= this._Resolution;
 
-		// window.addEventListener("resize",()=>{
-		// 	this.stageBorders.left=this.app.view.offsetLeft;
-		// 	this.stageBorders.top=this.app.view.offsetTop;
-		// });
-		
-		JMBL.init(this.app);
-		TextureData.init(this.app.renderer);
-		new ScoreTracker();
-		window.setTimeout(this.init,10);
-	}
+    this.app.stage.scale.x = 1 / this._Resolution;
+    this.app.stage.scale.y = 1 / this._Resolution;
+    this.stageBorders.x = this.app.view.offsetLeft;
+    this.stageBorders.y = this.app.view.offsetTop;
+    this.app.stage.interactive = true;
 
-	init=()=>{
-		//this will happen after "preloader"
-		
-		initializeDatas();
-		SaveData.init();
+    let _background = new PIXI.Graphics();
+    _background.beginFill(CONFIG.INIT.BACKGROUND_COLOR);
+    _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
+    this.app.stage.addChild(_background);
 
-		this.currentModule=new MenuUI ();
-		this.currentModule.navOut=this.updateCurrentModule;
-		this.app.stage.addChild(this.currentModule);
-	}
+    // window.addEventListener('resize',()=>{
+    // 	this.stageBorders.left=this.app.view.offsetLeft;
+    // 	this.stageBorders.top=this.app.view.offsetTop;
+    // });
 
-	updateCurrentModule=(o:any)=>{
-		SaveData.saveExtrinsic(()=>{
-			if (this.currentModule.dispose){
-				this.currentModule.dispose();
-			}else if (this.currentModule.destroy){
-				this.currentModule.destroy();
-			}
-			this.currentModule=o;
-			o.navOut=this.updateCurrentModule;
-			this.app.stage.addChild(o);
-		});
-	}
+    JMBL.init(this.app);
+    TextureData.init(this.app.renderer);
+    // new ScoreTracker();
+    window.setTimeout(this.init, 10);
+  }
 
-	saveCallback=(finish:()=>void)=>{
-		SaveData.saveExtrinsic(finish);
-	}
-}
+  public init = () => {
+    // this will happen after 'preloader'
 
-function initializeDatas(){
+    initializeDatas();
+    SaveData.init();
+
+    this.currentModule = new MenuUI();
+    this.currentModule.navOut = this.updateCurrentModule;
+    this.app.stage.addChild(this.currentModule);
+  }
+
+  public updateCurrentModule = (o: any) => {
+    SaveData.saveExtrinsic(() => {
+      if (this.currentModule.dispose) {
+        this.currentModule.dispose();
+      } else if (this.currentModule.destroy) {
+        this.currentModule.destroy();
+      }
+      this.currentModule = o;
+      o.navOut = this.updateCurrentModule;
+      this.app.stage.addChild(o);
+    });
+  }
+
+  public saveCallback = (finish: () => void) => {
+    SaveData.saveExtrinsic(finish);
+  }
+}();
+
+function initializeDatas() {
 }
