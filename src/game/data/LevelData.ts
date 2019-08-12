@@ -41,29 +41,35 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
       pack.mirror();
 
-      pack.missile('sn', 0.15, 0, 3, 7, 3, 12, 3);
+      pack.wait(0.15);
+      pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
       pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
       pack.repeat(0.01, 3, 2);
 
-      pack.laser('sn', 0.1, 6, 0);
+      pack.wait(0.1);
+      pack.laser('sn', 0, 6, 0);
 
-      pack.missile('sn', 0.1, 3, 0, 7, 5, 4, 5, 7, 0);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 3, 0, 7, 5, 4, 5, 7, 0);
       pack.repeat(0.01, 5);
       pack.laser('sn', 0, 12, 5);
 
-      pack.missile('sn', 0.13, 2, 0, 2, 4, 12, 9);
+      pack.wait(0.13);
+      pack.missile('sn', 0, 2, 0, 2, 4, 12, 9);
       pack.repeat(0.01, 7, 1, true);
       pack.laser('sn', 0, 0, 6);
       pack.insert(-4);
       pack.laser('sn', 0, 12, 6);
       pack.insert(-4);
 
-      pack.laser('sn', 0.15, 0, 3);
+      pack.wait(0.15);
+      pack.laser('sn', 0, 0, 3);
       pack.laser('sn', 0.005, 12, 3);
       pack.laser('sn', 0.005, 0, 6);
       pack.laser('sn', 0.005, 12, 6);
 
-      pack.missile('sn', 0.13, 3, 0, 4, 4, 7, 0);
+      pack.wait(0.13);
+      pack.missile('sn', 0, 3, 0, 4, 4, 7, 0);
       pack.missile('sn', 0.01, 12, 5, 7, 6, 0, 5);
       pack.repeat(0.02, 4, 2);
       pack.laser('sn', 0.04, 0, 2);
@@ -76,11 +82,13 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       break;
 
     case 1:
-      pack.missile('sn', 0.1, 4, 0, 4, 7, 0, 12);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 4, 0, 4, 7, 0, 12);
       pack.missile('sn', 0, 2, 0, 2, 6, 0, 9);
       pack.repeat(0, 1, 2, true);
 
-      pack.missile('sn', 0.12, 0, 3, 7, 3, 12, 3);
+      pack.wait(0.12);
+      pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
       pack.offset(0, 0, 1);
       pack.repeat(0.015, 1, 2);
       pack.missile('sn', 0.02, 12, 5, 5, 5, 0, 5);
@@ -88,16 +96,19 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.repeat(0.015, 1, 2);
       pack.laser('ss', 0, 6, 0);
 
-      pack.suicide('mn', 0.14, 3, 0, 3, 3);
+      pack.wait(0.14);
+      pack.suicide('mn', 0, 3, 0, 3, 3);
       pack.repeat(0.008, 3, 1, true);
 
-      pack.suicide('mn', 0.1, 0, 2, 8, 2);
+      pack.wait(0.1);
+      pack.suicide('mn', 0, 0, 2, 8, 2);
       pack.mirror(0.005);
       pack.suicide('mn', 0.03, 3, 0, 3, 3);
       pack.mirror(0.001);
       pack.repeat(0.01, 5, 4);
 
-      pack.missile('sn', 0.15, 0, 3, 7, 4, 12, 7);
+      pack.wait(0.15);
+      pack.missile('sn', 0, 0, 3, 7, 4, 12, 7);
       pack.repeat(0.02, 9, 1, true);
       pack.laser('ss', 0, 4, 0);
       pack.insert(-6);
@@ -106,25 +117,29 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.suicide('mn', 0.05, 1, 0, 4, 4);
       pack.repeat(0.01, 3, 1, true);
 
-      pack.laser('ss', 0.12, 0, 3);
+      pack.wait(0.12);
+      pack.laser('ss', 0, 0, 3);
       pack.laser('ss', 0.005, 12, 3);
       pack.laser('ss', 0.01, 0, 6);
       pack.laser('ss', 0.005, 12, 6);
 
-      pack.missile('sn', 0.18, 2, 0, 2, 6, 0, 7);
+      pack.wait(0.18);
+      pack.missile('sn', 0, 2, 0, 2, 6, 0, 7);
       pack.missile('sn', 0, 3, 0, 3, 6, 12, 9);
       pack.repeat(0.03, 4, 2, true);
       pack.suicide('mn', 0.04, 0, 3, 4, 5);
       pack.repeat(0.005, 3, 1, true);
 
-      pack.laser('sn', 0.13, 0, 3);
+      pack.wait(0.13);
+      pack.laser('sn', 0, 0, 3);
       pack.laser('sn', 0.005, 12, 3);
       pack.laser('sn', 0.01, 0, 6);
       pack.laser('sn', 0.005, 12, 6);
       pack.suicide('mn', 0.025, 2, 12, 3, 4);
       pack.repeat(0.005, 7, 1, true);
 
-      pack.suicide('mn', 0.2, 0, 7, 3, 6);
+      pack.wait(0.2);
+      pack.suicide('mn', 0, 0, 7, 3, 6);
       pack.mirror();
       pack.suicide('mn', 0.01, 0, 2, 6, 3);
       pack.mirror();
@@ -133,7 +148,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.suicide('mn', 0.01, 5, 0, 5, 1);
       pack.mirror();
 
-      pack.missile('sn', 0.12, 3, 0, 6, 7, 12, 8);
+      pack.wait(0.12);
+      pack.missile('sn', 0, 3, 0, 6, 7, 12, 8);
       pack.repeat(0.02, 11, 1, true);
       pack.laser('ss', 0, 0, 6);
       pack.insert(-7);
@@ -146,10 +162,12 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       break;
 
     case 2:
-      pack.missile('sn', 0.1, 6, 0, 6, 5, 0, 9);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 6, 0, 6, 5, 0, 9);
       pack.repeat(0.01, 5, 1, true);
 
-      pack.missile('sn', 0.1, 0, 1, 5, 4, 0, 8);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 0, 1, 5, 4, 0, 8);
       pack.mirror();
       pack.repeat(0.03, 3, 2, true);
       pack.laser('sn', 0, 0, 6);
@@ -158,7 +176,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.insert(-4);
       pack.laser('mn', 0, 6, 0);
 
-      pack.missile('sn', 0.17, 3, 0, 3, 4, 12, 11);
+      pack.wait(0.17);
+      pack.missile('sn', 0, 3, 0, 3, 4, 12, 11);
       pack.missile('sn', 0, 4, 0, 5, 4, 8, 0);
       pack.repeat(0.025, 3, 2);
       pack.laser('sn', 0.01, 2, 0);
@@ -171,13 +190,15 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.suicide('mn', 0.09, 0, 3, 3, 3);
       pack.repeat(0.01, 3);
 
-      pack.laser('sn', 0.13, 0, 3);
+      pack.wait(0.13);
+      pack.laser('sn', 0, 0, 3);
       pack.mirror();
       pack.laser('mn', 0, 6, 0);
       pack.laser('sn', 0.01, 0, 6);
       pack.mirror();
 
-      pack.missile('sn', 0.18, 2, 0, 2, 7, 2, 12);
+      pack.wait(0.18);
+      pack.missile('sn', 0, 2, 0, 2, 7, 2, 12);
       pack.offset(0, 1, 0);
       pack.repeat(0.015, 1, 2);
       pack.repeat(0.05, 1, 4, true);
@@ -190,14 +211,16 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.offset(0, 0, 1);
       pack.repeat(0.015, 1, 2);
 
-      pack.missile('sn', 0.2, 0, 12, 4, 4, 12, 9);
+      pack.wait(0.2);
+      pack.missile('sn', 0, 0, 12, 4, 4, 12, 9);
       pack.repeat(0.006, 3, 1, true);
       pack.laser('mn', 0.01, 4, 0);
       pack.mirror(0.01);
       pack.suicide('mn', 0.05, 0, 3, 3, 3);
       pack.repeat(0.015, 7, 1, true);
 
-      pack.laser('mn', 0.15, 0, 7);
+      pack.wait(0.15);
+      pack.laser('mn', 0, 0, 7);
       pack.mirror();
       pack.laser('sn', 0.015, 0, 4);
       pack.mirror();
@@ -206,7 +229,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('sn', 0.015, 5, 0);
       pack.mirror();
 
-      pack.missile('sn', 0.2, 6, 0, 6, 4, 0, 0);
+      pack.wait(0.2);
+      pack.missile('sn', 0, 6, 0, 6, 4, 0, 0);
       pack.mirror(0.027);
       pack.missile('sn', 0.027, 6, 0, 6, 6, 0, 9);
       pack.mirror(0.028);
@@ -228,7 +252,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
 
       break;
     case 3:
-      pack.missile('sn', 0.1, 0, 3, 3, 5, 8, 0);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 0, 3, 3, 5, 8, 0);
       pack.repeat(0.02, 5, 1, true);
       pack.laser('ss', 0.02, 5, 0);
       pack.mirror(0.02);
@@ -240,13 +265,15 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ms', 0.02, 0, 2);
       pack.mirror(0.02);
 
-      pack.boss(0.2, 0);
+      pack.wait(0.2);
+      pack.boss(0, 0);
       break;
     case 4:
       pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
       pack.mirror();
 
-      pack.missile('sn', 0.15, 0, 3, 7, 3, 12, 3);
+      pack.wait(0.15);
+      pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
       pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
       pack.repeat(0.01, 3, 2);
       pack.laser('ss', 0.03, 3, 0);
@@ -254,7 +281,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ss', 0.02, 0, 9);
       pack.mirror();
 
-      pack.missile('sn', 0.25, 6, 0, 6, 5, 0, 10);
+      pack.wait(0.25);
+      pack.missile('sn', 0, 6, 0, 6, 5, 0, 10);
       pack.repeat(0.015, 7, 1, true);
       pack.laser('ss', 0.015, 0, 3);
       pack.mirror();
@@ -263,19 +291,22 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ss', 0.02, 3, 0);
       pack.mirror();
 
-      pack.missile('sn', 0.2, 5, 0, 5, 6, 1, 12);
+      pack.wait(0.2);
+      pack.missile('sn', 0, 5, 0, 5, 6, 1, 12);
       pack.mirror();
       pack.repeat(0.03, 3, 2);
       pack.laser('ms', 0.03, 0, 9);
       pack.mirror();
 
-      pack.laser('ms', 0.25, 6, 0);
+      pack.wait(0.25);
+      pack.laser('ms', 0, 6, 0);
       pack.laser('ss', 0.01, 0, 3);
       pack.mirror(0.01);
       pack.offset(0.02, 0, 3);
       pack.mirror(0.02);
 
-      pack.suicide('sn', 0.25, 1.5, 0, 1.5, 6);
+      pack.wait(0.25);
+      pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
       pack.offset(0, 3);
       pack.offset(0, 3);
       pack.offset(0, 3);
@@ -284,7 +315,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.offset(0, 3);
       pack.repeat(0.028, 3, 7);
 
-      pack.missile('sn', 0.25, 0, 4, 3, 6, 6, 0);
+      pack.wait(0.25);
+      pack.missile('sn', 0, 0, 4, 3, 6, 6, 0);
       pack.repeat(0.03, 11, 1, true);
       pack.laser('ss', 0, 2, 0);
       pack.insert(-9);
@@ -294,7 +326,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.insert(-3);
       pack.laser('ss', 0, 8, 0);
 
-      pack.missile('sn', 0.25, 12, 2, 7, 3, 0, 2);
+      pack.wait(0.25);
+      pack.missile('sn', 0.2, 12, 2, 7, 3, 0, 2);
       pack.missile('sn', 0.015, 1, 12, 5, 6, 12, 8);
       pack.repeat(0.03, 5, 2);
       pack.laser('ms', 0, 0, 6);
@@ -313,7 +346,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.mirror();
       pack.repeat(0.03, 1, 2);
 
-      pack.missile('ss', 0.1, 6, 0, 6, 5, 0, 10);
+      pack.wait(0.1);
+      pack.missile('ss', 0, 6, 0, 6, 5, 0, 10);
       pack.repeat(0.06, 5, 1, true);
       pack.missile('sn', 0, 1, 0, 2, 4, 3, 0);
       pack.missile('sn', 0, 2, 0, 3, 4, 4, 0);
@@ -330,14 +364,16 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.insert(-3);
       pack.insert(-2);
 
-      pack.missile('ss', 0.15, 9, 0, 9, 6, 9, 12);
+      pack.wait(0.15);
+      pack.missile('ss', 0, 9, 0, 9, 6, 9, 12);
       pack.offset(0, 1);
       pack.missile('mn', 0.02, 2, 0, 2, 6, 2, 12);
       pack.offset(0, 2);
       pack.missile('sn', 0.04, 0, 2, 5, 4, 12, 7);
       pack.repeat(0.01, 3, 1, true);
 
-      pack.missile('sn', 0.15, 1, 0, 1, 6, 1, 12);
+      pack.wait(0.15);
+      pack.missile('sn', 0, 1, 0, 1, 6, 1, 12);
       pack.offset(0, 1);
       pack.repeat(0.04, 1, 2);
       pack.missile('mn', 0.02, 10, 0, 10, 6, 10, 12);
@@ -346,13 +382,15 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.mirror();
       pack.insert(-4);
 
-      pack.suicide('sn', 0.32, 1.5, 0, 1.5, 6);
+      pack.wait(0.32);
+      pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
       pack.offset(0, 3);
       pack.offset(0, 3);
       pack.offset(0, 3);
       pack.repeat(0.035, 7, 4, true);
 
-      pack.missile('ss', 0.3, 6, 0, 6, 5, 0, 9);
+      pack.wait(0.3);
+      pack.missile('ss', 0, 6, 0, 6, 5, 0, 9);
       pack.missile('mn', 0.01, 0, 8, 4, 5, 5, 0);
       pack.mirror();
       pack.repeat(0.07, 3, 3, true);
@@ -361,7 +399,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ms', 0, 10, 0);
       pack.insert(-6);
 
-      pack.missile('mn', 0.2, 2, 0, 2, 5, 2, 12);
+      pack.wait(0.2);
+      pack.missile('mn', 0, 2, 0, 2, 5, 2, 12);
       pack.missile('ss', 0, 3, 0, 3.5, 5, 7, 0);
       pack.repeat(0.05, 3, 2);
       pack.missile('mn', 0.03, 12, 2, 5, 5, 2, 12);
@@ -377,18 +416,21 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('mn', 0, 4, 0, 4, 6, 2, 12);
       pack.mirror();
 
-      pack.missile('ms', 0.15, 1, 0, 5, 4, 11, 12);
+      pack.wait(0.15);
+      pack.missile('ms', 0, 1, 0, 5, 4, 11, 12);
       pack.mirror();
       pack.missile('mn', 0.01, 0, 10, 3, 6, 0, 3);
       pack.repeat(0.01, 3, 1, true);
 
-      pack.missile('ms', 0.2, 0, 4, 7, 4, 12, 4);
+      pack.wait(0.2);
+      pack.missile('ms', 0, 0, 4, 7, 4, 12, 4);
       pack.offset(0.02, 0, 2);
       pack.repeat(0.03, 3, 2);
       pack.laser('ms', 0.04, 0, 2);
       pack.laser('ms', 0.04, 0, 8);
 
-      pack.missile('ms', 0.25, 2, 0, 2, 7, 2, 12);
+      pack.wait(0.25);
+      pack.missile('ms', 0, 2, 0, 2, 7, 2, 12);
       pack.missile('ms', 0.01, 3, 0, 5, 5, 12, 7);
       pack.repeat(0.06, 1, 2);
       pack.missile('mn', 0.05, 2, 0, 2, 7, 2, 12);
@@ -401,7 +443,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ss', 0, 6, 0);
       pack.insert(-1);
 
-      pack.missile('ms', 0.2, 5, 0, 5, 6, 0, 10);
+      pack.wait(0.2);
+      pack.missile('ms', 0, 5, 0, 5, 6, 0, 10);
       pack.mirror();
       pack.missile('mn', 0.02, 3, 0, 3, 4, 0, 7);
       pack.repeat(0.035, 11, 1, true);
@@ -410,7 +453,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('ms', 0, 12, 3);
       pack.insert(-6);
 
-      pack.missile('ms', 0.2, 3, 0, 3, 7, 2, 12);
+      pack.wait(0.2);
+      pack.missile('ms', 0, 3, 0, 3, 7, 2, 12);
       pack.mirror();
       pack.missile('ms', 0.04, 4, 0, 4, 6, 2, 12);
       pack.mirror();
@@ -423,20 +467,23 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('mn', 0.04, 5, 0, 5, 5, 2, 12);
       pack.mirror();
 
-      pack.laser('mn', 0.2, 0, 3);
+      pack.wait(0.2);
+      pack.laser('mn', 0, 0, 3);
       pack.mirror();
       pack.laser('sn', 0.01, 0, 6);
       pack.mirror();
       pack.laser('ln', 0, 6, 0);
 
-      pack.suicide('ss', 0.35, 1.4, 0, 1.4, 6);
+      pack.wait(0.35);
+      pack.suicide('ss', 0, 1.4, 0, 1.4, 6);
       pack.offset(0, 3.8);
       pack.offset(0, 3.8);
       pack.repeat(0.05, 4, 3, true);
       break;
 
     case 7:
-      pack.suicide('sn', 0.1, 1.5, 0, 1.5, 6);
+      pack.wait(0.1);
+      pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
       pack.offset(0, 3);
       pack.offset(0, 3);
       pack.offset(0, 3);
@@ -464,7 +511,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('ms', 0.02, 0, 2, 3, 6, 0, 9);
       pack.mirror(0.02);
 
-      pack.boss(0.2, 1);
+      pack.wait(0.2);
+      pack.boss(0, 1);
       break;
 
     case 8:
@@ -481,7 +529,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('sn', 0.02, 1, 12, 4, 6, 12, 2);
       pack.repeat(0.02, 5, 1, true);
 
-      pack.missile('sn', 0.17, 12, 12, 8, 3, 2, 6, 12, 7);
+      pack.wait(0.17);
+      pack.missile('sn', 0, 12, 12, 8, 3, 2, 6, 12, 7);
       pack.repeat(0.01, 12, 1);
       pack.laser('ln', 0, 3, 0);
       pack.insert(-10);
@@ -490,7 +539,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.suicide('mn', 0.05, 0, 0, 3, 4);
       pack.repeat(0.01, 3);
 
-      pack.laser('ms', 0.23, 4, 0);
+      pack.wait(0.23);
+      pack.laser('ms', 0, 4, 0);
       pack.mirror(0.01);
       pack.laser('ls', 0.01, 6, 0);
       pack.laser('ss', 0.04, 0, 4);
@@ -498,28 +548,35 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.offset(0.022, 0, 3);
       pack.mirror(0.022);
 
-      pack.missile('ss', 0.22, 0, 12, 4, 3, 10, 6, 0, 6);
+      pack.wait(0.22);
+      pack.missile('ss', 0, 0, 12, 4, 3, 10, 6, 0, 6);
       pack.repeat(0.03, 7, 1);
       pack.laser('ls', 0, 5, 0);
       pack.insert(-5);
       pack.laser('ls', 0, 7, 0);
       pack.insert(-1);
-      pack.suicide('mn', 0.13, 12, 0, 9, 4);
+
+      pack.wait(0.13);
+      pack.suicide('mn', 0, 12, 0, 9, 4);
       pack.repeat(0.01, 3);
 
-      pack.laser('ls', 0.3, 2, 0);
+      pack.wait(0.3);
+      pack.laser('ls', 0, 2, 0);
       pack.offset(0.01, 2);
       pack.offset(0.01, 2);
       pack.offset(0.01, 2);
       pack.offset(0.01, 2);
-      pack.suicide('mn', 0.13, 0, 12, 2, 5);
+
+      pack.wait(0.13);
+      pack.suicide('mn', 0, 0, 12, 2, 5);
       pack.repeat(0.01, 7, 1, true);
       break;
     case 9:
       pack.missile('ln', 0.05, -1, -1, 5, 6, 13, 13);
       pack.mirror(0.01);
 
-      pack.missile('mn', 0.1, 0, 1, 9, 3, 0, 6);
+      pack.wait(0.1);
+      pack.missile('mn', 0, 0, 1, 9, 3, 0, 6);
       pack.missile('mn', 0.013, 12, 8, 3, 6, 12, 3);
       pack.repeat(0.013, 3, 2);
       pack.missile('ln', 0.03, -1, 3, 6, 5, 13, 3);
@@ -527,24 +584,29 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('lb', 0.06, 4.5, 0);
       pack.laser('lb', 0.01, 7.5, 0);
 
-      pack.missile('ln', 0.3, 3, -1, 3, 5, 3, 13);
+      pack.wait(0.3);
+      pack.missile('ln', 0, 3, -1, 3, 5, 3, 13);
       pack.mirror();
       pack.missile('ln', 0.04, -1, 1, 6, 3, 9, 13);
       pack.mirror();
       pack.laser('lt', 0.04, 0, 5);
       pack.mirror();
-      pack.missile('mn', 0.14, 0, 1, 5, 5, 12, 1);
+
+      pack.wait(0.14);
+      pack.missile('mn', 0, 0, 1, 5, 5, 12, 1);
       pack.missile('mn', 0, 0, 9, 6, 6, 0, 3);
       pack.missile('mn', 0, 12, 9, 7, 5, 0, 9);
       pack.missile('mn', 0, 12, 1, 6, 4, 12, 10);
 
-      pack.missile('ss', 0.14, 2, 12, 2, 3, 9, 2.5, 10, 12);
+      pack.wait(0.14);
+      pack.missile('ss', 0, 2, 12, 2, 3, 9, 2.5, 10, 12);
       pack.repeat(0.01, 7);
       pack.missile('ls', 0.07, -1, 6, 8, 6, 13, 6);
       pack.offset(0, 0, 2);
       pack.laser('lb', 0.05, 0, 7);
 
-      pack.ship('lmt', 0.1, 3, 0, [pack.move(3, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
+      pack.wait(0.1);
+      pack.ship('lmt', 0, 3, 0, [pack.move(3, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
       pack.mirror();
       pack.ship('lmt', 0.05, 5, 0, [pack.move(5, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
       pack.mirror();
@@ -553,7 +615,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('mn', 0.03, 6, 0, 6, 5, 1, 12);
       pack.mirror();
 
-      pack.missile('ms', 0.23, 2, 0, 2, 6, 6, 4, 10, 12);
+      pack.wait(0.23);
+      pack.missile('ms', 0, 2, 0, 2, 6, 6, 4, 10, 12);
       pack.mirror(0.018);
       pack.missile('mn', 0.018, 2, 0, 2, 6, 6, 4, 10, 12);
       pack.repeat(0.018, 5, 1, true);
@@ -561,7 +624,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.mirror();
       pack.laser('lb', 0.05, 6, 0);
 
-      pack.laser('lb', 0.35, 4, 0);
+      pack.wait(0.35);
+      pack.laser('lb', 0, 4, 0);
       pack.mirror();
       pack.stealth(0.05, 3, 5, 0, 12);
       pack.mirror(0.01);
@@ -579,7 +643,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.missile('ss', 0.03, 6, 0, 6, 5, 1, 0);
       pack.repeat(0.03, 3, 1, true);
 
-      pack.missile('sn', 0.1, 2, 12, 2, 3, 8, 4, 10, 12);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 2, 12, 2, 3, 8, 4, 10, 12);
       pack.repeat(0.01, 13, 1, true);
       pack.laser('ss', 0.02, 5, 0);
       pack.mirror();
@@ -587,7 +652,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.repeat(0.01, 5, 1, true);
       pack.stealth(0.05, 6, 7, 6, 0);
 
-      pack.missile('sn', 0.1, 6, 0, 6, 5, 3, 2, 12, 7);
+      pack.wait(0.1);
+      pack.missile('sn', 0, 6, 0, 6, 5, 3, 2, 12, 7);
       pack.repeat(0.014, 9);
       pack.missile('lb', 0.03, 2, -1, 2, 7, 2, 13);
       pack.mirror(0.02);
@@ -596,7 +662,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.stealth(0.07, 5, 3, 0, 6);
       pack.stealth(0.02, 8, 5, 12, 7);
 
-      pack.missile('lb', 0.2, 2, -1, 5, 4, 2, 13);
+      pack.wait(0.2);
+      pack.missile('lb', 0, 2, -1, 5, 4, 2, 13);
       pack.mirror();
       pack.laser('sn', 0.02, 0, 7);
       pack.mirror(0.015);
@@ -609,7 +676,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('sn', 0.015, 7, 0);
       pack.mirror(0.015);
 
-      pack.missile('mn', 0.2, 0, 2, 6, 4, 12, 2);
+      pack.wait(0.2);
+      pack.missile('mn', 0, 0, 2, 6, 4, 12, 2);
       pack.repeat(0.02, 3);
       pack.missile('sn', 0.01, 12, 3, 6, 5, 0, 3);
       pack.clone(0.01, -2);
@@ -621,7 +689,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.stealth(0.05, 5, 5, 5, 0);
       pack.mirror(0.03);
 
-      pack.suicide('sn', 0.3, 1.4, 0, 1.4, 6);
+      pack.wait(0.3);
+      pack.suicide('sn', 0, 1.4, 0, 1.4, 6);
       pack.offset(0, 3.8);
       pack.offset(0, 3.8);
       pack.repeat(0.03, 2, 3, true);
@@ -633,7 +702,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.mirror();
       pack.missile('ln', 0, 13, 5, 6, 7, -1, 10);
 
-      pack.laser('ms', 0.18, 4, 0);
+      pack.wait(0.18);
+      pack.laser('ms', 0, 4, 0);
       pack.mirror(0.01);
       pack.laser('ls', 0.01, 6, 0);
       pack.laser('ss', 0.06, 0, 4);
@@ -643,7 +713,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.stealth(0.05, 4, 5, 0, 12);
       pack.mirror(0.02);
 
-      pack.suicide('mn', 0.2, 3, 0, 5, 2);
+      pack.wait(0.2);
+      pack.suicide('mn', 0, 3, 0, 5, 2);
       pack.mirror();
       pack.repeat(0.06, 1, 2);
       pack.suicide('mn', 0, 0, 0, 2, 2);
@@ -656,7 +727,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.mirror();
       break;
     case 11:
-      pack.missile('ln', 0.1, 1, -1, 4, 6, -1, 13);
+      pack.wait(0.1);
+      pack.missile('ln', 0, 1, -1, 4, 6, -1, 13);
       pack.mirror();
       pack.laser('ln', 0.06, 0, 5);
       pack.mirror();
@@ -676,7 +748,8 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
       pack.laser('lb', 0.09, 5, 0);
       pack.mirror();
 
-      pack.stealth(0.2, 3, 4, 0, 5);
+      pack.wait(0.2);
+      pack.stealth(0, 3, 4, 0, 5);
       pack.mirror(0.024);
       pack.stealth(0.024, 6, 3, 6, 0, true);
 
@@ -706,27 +779,34 @@ export function getBossLoop(bossType: number, wpm: number = 60): ILevelEvent[] {
 
   switch (bossType) {
     case 0:
-      pack.missile('sn', 0.3, 0, 4, 7, 6, 12, 6);
+      pack.wait(0.3);
+      pack.missile('sn', 0, 0, 4, 7, 6, 12, 6);
       pack.missile('sn', 0.015, 12, 3, 5, 5, 0, 5);
       pack.repeat(0.015, 2, 2);
 
-      pack.laser('ss', 0.2, 0, 9);
+      pack.wait(0.2);
+      pack.laser('ss', 0, 0, 9);
       pack.mirror(0.01);
       break;
     case 1:
-      pack.missile('mn', 0.25, 0, 3 + Math.random() * 3, 5, 6, 12, 7);
+      pack.wait(0.25);
+      pack.missile('mn', 0, 0, 3 + Math.random() * 3, 5, 6, 12, 7);
       pack.mirror();
       pack.repeat(0.03, 1, 2);
 
-      pack.laser('ms', 0.35, 0, 8);
+      pack.wait(0.35);
+      pack.laser('ms', 0, 0, 8);
       pack.mirror(0.01);
       break;
     case 2:
-      pack.laser('ms', 0.3, 0, 6 + Math.random() * 3);
+      pack.wait(0.3);
+      pack.laser('ms', 0, 0, 6 + Math.random() * 3);
       pack.mirror();
-      pack.missile('mn', 0.3, 0, 0, 2, 4, 5, 6, 12, 10);
+      pack.wait(0.3);
+      pack.missile('mn', 0, 0, 0, 2, 4, 5, 6, 12, 10);
       pack.repeat(0.02, 5, 1, true);
-      pack.stealth(0.3, 2 + Math.random() * 8, 5 + Math.random() * 2, (Math.random() > 0.5 ? 0 : 12), 5);
+      pack.wait(0.3);
+      pack.stealth(0, 2 + Math.random() * 8, 5 + Math.random() * 2, (Math.random() > 0.5 ? 0 : 12), 5);
       break;
   }
   return pack.array;
@@ -736,7 +816,7 @@ class MethodPack {
   public array: ILevelEvent[] = [];
   private distance: number = 0;
 
-  constructor(mult: number) { }
+  constructor(private mult: number) { }
 
   public setDist(distance: number) {
     // if (distance>=0.1){
@@ -753,7 +833,7 @@ class MethodPack {
   }
 
   public wait(distance: number = 0): ILevelEvent {
-    this.setDist(distance);
+    this.setDist(distance * this.mult);
     let m: ILevelEvent = { type: EventType.WAIT, distance: this.distance, waitTime: distance };
 
     this.array.push(m);

@@ -5,6 +5,7 @@ import { IEnemyConfig, EnemyData } from '../data/EnemyData';
 import { ActionType, GameEvents } from '../data/Misc';
 import { Turret } from './Turret';
 import * as JMBL from '../../JMGE/JMBL';
+import { CONFIG } from '../../Config';
 
 interface IEnemyCallbacks {
   onFire?: (enemy: EnemyShip, fires: ActionType) => void;
@@ -48,7 +49,11 @@ export class EnemyShip extends GameSprite {
     this.health = enemyConfig.health;
     if (enemyConfig.turnRate || enemyConfig.turnRate === 0) {
       this.turnRate = enemyConfig.turnRate;
+    } else {
+      this.turnRate = this.a / 7;
     }
+
+    this.n = Math.atan2(config.commands[0].y - config.y, config.commands[0].x - config.x);
 
     this.addChild(this.charge);
 
@@ -87,17 +92,16 @@ export class EnemyShip extends GameSprite {
       }
 
       if (this.config.commands[0].move) {
-        let command = this.config.commands[0];
-        let dx = command.x - this.x;
-        let dy = command.y - this.y;
-        let angle = Math.atan2(dy, dx);
-        this.x += speed * Math.cos(angle);
-        this.y += speed * Math.sin(angle);
-      }
-
-      if (this.config.commands[0].x !== undefined && this.config.commands[0].y !== undefined) {
-        let angle = Math.atan2(this.config.commands[0].y - this.y, this.config.commands[0].x - this.x);
-        this.rotation = angle + Math.PI / 2;
+        this.moveTo(this.config.commands[0], speed);
+      } else if (this.config.commands[0].x !== undefined && this.config.commands[0].y !== undefined) {
+        this.rotateTo(this.config.commands[0], speed);
+        // this.rotateTo({x: CONFIG.INIT.STAGE_WIDTH / 2, y: CONFIG.INIT.STAGE_HEIGHT - 150}, speed);
+        // console.log(this.n, this.rotation);
+        // let angle = Math.atan2(this.config.commands[0].y - this.y, this.config.commands[0].x - this.x);
+        // this.rotation = angle + Math.PI / 2;
+      } else {
+    //     this.player.x = CONFIG.INIT.STAGE_WIDTH / 2;
+    // this.player.y = CONFIG.INIT.STAGE_HEIGHT - 150;
       }
 
       if (this.turret) {

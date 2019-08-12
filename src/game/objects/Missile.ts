@@ -31,15 +31,21 @@ export class Missile extends GameSprite {
     this.speed = missileConfig.moveSpeed;
     this.killBy = missileConfig.killBy;
     this.health = missileConfig.health;
+    this.a = missileConfig.moveSpeed;
+
     if (missileConfig.turnRate || missileConfig.turnRate === 0) {
       this.turnRate = missileConfig.turnRate;
+    } else {
+      this.turnRate = this.a / 7;
     }
+
     if (this.wordSize > 0) {
       this.addWord();
     }
 
     this.x = origin.x;
     this.y = origin.y;
+    this.n = origin.n;
   }
 
   public update = (speed: number) => {
@@ -49,17 +55,19 @@ export class Missile extends GameSprite {
       if (this.target.toDestroy) {
         this.toDestroy = true;
       }
+      this.moveTo(this.target, speed);
+
       let dx = this.target.x - this.x;
       let dy = this.target.y - this.y;
-      let angle = Math.atan2(dy, dx);
-      this.rotation = angle + Math.PI / 2;
+      // let angle = Math.atan2(dy, dx);
+      // this.rotation = angle + Math.PI / 2;
       let distance = Math.sqrt(dy * dy + dx * dx);
       if (distance < Math.max(30, speed * this.speed * 2)) {
         this.config.onComplete(this.target);
         this.toDestroy = true;
       } else {
-        this.x += speed * this.speed * Math.cos(angle);
-        this.y += speed * this.speed * Math.sin(angle);
+        // this.x += speed * this.speed * Math.cos(angle);
+        // this.y += speed * this.speed * Math.sin(angle);
         if (this.target.turret) {
           if (this.target.turret.targetInRange(this)) {
             this.toDestroy = true;

@@ -117,7 +117,7 @@ export class ActionControl {
   public shootSuicide(origin: EnemyShip, target: GameSprite) {
     origin.replaceCommands([{ x: target.x, y: target.y, move: true }]);
     origin.callbacks.onFinishCommands = () => this.manager.player.addHealth(-1);
-    // origin.speed*=2;
+    origin.a *= 2;
     origin.priority = 3;
   }
 

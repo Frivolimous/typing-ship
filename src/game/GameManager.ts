@@ -43,7 +43,7 @@ export class GameManager extends BaseUI {
     this.actionC.missileRate = 0.4;
 
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
-    this.levelEvents.loadLevel(level, 60);
+    this.levelEvents.loadLevel(level, 60 * this.gameSpeed);
 
     this.player.x = CONFIG.INIT.STAGE_WIDTH / 2;
     this.player.y = CONFIG.INIT.STAGE_HEIGHT - 150;

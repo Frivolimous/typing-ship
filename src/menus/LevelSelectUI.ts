@@ -50,6 +50,7 @@ export class LevelSelectUI extends BaseUI {
   }
 
   public startGame = () => {
+    console.log(this.currentDifficulty);
     this.navForward(new GameManager(this.currentLevel, this.currentDifficulty));
     if (this.difficultyPopup) {
       this.difficultyPopup.destroy();

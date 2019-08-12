@@ -1,6 +1,5 @@
 import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
-import { GameManager } from '../game/GameManager';
 import { LevelSelectUI } from './LevelSelectUI';
 import { CONFIG } from '../Config';
 import { BadgesUI } from './BadgesUI';

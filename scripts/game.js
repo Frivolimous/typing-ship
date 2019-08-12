@@ -1276,6 +1276,44 @@ define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI"], function (require
     }(JMBUI.BasicElement));
     exports.BaseUI = BaseUI;
 });
+define("Config", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CONFIG = {
+        INIT: {
+            SCREEN_WIDTH: 500,
+            SCREEN_HEIGHT: 500,
+            STAGE_WIDTH: 560,
+            STAGE_HEIGHT: 560,
+            RESOLUTION: 1,
+            BACKGROUND_COLOR: 0,
+            MOUSE_HOLD: 200,
+            FPS: 60,
+        },
+        TILEMAP: {
+            TILE_SIZE: 30,
+        },
+        GAME: {
+            skillPerLevel: 0.2,
+        },
+        toPS: function (n) {
+            return Math.floor(exports.CONFIG.INIT.FPS * 10 / n) / 10;
+        },
+        fromPS: function (n) {
+            return Math.floor(n / exports.CONFIG.INIT.FPS * 10) / 10;
+        },
+        toDur: function (n) {
+            return Math.floor(n * 10 / exports.CONFIG.INIT.FPS) / 10;
+        },
+        pixelToTile: function (n, minusHalf) {
+            if (minusHalf === void 0) { minusHalf = true; }
+            return Math.floor(n * 10 / exports.CONFIG.TILEMAP.TILE_SIZE - (minusHalf ? 5 : 0)) / 10;
+        },
+        toTPS: function (n) {
+            return Math.floor(n * exports.CONFIG.INIT.FPS / exports.CONFIG.TILEMAP.TILE_SIZE * 10) / 10;
+        },
+    };
+});
 define("game/data/WordList10k", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -1825,44 +1863,6 @@ define("JMGE/effects/Laser", ["require", "exports", "JMGE/others/Colors", "JMGE/
     }(PIXI.Graphics));
     exports.Laser = Laser;
 });
-define("Config", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.CONFIG = {
-        INIT: {
-            SCREEN_WIDTH: 500,
-            SCREEN_HEIGHT: 500,
-            STAGE_WIDTH: 560,
-            STAGE_HEIGHT: 560,
-            RESOLUTION: 1,
-            BACKGROUND_COLOR: 0,
-            MOUSE_HOLD: 200,
-            FPS: 60,
-        },
-        TILEMAP: {
-            TILE_SIZE: 30,
-        },
-        GAME: {
-            skillPerLevel: 0.2,
-        },
-        toPS: function (n) {
-            return Math.floor(exports.CONFIG.INIT.FPS * 10 / n) / 10;
-        },
-        fromPS: function (n) {
-            return Math.floor(n / exports.CONFIG.INIT.FPS * 10) / 10;
-        },
-        toDur: function (n) {
-            return Math.floor(n * 10 / exports.CONFIG.INIT.FPS) / 10;
-        },
-        pixelToTile: function (n, minusHalf) {
-            if (minusHalf === void 0) { minusHalf = true; }
-            return Math.floor(n * 10 / exports.CONFIG.TILEMAP.TILE_SIZE - (minusHalf ? 5 : 0)) / 10;
-        },
-        toTPS: function (n) {
-            return Math.floor(n * exports.CONFIG.INIT.FPS / exports.CONFIG.TILEMAP.TILE_SIZE * 10) / 10;
-        },
-    };
-});
 define("game/GameUI", ["require", "exports", "Config", "JMGE/JMBL", "JMGE/effects/FlyingText", "JMGE/JMBUI", "game/data/Misc"], function (require, exports, Config_1, JMBL, FlyingText_1, JMBUI_1, Misc_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -1982,6 +1982,886 @@ define("game/objects/Turret", ["require", "exports", "game/objects/GameSprite", 
     }(GameSprite_1.GameSprite));
     exports.Turret = Turret;
 });
+define("game/data/LevelData", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var EventType;
+    (function (EventType) {
+        EventType[EventType["LOOP"] = 0] = "LOOP";
+        EventType[EventType["WAIT"] = 1] = "WAIT";
+        EventType[EventType["JUMP"] = 2] = "JUMP";
+        EventType[EventType["SPAWN"] = 3] = "SPAWN";
+        EventType[EventType["BOSS"] = 4] = "BOSS";
+    })(EventType = exports.EventType || (exports.EventType = {}));
+    function getLevel(level, wpm) {
+        if (wpm === void 0) { wpm = 60; }
+        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
+        switch (level) {
+            case -1:
+                pack.boss(0.01, 0);
+                break;
+            case 0:
+                pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
+                pack.mirror();
+                pack.wait(0.15);
+                pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
+                pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
+                pack.repeat(0.01, 3, 2);
+                pack.wait(0.1);
+                pack.laser('sn', 0, 6, 0);
+                pack.wait(0.1);
+                pack.missile('sn', 0, 3, 0, 7, 5, 4, 5, 7, 0);
+                pack.repeat(0.01, 5);
+                pack.laser('sn', 0, 12, 5);
+                pack.wait(0.13);
+                pack.missile('sn', 0, 2, 0, 2, 4, 12, 9);
+                pack.repeat(0.01, 7, 1, true);
+                pack.laser('sn', 0, 0, 6);
+                pack.insert(-4);
+                pack.laser('sn', 0, 12, 6);
+                pack.insert(-4);
+                pack.wait(0.15);
+                pack.laser('sn', 0, 0, 3);
+                pack.laser('sn', 0.005, 12, 3);
+                pack.laser('sn', 0.005, 0, 6);
+                pack.laser('sn', 0.005, 12, 6);
+                pack.wait(0.13);
+                pack.missile('sn', 0, 3, 0, 4, 4, 7, 0);
+                pack.missile('sn', 0.01, 12, 5, 7, 6, 0, 5);
+                pack.repeat(0.02, 4, 2);
+                pack.laser('sn', 0.04, 0, 2);
+                pack.laser('sn', 0.01, 12, 2);
+                pack.laser('sn', 0.02, 0, 4);
+                pack.laser('sn', 0.01, 12, 4);
+                pack.missile('sn', 0.07, 9, 0, 8, 4, 5, 0);
+                pack.missile('sn', 0.01, 0, 5, 5, 6, 12, 5);
+                pack.repeat(0.02, 4, 2);
+                break;
+            case 1:
+                pack.wait(0.1);
+                pack.missile('sn', 0, 4, 0, 4, 7, 0, 12);
+                pack.missile('sn', 0, 2, 0, 2, 6, 0, 9);
+                pack.repeat(0, 1, 2, true);
+                pack.wait(0.12);
+                pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
+                pack.offset(0, 0, 1);
+                pack.repeat(0.015, 1, 2);
+                pack.missile('sn', 0.02, 12, 5, 5, 5, 0, 5);
+                pack.offset(0, 0, 1);
+                pack.repeat(0.015, 1, 2);
+                pack.laser('ss', 0, 6, 0);
+                pack.wait(0.14);
+                pack.suicide('mn', 0, 3, 0, 3, 3);
+                pack.repeat(0.008, 3, 1, true);
+                pack.wait(0.1);
+                pack.suicide('mn', 0, 0, 2, 8, 2);
+                pack.mirror(0.005);
+                pack.suicide('mn', 0.03, 3, 0, 3, 3);
+                pack.mirror(0.001);
+                pack.repeat(0.01, 5, 4);
+                pack.wait(0.15);
+                pack.missile('sn', 0, 0, 3, 7, 4, 12, 7);
+                pack.repeat(0.02, 9, 1, true);
+                pack.laser('ss', 0, 4, 0);
+                pack.insert(-6);
+                pack.laser('ss', 0, 8, 0);
+                pack.insert(-2);
+                pack.suicide('mn', 0.05, 1, 0, 4, 4);
+                pack.repeat(0.01, 3, 1, true);
+                pack.wait(0.12);
+                pack.laser('ss', 0, 0, 3);
+                pack.laser('ss', 0.005, 12, 3);
+                pack.laser('ss', 0.01, 0, 6);
+                pack.laser('ss', 0.005, 12, 6);
+                pack.wait(0.18);
+                pack.missile('sn', 0, 2, 0, 2, 6, 0, 7);
+                pack.missile('sn', 0, 3, 0, 3, 6, 12, 9);
+                pack.repeat(0.03, 4, 2, true);
+                pack.suicide('mn', 0.04, 0, 3, 4, 5);
+                pack.repeat(0.005, 3, 1, true);
+                pack.wait(0.13);
+                pack.laser('sn', 0, 0, 3);
+                pack.laser('sn', 0.005, 12, 3);
+                pack.laser('sn', 0.01, 0, 6);
+                pack.laser('sn', 0.005, 12, 6);
+                pack.suicide('mn', 0.025, 2, 12, 3, 4);
+                pack.repeat(0.005, 7, 1, true);
+                pack.wait(0.2);
+                pack.suicide('mn', 0, 0, 7, 3, 6);
+                pack.mirror();
+                pack.suicide('mn', 0.01, 0, 2, 6, 3);
+                pack.mirror();
+                pack.suicide('mn', 0.01, 0, 4, 4, 3);
+                pack.mirror();
+                pack.suicide('mn', 0.01, 5, 0, 5, 1);
+                pack.mirror();
+                pack.wait(0.12);
+                pack.missile('sn', 0, 3, 0, 6, 7, 12, 8);
+                pack.repeat(0.02, 11, 1, true);
+                pack.laser('ss', 0, 0, 6);
+                pack.insert(-7);
+                pack.laser('ss', 0, 12, 6);
+                pack.insert(-3);
+                pack.laser('mn', 0, 6, 0);
+                pack.suicide('mn', 0.03, 0, 2, 6, 3);
+                pack.repeat(0.01, 3, 1, true);
+                break;
+            case 2:
+                pack.wait(0.1);
+                pack.missile('sn', 0, 6, 0, 6, 5, 0, 9);
+                pack.repeat(0.01, 5, 1, true);
+                pack.wait(0.1);
+                pack.missile('sn', 0, 0, 1, 5, 4, 0, 8);
+                pack.mirror();
+                pack.repeat(0.03, 3, 2, true);
+                pack.laser('sn', 0, 0, 6);
+                pack.insert(-6);
+                pack.laser('sn', 0, 12, 6);
+                pack.insert(-4);
+                pack.laser('mn', 0, 6, 0);
+                pack.wait(0.17);
+                pack.missile('sn', 0, 3, 0, 3, 4, 12, 11);
+                pack.missile('sn', 0, 4, 0, 5, 4, 8, 0);
+                pack.repeat(0.025, 3, 2);
+                pack.laser('sn', 0.01, 2, 0);
+                pack.mirror();
+                pack.missile('sn', 0.09, 12, 3, 8, 3, 1, 12);
+                pack.missile('sn', 0, 12, 4, 8, 5, 12, 8);
+                pack.repeat(0.025, 3, 2);
+                pack.laser('sn', 0.01, 0, 6);
+                pack.mirror();
+                pack.suicide('mn', 0.09, 0, 3, 3, 3);
+                pack.repeat(0.01, 3);
+                pack.wait(0.13);
+                pack.laser('sn', 0, 0, 3);
+                pack.mirror();
+                pack.laser('mn', 0, 6, 0);
+                pack.laser('sn', 0.01, 0, 6);
+                pack.mirror();
+                pack.wait(0.18);
+                pack.missile('sn', 0, 2, 0, 2, 7, 2, 12);
+                pack.offset(0, 1, 0);
+                pack.repeat(0.015, 1, 2);
+                pack.repeat(0.05, 1, 4, true);
+                pack.laser('mn', 0, 0, 4);
+                pack.missile('sn', 0.05, 0, 2, 7, 2, 12, 2);
+                pack.offset(0, 0, 1);
+                pack.repeat(0.015, 1, 2);
+                pack.laser('mn', 0, 12, 4);
+                pack.missile('sn', 0.05, 12, 5, 5, 5, 0, 5);
+                pack.offset(0, 0, 1);
+                pack.repeat(0.015, 1, 2);
+                pack.wait(0.2);
+                pack.missile('sn', 0, 0, 12, 4, 4, 12, 9);
+                pack.repeat(0.006, 3, 1, true);
+                pack.laser('mn', 0.01, 4, 0);
+                pack.mirror(0.01);
+                pack.suicide('mn', 0.05, 0, 3, 3, 3);
+                pack.repeat(0.015, 7, 1, true);
+                pack.wait(0.15);
+                pack.laser('mn', 0, 0, 7);
+                pack.mirror();
+                pack.laser('sn', 0.015, 0, 4);
+                pack.mirror();
+                pack.laser('mn', 0.02, 3, 0);
+                pack.mirror();
+                pack.laser('sn', 0.015, 5, 0);
+                pack.mirror();
+                pack.wait(0.2);
+                pack.missile('sn', 0, 6, 0, 6, 4, 0, 0);
+                pack.mirror(0.027);
+                pack.missile('sn', 0.027, 6, 0, 6, 6, 0, 9);
+                pack.mirror(0.028);
+                pack.repeat(0.028, 4, 4);
+                pack.laser('sn', 0, 0, 3);
+                pack.insert(-18);
+                pack.laser('sn', 0, 12, 3);
+                pack.insert(-15);
+                pack.laser('sn', 0, 0, 6);
+                pack.insert(-12);
+                pack.laser('sn', 0, 12, 6);
+                pack.insert(-9);
+                pack.laser('mn', 0, 3, 0);
+                pack.insert(-6);
+                pack.laser('mn', 0, 9, 0);
+                pack.insert(-3);
+                pack.suicide('ms', 0.08, 0, 12, 3, 4);
+                pack.repeat(0.015, 7, 1, true);
+                break;
+            case 3:
+                pack.wait(0.1);
+                pack.missile('sn', 0, 0, 3, 3, 5, 8, 0);
+                pack.repeat(0.02, 5, 1, true);
+                pack.laser('ss', 0.02, 5, 0);
+                pack.mirror(0.02);
+                pack.suicide('mn', 0.02, 0, 2, 6, 3);
+                pack.mirror(0.02);
+                pack.suicide('mn', 0.02, 0, 4, 6, 5);
+                pack.mirror(0.02);
+                pack.repeat(0.02, 1, 4);
+                pack.laser('ms', 0.02, 0, 2);
+                pack.mirror(0.02);
+                pack.wait(0.2);
+                pack.boss(0, 0);
+                break;
+            case 4:
+                pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
+                pack.mirror();
+                pack.wait(0.15);
+                pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
+                pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
+                pack.repeat(0.01, 3, 2);
+                pack.laser('ss', 0.03, 3, 0);
+                pack.mirror();
+                pack.laser('ss', 0.02, 0, 9);
+                pack.mirror();
+                pack.wait(0.25);
+                pack.missile('sn', 0, 6, 0, 6, 5, 0, 10);
+                pack.repeat(0.015, 7, 1, true);
+                pack.laser('ss', 0.015, 0, 3);
+                pack.mirror();
+                pack.missile('sn', 0.015, 1, 0, 5, 4, 12, 5);
+                pack.repeat(0.015, 5, 1, true);
+                pack.laser('ss', 0.02, 3, 0);
+                pack.mirror();
+                pack.wait(0.2);
+                pack.missile('sn', 0, 5, 0, 5, 6, 1, 12);
+                pack.mirror();
+                pack.repeat(0.03, 3, 2);
+                pack.laser('ms', 0.03, 0, 9);
+                pack.mirror();
+                pack.wait(0.25);
+                pack.laser('ms', 0, 6, 0);
+                pack.laser('ss', 0.01, 0, 3);
+                pack.mirror(0.01);
+                pack.offset(0.02, 0, 3);
+                pack.mirror(0.02);
+                pack.wait(0.25);
+                pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.suicide('sn', 0.028, 3, 0, 3, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.repeat(0.028, 3, 7);
+                pack.wait(0.25);
+                pack.missile('sn', 0, 0, 4, 3, 6, 6, 0);
+                pack.repeat(0.03, 11, 1, true);
+                pack.laser('ss', 0, 2, 0);
+                pack.insert(-9);
+                pack.laser('ss', 0, 4, 0);
+                pack.insert(-6);
+                pack.laser('ss', 0, 10, 0);
+                pack.insert(-3);
+                pack.laser('ss', 0, 8, 0);
+                pack.wait(0.25);
+                pack.missile('sn', 0.2, 12, 2, 7, 3, 0, 2);
+                pack.missile('sn', 0.015, 1, 12, 5, 6, 12, 8);
+                pack.repeat(0.03, 5, 2);
+                pack.laser('ms', 0, 0, 6);
+                pack.insert(-8);
+                pack.laser('ms', 0, 12, 6);
+                pack.insert(-6);
+                pack.laser('ms', 0, 6, 0);
+                pack.insert(-4);
+                break;
+            case 5:
+                pack.missile('ss', 0.05, 5, 0, 5, 4, 2, 0);
+                pack.mirror();
+                pack.repeat(0.03, 1, 2);
+                pack.missile('sn', 0.03, 5, 0, 5, 4, 2, 0);
+                pack.mirror();
+                pack.repeat(0.03, 1, 2);
+                pack.wait(0.1);
+                pack.missile('ss', 0, 6, 0, 6, 5, 0, 10);
+                pack.repeat(0.06, 5, 1, true);
+                pack.missile('sn', 0, 1, 0, 2, 4, 3, 0);
+                pack.missile('sn', 0, 2, 0, 3, 4, 4, 0);
+                pack.repeat(0, 1, 2);
+                pack.insert(-10);
+                pack.insert(-9);
+                pack.insert(-7);
+                pack.insert(-6);
+                pack.missile('sn', 0, 12, 1, 8, 2, 12, 3);
+                pack.missile('sn', 0, 12, 2, 8, 3, 12, 4);
+                pack.repeat(0, 1, 2);
+                pack.insert(-6);
+                pack.insert(-5);
+                pack.insert(-3);
+                pack.insert(-2);
+                pack.wait(0.15);
+                pack.missile('ss', 0, 9, 0, 9, 6, 9, 12);
+                pack.offset(0, 1);
+                pack.missile('mn', 0.02, 2, 0, 2, 6, 2, 12);
+                pack.offset(0, 2);
+                pack.missile('sn', 0.04, 0, 2, 5, 4, 12, 7);
+                pack.repeat(0.01, 3, 1, true);
+                pack.wait(0.15);
+                pack.missile('sn', 0, 1, 0, 1, 6, 1, 12);
+                pack.offset(0, 1);
+                pack.repeat(0.04, 1, 2);
+                pack.missile('mn', 0.02, 10, 0, 10, 6, 10, 12);
+                pack.repeat(0.03, 3, 3);
+                pack.laser('ms', 0, 5, 0);
+                pack.mirror();
+                pack.insert(-4);
+                pack.wait(0.32);
+                pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.repeat(0.035, 7, 4, true);
+                pack.wait(0.3);
+                pack.missile('ss', 0, 6, 0, 6, 5, 0, 9);
+                pack.missile('mn', 0.01, 0, 8, 4, 5, 5, 0);
+                pack.mirror();
+                pack.repeat(0.07, 3, 3, true);
+                pack.laser('ms', 0, 2, 0);
+                pack.insert(-9);
+                pack.laser('ms', 0, 10, 0);
+                pack.insert(-6);
+                pack.wait(0.2);
+                pack.missile('mn', 0, 2, 0, 2, 5, 2, 12);
+                pack.missile('ss', 0, 3, 0, 3.5, 5, 7, 0);
+                pack.repeat(0.05, 3, 2);
+                pack.missile('mn', 0.03, 12, 2, 5, 5, 2, 12);
+                pack.missile('ss', 0, 12, 3.5, 7, 5, 12, 7);
+                pack.repeat(0.05, 3, 2);
+                pack.suicide('ms', 0.06, 0, 12, 3, 4);
+                pack.repeat(0.015, 3, 1, true);
+                break;
+            case 6:
+                pack.missile('mn', 0.05, 2, 0, 2, 7, 2, 12);
+                pack.mirror();
+                pack.missile('mn', 0, 4, 0, 4, 6, 2, 12);
+                pack.mirror();
+                pack.wait(0.15);
+                pack.missile('ms', 0, 1, 0, 5, 4, 11, 12);
+                pack.mirror();
+                pack.missile('mn', 0.01, 0, 10, 3, 6, 0, 3);
+                pack.repeat(0.01, 3, 1, true);
+                pack.wait(0.2);
+                pack.missile('ms', 0, 0, 4, 7, 4, 12, 4);
+                pack.offset(0.02, 0, 2);
+                pack.repeat(0.03, 3, 2);
+                pack.laser('ms', 0.04, 0, 2);
+                pack.laser('ms', 0.04, 0, 8);
+                pack.wait(0.25);
+                pack.missile('ms', 0, 2, 0, 2, 7, 2, 12);
+                pack.missile('ms', 0.01, 3, 0, 5, 5, 12, 7);
+                pack.repeat(0.06, 1, 2);
+                pack.missile('mn', 0.05, 2, 0, 2, 7, 2, 12);
+                pack.missile('mn', 0.01, 3, 0, 5, 5, 12, 7);
+                pack.repeat(0.06, 3, 2);
+                pack.laser('ss', 0, 12, 3);
+                pack.insert(-7);
+                pack.laser('ss', 0, 8, 0);
+                pack.insert(-4);
+                pack.laser('ss', 0, 6, 0);
+                pack.insert(-1);
+                pack.wait(0.2);
+                pack.missile('ms', 0, 5, 0, 5, 6, 0, 10);
+                pack.mirror();
+                pack.missile('mn', 0.02, 3, 0, 3, 4, 0, 7);
+                pack.repeat(0.035, 11, 1, true);
+                pack.laser('ms', 0, 0, 3);
+                pack.insert(-8);
+                pack.laser('ms', 0, 12, 3);
+                pack.insert(-6);
+                pack.wait(0.2);
+                pack.missile('ms', 0, 3, 0, 3, 7, 2, 12);
+                pack.mirror();
+                pack.missile('ms', 0.04, 4, 0, 4, 6, 2, 12);
+                pack.mirror();
+                pack.missile('ms', 0.04, 5, 0, 5, 5, 2, 12);
+                pack.mirror();
+                pack.missile('mn', 0.07, 3, 0, 3, 7, 2, 12);
+                pack.mirror();
+                pack.missile('mn', 0.04, 4, 0, 4, 6, 2, 12);
+                pack.mirror();
+                pack.missile('mn', 0.04, 5, 0, 5, 5, 2, 12);
+                pack.mirror();
+                pack.wait(0.2);
+                pack.laser('mn', 0, 0, 3);
+                pack.mirror();
+                pack.laser('sn', 0.01, 0, 6);
+                pack.mirror();
+                pack.laser('ln', 0, 6, 0);
+                pack.wait(0.35);
+                pack.suicide('ss', 0, 1.4, 0, 1.4, 6);
+                pack.offset(0, 3.8);
+                pack.offset(0, 3.8);
+                pack.repeat(0.05, 4, 3, true);
+                break;
+            case 7:
+                pack.wait(0.1);
+                pack.suicide('sn', 0, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.laser('ms', 0.04, 3, 0);
+                pack.mirror();
+                pack.suicide('sn', 0.09, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.missile('mn', 0.02, 0, 2, 6, 2, 12, 2);
+                pack.missile('mn', 0.02, 12, 4, 6, 4, 0, 4);
+                pack.suicide('sn', 0.09, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.missile('ss', 0.02, 3, 0, 3, 6, 2, 12);
+                pack.mirror(0.02);
+                pack.suicide('ss', 0.09, 1.5, 0, 1.5, 6);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.offset(0, 3);
+                pack.missile('ms', 0.02, 0, 2, 3, 6, 0, 9);
+                pack.mirror(0.02);
+                pack.wait(0.2);
+                pack.boss(0, 1);
+                break;
+            case 8:
+                pack.missile('sn', 0.07, 0, 2, 4, 2, 0, 7);
+                pack.repeat(0.008, 5, 1, true);
+                pack.missile('sn', 0.05, 0, 3, 5, 4, 12, 8);
+                pack.repeat(0.015, 9, 1, true);
+                pack.laser('ln', 0, 3, 0);
+                pack.insert(-7);
+                pack.laser('ln', 0, 9, 0);
+                pack.insert(-5);
+                pack.laser('ln', 0, 6, 0);
+                pack.missile('sn', 0.02, 1, 12, 4, 6, 12, 2);
+                pack.repeat(0.02, 5, 1, true);
+                pack.wait(0.17);
+                pack.missile('sn', 0, 12, 12, 8, 3, 2, 6, 12, 7);
+                pack.repeat(0.01, 12, 1);
+                pack.laser('ln', 0, 3, 0);
+                pack.insert(-10);
+                pack.laser('ln', 0, 9, 0);
+                pack.insert(-5);
+                pack.suicide('mn', 0.05, 0, 0, 3, 4);
+                pack.repeat(0.01, 3);
+                pack.wait(0.23);
+                pack.laser('ms', 0, 4, 0);
+                pack.mirror(0.01);
+                pack.laser('ls', 0.01, 6, 0);
+                pack.laser('ss', 0.04, 0, 4);
+                pack.mirror(0.022);
+                pack.offset(0.022, 0, 3);
+                pack.mirror(0.022);
+                pack.wait(0.22);
+                pack.missile('ss', 0, 0, 12, 4, 3, 10, 6, 0, 6);
+                pack.repeat(0.03, 7, 1);
+                pack.laser('ls', 0, 5, 0);
+                pack.insert(-5);
+                pack.laser('ls', 0, 7, 0);
+                pack.insert(-1);
+                pack.wait(0.13);
+                pack.suicide('mn', 0, 12, 0, 9, 4);
+                pack.repeat(0.01, 3);
+                pack.wait(0.3);
+                pack.laser('ls', 0, 2, 0);
+                pack.offset(0.01, 2);
+                pack.offset(0.01, 2);
+                pack.offset(0.01, 2);
+                pack.offset(0.01, 2);
+                pack.wait(0.13);
+                pack.suicide('mn', 0, 0, 12, 2, 5);
+                pack.repeat(0.01, 7, 1, true);
+                break;
+            case 9:
+                pack.missile('ln', 0.05, -1, -1, 5, 6, 13, 13);
+                pack.mirror(0.01);
+                pack.wait(0.1);
+                pack.missile('mn', 0, 0, 1, 9, 3, 0, 6);
+                pack.missile('mn', 0.013, 12, 8, 3, 6, 12, 3);
+                pack.repeat(0.013, 3, 2);
+                pack.missile('ln', 0.03, -1, 3, 6, 5, 13, 3);
+                pack.missile('ln', 0, 13, 5, 6, 3, -1, 4);
+                pack.laser('lb', 0.06, 4.5, 0);
+                pack.laser('lb', 0.01, 7.5, 0);
+                pack.wait(0.3);
+                pack.missile('ln', 0, 3, -1, 3, 5, 3, 13);
+                pack.mirror();
+                pack.missile('ln', 0.04, -1, 1, 6, 3, 9, 13);
+                pack.mirror();
+                pack.laser('lt', 0.04, 0, 5);
+                pack.mirror();
+                pack.wait(0.14);
+                pack.missile('mn', 0, 0, 1, 5, 5, 12, 1);
+                pack.missile('mn', 0, 0, 9, 6, 6, 0, 3);
+                pack.missile('mn', 0, 12, 9, 7, 5, 0, 9);
+                pack.missile('mn', 0, 12, 1, 6, 4, 12, 10);
+                pack.wait(0.14);
+                pack.missile('ss', 0, 2, 12, 2, 3, 9, 2.5, 10, 12);
+                pack.repeat(0.01, 7);
+                pack.missile('ls', 0.07, -1, 6, 8, 6, 13, 6);
+                pack.offset(0, 0, 2);
+                pack.laser('lb', 0.05, 0, 7);
+                pack.wait(0.1);
+                pack.ship('lmt', 0, 3, 0, [pack.move(3, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
+                pack.mirror();
+                pack.ship('lmt', 0.05, 5, 0, [pack.move(5, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
+                pack.mirror();
+                pack.missile('mn', 0.06, 0, 12, 4, 7, 4, 0);
+                pack.mirror();
+                pack.missile('mn', 0.03, 6, 0, 6, 5, 1, 12);
+                pack.mirror();
+                pack.wait(0.23);
+                pack.missile('ms', 0, 2, 0, 2, 6, 6, 4, 10, 12);
+                pack.mirror(0.018);
+                pack.missile('mn', 0.018, 2, 0, 2, 6, 6, 4, 10, 12);
+                pack.repeat(0.018, 5, 1, true);
+                pack.missile('ln', 0.04, -1, -1, 2, 3, -1, 13);
+                pack.mirror();
+                pack.laser('lb', 0.05, 6, 0);
+                pack.wait(0.35);
+                pack.laser('lb', 0, 4, 0);
+                pack.mirror();
+                pack.stealth(0.05, 3, 5, 0, 12);
+                pack.mirror(0.01);
+                pack.stealth(0.01, 6, 4, 6, 0);
+                break;
+            case 10:
+                pack.missile('lb', 0.03, 2, -1, 2, 13);
+                pack.mirror();
+                pack.missile('lb', 0.05, -1, 2, 13, 2);
+                pack.mirror();
+                pack.laser('lb', 0.05, 0, 5);
+                pack.mirror();
+                pack.missile('lb', 0.05, 3, -1, 3, 6, 1, 13);
+                pack.mirror();
+                pack.missile('ss', 0.03, 6, 0, 6, 5, 1, 0);
+                pack.repeat(0.03, 3, 1, true);
+                pack.wait(0.1);
+                pack.missile('sn', 0, 2, 12, 2, 3, 8, 4, 10, 12);
+                pack.repeat(0.01, 13, 1, true);
+                pack.laser('ss', 0.02, 5, 0);
+                pack.mirror();
+                pack.missile('sn', 0.05, 2, 0, 2, 7, 2, 12);
+                pack.repeat(0.01, 5, 1, true);
+                pack.stealth(0.05, 6, 7, 6, 0);
+                pack.wait(0.1);
+                pack.missile('sn', 0, 6, 0, 6, 5, 3, 2, 12, 7);
+                pack.repeat(0.014, 9);
+                pack.missile('lb', 0.03, 2, -1, 2, 7, 2, 13);
+                pack.mirror(0.02);
+                pack.laser('ss', 0.04, 4, 0);
+                pack.mirror(0.02);
+                pack.stealth(0.07, 5, 3, 0, 6);
+                pack.stealth(0.02, 8, 5, 12, 7);
+                pack.wait(0.2);
+                pack.missile('lb', 0, 2, -1, 5, 4, 2, 13);
+                pack.mirror();
+                pack.laser('sn', 0.02, 0, 7);
+                pack.mirror(0.015);
+                pack.offset(0.015, 0, -2);
+                pack.mirror(0.015);
+                pack.offset(0.015, 0, -2);
+                pack.mirror(0.015);
+                pack.laser('sn', 0.015, 3, 0);
+                pack.mirror(0.015);
+                pack.laser('sn', 0.015, 7, 0);
+                pack.mirror(0.015);
+                pack.wait(0.2);
+                pack.missile('mn', 0, 0, 2, 6, 4, 12, 2);
+                pack.repeat(0.02, 3);
+                pack.missile('sn', 0.01, 12, 3, 6, 5, 0, 3);
+                pack.clone(0.01, -2);
+                pack.repeat(0.01, 4, 2);
+                pack.clone(0.01, -2);
+                pack.repeat(0.02, 3);
+                pack.laser('lb', 0.01, 0, 6);
+                pack.mirror(0.01);
+                pack.stealth(0.05, 5, 5, 5, 0);
+                pack.mirror(0.03);
+                pack.wait(0.3);
+                pack.suicide('sn', 0, 1.4, 0, 1.4, 6);
+                pack.offset(0, 3.8);
+                pack.offset(0, 3.8);
+                pack.repeat(0.03, 2, 3, true);
+                pack.missile('sn', 0, 0, 6, 6, 7, 12, 10);
+                pack.repeat(0.01, 7);
+                pack.missile('mn', 0, 2, 0, 2, 5, 1, 12);
+                pack.mirror();
+                pack.missile('mn', 0.06, 4, 0, 4, 5, 1, 12);
+                pack.mirror();
+                pack.missile('ln', 0, 13, 5, 6, 7, -1, 10);
+                pack.wait(0.18);
+                pack.laser('ms', 0, 4, 0);
+                pack.mirror(0.01);
+                pack.laser('ls', 0.01, 6, 0);
+                pack.laser('ss', 0.06, 0, 4);
+                pack.mirror(0.02);
+                pack.offset(0.02, 0, 3);
+                pack.mirror(0.02);
+                pack.stealth(0.05, 4, 5, 0, 12);
+                pack.mirror(0.02);
+                pack.wait(0.2);
+                pack.suicide('mn', 0, 3, 0, 5, 2);
+                pack.mirror();
+                pack.repeat(0.06, 1, 2);
+                pack.suicide('mn', 0, 0, 0, 2, 2);
+                pack.mirror();
+                pack.repeat(0.06, 1, 4);
+                pack.suicide('mn', 0, 0, 7, 3, 6);
+                pack.mirror();
+                pack.repeat(0.06, 1, 6);
+                pack.suicide('ms', 0, 5, 0, 5, 3);
+                pack.mirror();
+                break;
+            case 11:
+                pack.wait(0.1);
+                pack.missile('ln', 0, 1, -1, 4, 6, -1, 13);
+                pack.mirror();
+                pack.laser('ln', 0.06, 0, 5);
+                pack.mirror();
+                pack.missile('ls', 0.09, -1, 2, 6, 3.5, 13, 5);
+                pack.missile('ls', 0, 13, 8, 6, 6.5, -1, 5);
+                pack.laser('ls', 0.06, 3, 0);
+                pack.mirror();
+                pack.missile('lt', 0.09, 5, -1, 5, 4, -1, 8);
+                pack.mirror();
+                pack.laser('lt', 0.09, 0, 3);
+                pack.mirror();
+                pack.missile('lb', 0.09, -1, 1, 4, 2, -1, 12);
+                pack.mirror();
+                pack.laser('lb', 0.09, 5, 0);
+                pack.mirror();
+                pack.wait(0.2);
+                pack.stealth(0, 3, 4, 0, 5);
+                pack.mirror(0.024);
+                pack.stealth(0.024, 6, 3, 6, 0, true);
+                pack.boss(0.02, 2);
+                break;
+            default: throw (new Error('Level number OOB: ' + level));
+        }
+        return pack.array;
+    }
+    exports.getLevel = getLevel;
+    function boss0Suicides(wpm) {
+        if (wpm === void 0) { wpm = 60; }
+        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
+        pack.ship('msn', 0, 1.6, 3, [pack.halt(16), pack.fire()]);
+        pack.ship('msn', 0, 2.2, 3.4, [pack.halt(13), pack.fire()]);
+        pack.ship('msn', 0, 2.8, 3.7, [pack.halt(10), pack.fire()]);
+        pack.ship('msn', 0, 6.8, 3.7, [pack.halt(10), pack.fire()]);
+        pack.ship('msn', 0, 7.4, 3.4, [pack.halt(13), pack.fire()]);
+        pack.ship('msn', 0, 8, 3, [pack.halt(16), pack.fire()]);
+        return pack.array;
+    }
+    exports.boss0Suicides = boss0Suicides;
+    function getBossLoop(bossType, wpm) {
+        if (wpm === void 0) { wpm = 60; }
+        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
+        switch (bossType) {
+            case 0:
+                pack.wait(0.3);
+                pack.missile('sn', 0, 0, 4, 7, 6, 12, 6);
+                pack.missile('sn', 0.015, 12, 3, 5, 5, 0, 5);
+                pack.repeat(0.015, 2, 2);
+                pack.wait(0.2);
+                pack.laser('ss', 0, 0, 9);
+                pack.mirror(0.01);
+                break;
+            case 1:
+                pack.wait(0.25);
+                pack.missile('mn', 0, 0, 3 + Math.random() * 3, 5, 6, 12, 7);
+                pack.mirror();
+                pack.repeat(0.03, 1, 2);
+                pack.wait(0.35);
+                pack.laser('ms', 0, 0, 8);
+                pack.mirror(0.01);
+                break;
+            case 2:
+                pack.wait(0.3);
+                pack.laser('ms', 0, 0, 6 + Math.random() * 3);
+                pack.mirror();
+                pack.wait(0.3);
+                pack.missile('mn', 0, 0, 0, 2, 4, 5, 6, 12, 10);
+                pack.repeat(0.02, 5, 1, true);
+                pack.wait(0.3);
+                pack.stealth(0, 2 + Math.random() * 8, 5 + Math.random() * 2, (Math.random() > 0.5 ? 0 : 12), 5);
+                break;
+        }
+        return pack.array;
+    }
+    exports.getBossLoop = getBossLoop;
+    var MethodPack = (function () {
+        function MethodPack(mult) {
+            this.mult = mult;
+            this.array = [];
+            this.distance = 0;
+        }
+        MethodPack.prototype.setDist = function (distance) {
+            this.distance += distance;
+        };
+        MethodPack.prototype.loopBack = function (jumpIndex) {
+            if (jumpIndex === void 0) { jumpIndex = 0; }
+            if (jumpIndex < 0) {
+                jumpIndex = this.array.length + jumpIndex;
+            }
+            this.array.push({ type: EventType.LOOP, distance: this.distance, jumpIndex: jumpIndex });
+        };
+        MethodPack.prototype.wait = function (distance) {
+            if (distance === void 0) { distance = 0; }
+            this.setDist(distance * this.mult);
+            var m = { type: EventType.WAIT, distance: this.distance, waitTime: distance };
+            this.array.push(m);
+            return m;
+        };
+        MethodPack.prototype.jump = function (jumpIndex) {
+            if (jumpIndex === void 0) { jumpIndex = 0; }
+            this.array.push({ distance: this.distance, type: EventType.JUMP, jumpIndex: jumpIndex });
+        };
+        MethodPack.prototype.insert = function (insertAt) {
+            if (insertAt < 0) {
+                insertAt = this.array.length + insertAt;
+            }
+            this.array[this.array.length - 1].distance = this.array[insertAt].distance;
+            this.array.splice(insertAt, 0, this.array.pop());
+        };
+        MethodPack.prototype.ship = function (type, distance, x, y, commands) {
+            if (commands === void 0) { commands = null; }
+            this.setDist(distance);
+            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: type, x: x, y: y, commands: commands } });
+        };
+        MethodPack.prototype.laser = function (type, distance, x, y, speed) {
+            if (speed === void 0) { speed = 0; }
+            var commands;
+            if (x === 0) {
+                commands = [this.move(2, y), this.halt(10 - speed), this.halt(20 - speed, true), this.move(-2, y)];
+            }
+            else if (x === 12) {
+                commands = [this.move(10, y), this.halt(10 - speed), this.halt(20 - speed, true), this.move(14, y)];
+            }
+            else if (y === 0) {
+                commands = [this.move(x, 2), this.halt(10 - speed), this.halt(20 - speed, true), this.move(x, -2)];
+            }
+            else if (y === 12) {
+                commands = [this.move(x, 10), this.halt(10 - speed), this.halt(20 - speed, true), this.move(x, 14)];
+            }
+            else {
+                throw (new Error('Invalid spawn location: ' + x + ' ' + y));
+            }
+            this.ship(type.charAt(0) + 'l' + type.charAt(1), distance, x, y, commands);
+        };
+        MethodPack.prototype.suicide = function (_type, _distance, _x, _y, _xTo, _yTo) {
+            this.ship(_type.charAt(0) + 's' + _type.charAt(1), _distance, _x, _y, [this.move(_xTo, _yTo), this.fire()]);
+        };
+        MethodPack.prototype.stealth = function (_distance, _x, _y, _xTo, _yTo, _shield) {
+            if (_shield === void 0) { _shield = false; }
+            this.ship(_shield ? 'xms' : 'xmn', _distance, _x, _y, [this.halt(8), this.halt(10, true), this.halt(10, true), this.halt(10, true), this.halt(10, true), this.halt(5, true), this.move(_xTo, _yTo)]);
+        };
+        MethodPack.prototype.missile = function (_type, _distance, _x, _y, _xTo1, _yTo1, _xTo2, _yTo2, _xTo3, _yTo3) {
+            if (_xTo2 === void 0) { _xTo2 = -1; }
+            if (_yTo2 === void 0) { _yTo2 = -1; }
+            if (_xTo3 === void 0) { _xTo3 = -1; }
+            if (_yTo3 === void 0) { _yTo3 = -1; }
+            this.ship(_type.charAt(0) + 'm' + _type.charAt(1), _distance, _x, _y, [this.move(_xTo1, _yTo1), this.move(_xTo2, _yTo2, ((_xTo3 === -1) ? true : false)), ((_xTo3 !== -1) ? this.move(_xTo3, _yTo3, true) : this.halt(1))]);
+        };
+        MethodPack.prototype.boss = function (_distance, _type) {
+            this.setDist(_distance);
+            this.array.push({ type: EventType.BOSS, distance: this.distance, bossType: _type });
+        };
+        MethodPack.prototype.clone = function (_distance, index) {
+            if (_distance === void 0) { _distance = 0; }
+            if (index === void 0) { index = -1; }
+            this.setDist(_distance);
+            if (index < 0) {
+                index = this.array.length + index;
+            }
+            var oldSpawn = this.array[index].spawnEvent;
+            var commands = this.cloneCommands(oldSpawn.commands);
+            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: oldSpawn.x, y: oldSpawn.y, commands: commands } });
+        };
+        MethodPack.prototype.mirror = function (distance, index) {
+            if (distance === void 0) { distance = 0; }
+            if (index === void 0) { index = -1; }
+            this.setDist(distance);
+            if (index < 0) {
+                index = this.array.length + index;
+            }
+            var oldSpawn = this.array[index].spawnEvent;
+            var commands = this.mirrorCommands(oldSpawn.commands);
+            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: 12 - oldSpawn.x, y: oldSpawn.y, commands: commands } });
+        };
+        MethodPack.prototype.offset = function (_distance, xOff, yOff, index) {
+            if (_distance === void 0) { _distance = 0; }
+            if (xOff === void 0) { xOff = 0; }
+            if (yOff === void 0) { yOff = 0; }
+            if (index === void 0) { index = -1; }
+            this.setDist(_distance);
+            if (index < 0) {
+                index = this.array.length + index;
+            }
+            var oldSpawn = this.array[index].spawnEvent;
+            var commands = this.cloneCommands(oldSpawn.commands, xOff, yOff);
+            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: oldSpawn.x + xOff, y: oldSpawn.y + yOff, commands: commands } });
+        };
+        MethodPack.prototype.repeat = function (distance, repeatN, repeatC, reverse) {
+            if (repeatN === void 0) { repeatN = 1; }
+            if (repeatC === void 0) { repeatC = 1; }
+            for (var i = 0; i < repeatN * repeatC; i++) {
+                if (i % repeatC === 0) {
+                    if (reverse) {
+                        this.mirror(distance, 0 - repeatC);
+                    }
+                    else {
+                        this.clone(distance, 0 - repeatC);
+                    }
+                }
+                else {
+                    if (reverse) {
+                        this.mirror((this.array[this.array.length - repeatC].distance - this.array[this.array.length - repeatC - 1].distance), 0 - repeatC);
+                    }
+                    else {
+                        this.clone((this.array[this.array.length - repeatC].distance - this.array[this.array.length - repeatC - 1].distance), 0 - repeatC);
+                    }
+                }
+            }
+        };
+        MethodPack.prototype.move = function (x, y, fire) {
+            if (fire === void 0) { fire = false; }
+            return { x: x, y: y, fire: fire, move: true, timer: 0 };
+        };
+        MethodPack.prototype.halt = function (timer, fire) {
+            if (fire === void 0) { fire = false; }
+            return { x: 6, y: 12, timer: timer, fire: fire, move: false };
+        };
+        MethodPack.prototype.fire = function () {
+            return { timer: 1, move: false, fire: true };
+        };
+        MethodPack.prototype.cloneCommand = function (command, xOff, yOff) {
+            if (xOff === void 0) { xOff = 0; }
+            if (yOff === void 0) { yOff = 0; }
+            return { x: command.x + xOff, y: command.y + yOff, timer: command.timer, move: command.move, fire: command.fire };
+        };
+        MethodPack.prototype.mirrorCommand = function (command) {
+            return { x: 12 - command.x, y: command.y, timer: command.timer, move: command.move, fire: command.fire };
+        };
+        MethodPack.prototype.cloneCommands = function (commands, xOff, yOff) {
+            var _this = this;
+            if (xOff === void 0) { xOff = 0; }
+            if (yOff === void 0) { yOff = 0; }
+            var m = [];
+            commands.forEach(function (command) { return m.push(_this.cloneCommand(command, xOff, yOff)); });
+            return m;
+        };
+        MethodPack.prototype.mirrorCommands = function (commands, xOff, yOff) {
+            var _this = this;
+            if (xOff === void 0) { xOff = 0; }
+            if (yOff === void 0) { yOff = 0; }
+            var m = [];
+            commands.forEach(function (command) { return m.push(_this.mirrorCommand(command)); });
+            return m;
+        };
+        return MethodPack;
+    }());
+});
 define("game/objects/GameSprite", ["require", "exports", "game/objects/BaseObject", "game/objects/Shield"], function (require, exports, BaseObject_1, Shield_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -2026,6 +2906,48 @@ define("game/objects/GameSprite", ["require", "exports", "game/objects/BaseObjec
             _this.update = function (speed) {
                 return;
             };
+            _this.rotateTo = function (target, speed) {
+                var rMult = 0.1 * speed;
+                var rate = rMult * _this.turnRate;
+                if (isNaN(_this.n)) {
+                    _this.n = Math.atan2(target.y - _this.y, target.x - _this.x);
+                }
+                else {
+                    var dx = target.x - _this.x;
+                    var dy = target.y - _this.y;
+                    var angle = Math.atan2(dy, dx);
+                    while (angle < (_this.n - Math.PI))
+                        angle += Math.PI * 2;
+                    while (angle > (_this.n + Math.PI))
+                        angle -= Math.PI * 2;
+                    if (angle < _this.n) {
+                        _this.n -= rate;
+                        if (_this.n < angle)
+                            _this.n = angle;
+                    }
+                    else if (angle > _this.n) {
+                        _this.n += rate;
+                        if (_this.n > angle)
+                            _this.n = angle;
+                    }
+                    _this.rotation = _this.n + Math.PI / 2;
+                }
+            };
+            _this.moveTo = function (target, speed) {
+                _this.rotateTo(target, speed);
+                var aMult = speed;
+                var accel = aMult * _this.a;
+                if (_this.vT < accel) {
+                    _this.vT += accel;
+                }
+                else {
+                    _this.vT = accel;
+                }
+                _this.vX = Math.cos(_this.n) * _this.vT;
+                _this.vY = Math.sin(_this.n) * _this.vT;
+                _this.x += _this.vX;
+                _this.y += _this.vY;
+            };
             _this.addChild(_this.shieldView);
             return _this;
         }
@@ -2035,9 +2957,6 @@ define("game/objects/GameSprite", ["require", "exports", "game/objects/BaseObjec
             var x = this.x + this.firePoint.x * cos - this.firePoint.y * sin;
             var y = this.y + this.firePoint.x * sin + this.firePoint.y * cos;
             return new PIXI.Point(x, y);
-        };
-        GameSprite.prototype.moreUpdate = function () {
-            return true;
         };
         GameSprite.prototype.homeTarget = function (_target) {
             var tDiff = Math.atan2(_target.y - this.y, _target.x - this.x) - this.n;
@@ -2364,808 +3283,6 @@ define("JMGE/effects/Starfield", ["require", "exports"], function (require, expo
         return Star;
     }(PIXI.Graphics));
 });
-define("game/data/LevelData", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var EventType;
-    (function (EventType) {
-        EventType[EventType["LOOP"] = 0] = "LOOP";
-        EventType[EventType["WAIT"] = 1] = "WAIT";
-        EventType[EventType["JUMP"] = 2] = "JUMP";
-        EventType[EventType["SPAWN"] = 3] = "SPAWN";
-        EventType[EventType["BOSS"] = 4] = "BOSS";
-    })(EventType = exports.EventType || (exports.EventType = {}));
-    function getLevel(level, wpm) {
-        if (wpm === void 0) { wpm = 60; }
-        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
-        switch (level) {
-            case -1:
-                pack.boss(0.01, 0);
-                break;
-            case 0:
-                pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
-                pack.mirror();
-                pack.missile('sn', 0.15, 0, 3, 7, 3, 12, 3);
-                pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
-                pack.repeat(0.01, 3, 2);
-                pack.laser('sn', 0.1, 6, 0);
-                pack.missile('sn', 0.1, 3, 0, 7, 5, 4, 5, 7, 0);
-                pack.repeat(0.01, 5);
-                pack.laser('sn', 0, 12, 5);
-                pack.missile('sn', 0.13, 2, 0, 2, 4, 12, 9);
-                pack.repeat(0.01, 7, 1, true);
-                pack.laser('sn', 0, 0, 6);
-                pack.insert(-4);
-                pack.laser('sn', 0, 12, 6);
-                pack.insert(-4);
-                pack.laser('sn', 0.15, 0, 3);
-                pack.laser('sn', 0.005, 12, 3);
-                pack.laser('sn', 0.005, 0, 6);
-                pack.laser('sn', 0.005, 12, 6);
-                pack.missile('sn', 0.13, 3, 0, 4, 4, 7, 0);
-                pack.missile('sn', 0.01, 12, 5, 7, 6, 0, 5);
-                pack.repeat(0.02, 4, 2);
-                pack.laser('sn', 0.04, 0, 2);
-                pack.laser('sn', 0.01, 12, 2);
-                pack.laser('sn', 0.02, 0, 4);
-                pack.laser('sn', 0.01, 12, 4);
-                pack.missile('sn', 0.07, 9, 0, 8, 4, 5, 0);
-                pack.missile('sn', 0.01, 0, 5, 5, 6, 12, 5);
-                pack.repeat(0.02, 4, 2);
-                break;
-            case 1:
-                pack.missile('sn', 0.1, 4, 0, 4, 7, 0, 12);
-                pack.missile('sn', 0, 2, 0, 2, 6, 0, 9);
-                pack.repeat(0, 1, 2, true);
-                pack.missile('sn', 0.12, 0, 3, 7, 3, 12, 3);
-                pack.offset(0, 0, 1);
-                pack.repeat(0.015, 1, 2);
-                pack.missile('sn', 0.02, 12, 5, 5, 5, 0, 5);
-                pack.offset(0, 0, 1);
-                pack.repeat(0.015, 1, 2);
-                pack.laser('ss', 0, 6, 0);
-                pack.suicide('mn', 0.14, 3, 0, 3, 3);
-                pack.repeat(0.008, 3, 1, true);
-                pack.suicide('mn', 0.1, 0, 2, 8, 2);
-                pack.mirror(0.005);
-                pack.suicide('mn', 0.03, 3, 0, 3, 3);
-                pack.mirror(0.001);
-                pack.repeat(0.01, 5, 4);
-                pack.missile('sn', 0.15, 0, 3, 7, 4, 12, 7);
-                pack.repeat(0.02, 9, 1, true);
-                pack.laser('ss', 0, 4, 0);
-                pack.insert(-6);
-                pack.laser('ss', 0, 8, 0);
-                pack.insert(-2);
-                pack.suicide('mn', 0.05, 1, 0, 4, 4);
-                pack.repeat(0.01, 3, 1, true);
-                pack.laser('ss', 0.12, 0, 3);
-                pack.laser('ss', 0.005, 12, 3);
-                pack.laser('ss', 0.01, 0, 6);
-                pack.laser('ss', 0.005, 12, 6);
-                pack.missile('sn', 0.18, 2, 0, 2, 6, 0, 7);
-                pack.missile('sn', 0, 3, 0, 3, 6, 12, 9);
-                pack.repeat(0.03, 4, 2, true);
-                pack.suicide('mn', 0.04, 0, 3, 4, 5);
-                pack.repeat(0.005, 3, 1, true);
-                pack.laser('sn', 0.13, 0, 3);
-                pack.laser('sn', 0.005, 12, 3);
-                pack.laser('sn', 0.01, 0, 6);
-                pack.laser('sn', 0.005, 12, 6);
-                pack.suicide('mn', 0.025, 2, 12, 3, 4);
-                pack.repeat(0.005, 7, 1, true);
-                pack.suicide('mn', 0.2, 0, 7, 3, 6);
-                pack.mirror();
-                pack.suicide('mn', 0.01, 0, 2, 6, 3);
-                pack.mirror();
-                pack.suicide('mn', 0.01, 0, 4, 4, 3);
-                pack.mirror();
-                pack.suicide('mn', 0.01, 5, 0, 5, 1);
-                pack.mirror();
-                pack.missile('sn', 0.12, 3, 0, 6, 7, 12, 8);
-                pack.repeat(0.02, 11, 1, true);
-                pack.laser('ss', 0, 0, 6);
-                pack.insert(-7);
-                pack.laser('ss', 0, 12, 6);
-                pack.insert(-3);
-                pack.laser('mn', 0, 6, 0);
-                pack.suicide('mn', 0.03, 0, 2, 6, 3);
-                pack.repeat(0.01, 3, 1, true);
-                break;
-            case 2:
-                pack.missile('sn', 0.1, 6, 0, 6, 5, 0, 9);
-                pack.repeat(0.01, 5, 1, true);
-                pack.missile('sn', 0.1, 0, 1, 5, 4, 0, 8);
-                pack.mirror();
-                pack.repeat(0.03, 3, 2, true);
-                pack.laser('sn', 0, 0, 6);
-                pack.insert(-6);
-                pack.laser('sn', 0, 12, 6);
-                pack.insert(-4);
-                pack.laser('mn', 0, 6, 0);
-                pack.missile('sn', 0.17, 3, 0, 3, 4, 12, 11);
-                pack.missile('sn', 0, 4, 0, 5, 4, 8, 0);
-                pack.repeat(0.025, 3, 2);
-                pack.laser('sn', 0.01, 2, 0);
-                pack.mirror();
-                pack.missile('sn', 0.09, 12, 3, 8, 3, 1, 12);
-                pack.missile('sn', 0, 12, 4, 8, 5, 12, 8);
-                pack.repeat(0.025, 3, 2);
-                pack.laser('sn', 0.01, 0, 6);
-                pack.mirror();
-                pack.suicide('mn', 0.09, 0, 3, 3, 3);
-                pack.repeat(0.01, 3);
-                pack.laser('sn', 0.13, 0, 3);
-                pack.mirror();
-                pack.laser('mn', 0, 6, 0);
-                pack.laser('sn', 0.01, 0, 6);
-                pack.mirror();
-                pack.missile('sn', 0.18, 2, 0, 2, 7, 2, 12);
-                pack.offset(0, 1, 0);
-                pack.repeat(0.015, 1, 2);
-                pack.repeat(0.05, 1, 4, true);
-                pack.laser('mn', 0, 0, 4);
-                pack.missile('sn', 0.05, 0, 2, 7, 2, 12, 2);
-                pack.offset(0, 0, 1);
-                pack.repeat(0.015, 1, 2);
-                pack.laser('mn', 0, 12, 4);
-                pack.missile('sn', 0.05, 12, 5, 5, 5, 0, 5);
-                pack.offset(0, 0, 1);
-                pack.repeat(0.015, 1, 2);
-                pack.missile('sn', 0.2, 0, 12, 4, 4, 12, 9);
-                pack.repeat(0.006, 3, 1, true);
-                pack.laser('mn', 0.01, 4, 0);
-                pack.mirror(0.01);
-                pack.suicide('mn', 0.05, 0, 3, 3, 3);
-                pack.repeat(0.015, 7, 1, true);
-                pack.laser('mn', 0.15, 0, 7);
-                pack.mirror();
-                pack.laser('sn', 0.015, 0, 4);
-                pack.mirror();
-                pack.laser('mn', 0.02, 3, 0);
-                pack.mirror();
-                pack.laser('sn', 0.015, 5, 0);
-                pack.mirror();
-                pack.missile('sn', 0.2, 6, 0, 6, 4, 0, 0);
-                pack.mirror(0.027);
-                pack.missile('sn', 0.027, 6, 0, 6, 6, 0, 9);
-                pack.mirror(0.028);
-                pack.repeat(0.028, 4, 4);
-                pack.laser('sn', 0, 0, 3);
-                pack.insert(-18);
-                pack.laser('sn', 0, 12, 3);
-                pack.insert(-15);
-                pack.laser('sn', 0, 0, 6);
-                pack.insert(-12);
-                pack.laser('sn', 0, 12, 6);
-                pack.insert(-9);
-                pack.laser('mn', 0, 3, 0);
-                pack.insert(-6);
-                pack.laser('mn', 0, 9, 0);
-                pack.insert(-3);
-                pack.suicide('ms', 0.08, 0, 12, 3, 4);
-                pack.repeat(0.015, 7, 1, true);
-                break;
-            case 3:
-                pack.missile('sn', 0.1, 0, 3, 3, 5, 8, 0);
-                pack.repeat(0.02, 5, 1, true);
-                pack.laser('ss', 0.02, 5, 0);
-                pack.mirror(0.02);
-                pack.suicide('mn', 0.02, 0, 2, 6, 3);
-                pack.mirror(0.02);
-                pack.suicide('mn', 0.02, 0, 4, 6, 5);
-                pack.mirror(0.02);
-                pack.repeat(0.02, 1, 4);
-                pack.laser('ms', 0.02, 0, 2);
-                pack.mirror(0.02);
-                pack.boss(0.2, 0);
-                break;
-            case 4:
-                pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
-                pack.mirror();
-                pack.missile('sn', 0.15, 0, 3, 7, 3, 12, 3);
-                pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
-                pack.repeat(0.01, 3, 2);
-                pack.laser('ss', 0.03, 3, 0);
-                pack.mirror();
-                pack.laser('ss', 0.02, 0, 9);
-                pack.mirror();
-                pack.missile('sn', 0.25, 6, 0, 6, 5, 0, 10);
-                pack.repeat(0.015, 7, 1, true);
-                pack.laser('ss', 0.015, 0, 3);
-                pack.mirror();
-                pack.missile('sn', 0.015, 1, 0, 5, 4, 12, 5);
-                pack.repeat(0.015, 5, 1, true);
-                pack.laser('ss', 0.02, 3, 0);
-                pack.mirror();
-                pack.missile('sn', 0.2, 5, 0, 5, 6, 1, 12);
-                pack.mirror();
-                pack.repeat(0.03, 3, 2);
-                pack.laser('ms', 0.03, 0, 9);
-                pack.mirror();
-                pack.laser('ms', 0.25, 6, 0);
-                pack.laser('ss', 0.01, 0, 3);
-                pack.mirror(0.01);
-                pack.offset(0.02, 0, 3);
-                pack.mirror(0.02);
-                pack.suicide('sn', 0.25, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.suicide('sn', 0.028, 3, 0, 3, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.repeat(0.028, 3, 7);
-                pack.missile('sn', 0.25, 0, 4, 3, 6, 6, 0);
-                pack.repeat(0.03, 11, 1, true);
-                pack.laser('ss', 0, 2, 0);
-                pack.insert(-9);
-                pack.laser('ss', 0, 4, 0);
-                pack.insert(-6);
-                pack.laser('ss', 0, 10, 0);
-                pack.insert(-3);
-                pack.laser('ss', 0, 8, 0);
-                pack.missile('sn', 0.25, 12, 2, 7, 3, 0, 2);
-                pack.missile('sn', 0.015, 1, 12, 5, 6, 12, 8);
-                pack.repeat(0.03, 5, 2);
-                pack.laser('ms', 0, 0, 6);
-                pack.insert(-8);
-                pack.laser('ms', 0, 12, 6);
-                pack.insert(-6);
-                pack.laser('ms', 0, 6, 0);
-                pack.insert(-4);
-                break;
-            case 5:
-                pack.missile('ss', 0.05, 5, 0, 5, 4, 2, 0);
-                pack.mirror();
-                pack.repeat(0.03, 1, 2);
-                pack.missile('sn', 0.03, 5, 0, 5, 4, 2, 0);
-                pack.mirror();
-                pack.repeat(0.03, 1, 2);
-                pack.missile('ss', 0.1, 6, 0, 6, 5, 0, 10);
-                pack.repeat(0.06, 5, 1, true);
-                pack.missile('sn', 0, 1, 0, 2, 4, 3, 0);
-                pack.missile('sn', 0, 2, 0, 3, 4, 4, 0);
-                pack.repeat(0, 1, 2);
-                pack.insert(-10);
-                pack.insert(-9);
-                pack.insert(-7);
-                pack.insert(-6);
-                pack.missile('sn', 0, 12, 1, 8, 2, 12, 3);
-                pack.missile('sn', 0, 12, 2, 8, 3, 12, 4);
-                pack.repeat(0, 1, 2);
-                pack.insert(-6);
-                pack.insert(-5);
-                pack.insert(-3);
-                pack.insert(-2);
-                pack.missile('ss', 0.15, 9, 0, 9, 6, 9, 12);
-                pack.offset(0, 1);
-                pack.missile('mn', 0.02, 2, 0, 2, 6, 2, 12);
-                pack.offset(0, 2);
-                pack.missile('sn', 0.04, 0, 2, 5, 4, 12, 7);
-                pack.repeat(0.01, 3, 1, true);
-                pack.missile('sn', 0.15, 1, 0, 1, 6, 1, 12);
-                pack.offset(0, 1);
-                pack.repeat(0.04, 1, 2);
-                pack.missile('mn', 0.02, 10, 0, 10, 6, 10, 12);
-                pack.repeat(0.03, 3, 3);
-                pack.laser('ms', 0, 5, 0);
-                pack.mirror();
-                pack.insert(-4);
-                pack.suicide('sn', 0.32, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.repeat(0.035, 7, 4, true);
-                pack.missile('ss', 0.3, 6, 0, 6, 5, 0, 9);
-                pack.missile('mn', 0.01, 0, 8, 4, 5, 5, 0);
-                pack.mirror();
-                pack.repeat(0.07, 3, 3, true);
-                pack.laser('ms', 0, 2, 0);
-                pack.insert(-9);
-                pack.laser('ms', 0, 10, 0);
-                pack.insert(-6);
-                pack.missile('mn', 0.2, 2, 0, 2, 5, 2, 12);
-                pack.missile('ss', 0, 3, 0, 3.5, 5, 7, 0);
-                pack.repeat(0.05, 3, 2);
-                pack.missile('mn', 0.03, 12, 2, 5, 5, 2, 12);
-                pack.missile('ss', 0, 12, 3.5, 7, 5, 12, 7);
-                pack.repeat(0.05, 3, 2);
-                pack.suicide('ms', 0.06, 0, 12, 3, 4);
-                pack.repeat(0.015, 3, 1, true);
-                break;
-            case 6:
-                pack.missile('mn', 0.05, 2, 0, 2, 7, 2, 12);
-                pack.mirror();
-                pack.missile('mn', 0, 4, 0, 4, 6, 2, 12);
-                pack.mirror();
-                pack.missile('ms', 0.15, 1, 0, 5, 4, 11, 12);
-                pack.mirror();
-                pack.missile('mn', 0.01, 0, 10, 3, 6, 0, 3);
-                pack.repeat(0.01, 3, 1, true);
-                pack.missile('ms', 0.2, 0, 4, 7, 4, 12, 4);
-                pack.offset(0.02, 0, 2);
-                pack.repeat(0.03, 3, 2);
-                pack.laser('ms', 0.04, 0, 2);
-                pack.laser('ms', 0.04, 0, 8);
-                pack.missile('ms', 0.25, 2, 0, 2, 7, 2, 12);
-                pack.missile('ms', 0.01, 3, 0, 5, 5, 12, 7);
-                pack.repeat(0.06, 1, 2);
-                pack.missile('mn', 0.05, 2, 0, 2, 7, 2, 12);
-                pack.missile('mn', 0.01, 3, 0, 5, 5, 12, 7);
-                pack.repeat(0.06, 3, 2);
-                pack.laser('ss', 0, 12, 3);
-                pack.insert(-7);
-                pack.laser('ss', 0, 8, 0);
-                pack.insert(-4);
-                pack.laser('ss', 0, 6, 0);
-                pack.insert(-1);
-                pack.missile('ms', 0.2, 5, 0, 5, 6, 0, 10);
-                pack.mirror();
-                pack.missile('mn', 0.02, 3, 0, 3, 4, 0, 7);
-                pack.repeat(0.035, 11, 1, true);
-                pack.laser('ms', 0, 0, 3);
-                pack.insert(-8);
-                pack.laser('ms', 0, 12, 3);
-                pack.insert(-6);
-                pack.missile('ms', 0.2, 3, 0, 3, 7, 2, 12);
-                pack.mirror();
-                pack.missile('ms', 0.04, 4, 0, 4, 6, 2, 12);
-                pack.mirror();
-                pack.missile('ms', 0.04, 5, 0, 5, 5, 2, 12);
-                pack.mirror();
-                pack.missile('mn', 0.07, 3, 0, 3, 7, 2, 12);
-                pack.mirror();
-                pack.missile('mn', 0.04, 4, 0, 4, 6, 2, 12);
-                pack.mirror();
-                pack.missile('mn', 0.04, 5, 0, 5, 5, 2, 12);
-                pack.mirror();
-                pack.laser('mn', 0.2, 0, 3);
-                pack.mirror();
-                pack.laser('sn', 0.01, 0, 6);
-                pack.mirror();
-                pack.laser('ln', 0, 6, 0);
-                pack.suicide('ss', 0.35, 1.4, 0, 1.4, 6);
-                pack.offset(0, 3.8);
-                pack.offset(0, 3.8);
-                pack.repeat(0.05, 4, 3, true);
-                break;
-            case 7:
-                pack.suicide('sn', 0.1, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.laser('ms', 0.04, 3, 0);
-                pack.mirror();
-                pack.suicide('sn', 0.09, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.missile('mn', 0.02, 0, 2, 6, 2, 12, 2);
-                pack.missile('mn', 0.02, 12, 4, 6, 4, 0, 4);
-                pack.suicide('sn', 0.09, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.missile('ss', 0.02, 3, 0, 3, 6, 2, 12);
-                pack.mirror(0.02);
-                pack.suicide('ss', 0.09, 1.5, 0, 1.5, 6);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.offset(0, 3);
-                pack.missile('ms', 0.02, 0, 2, 3, 6, 0, 9);
-                pack.mirror(0.02);
-                pack.boss(0.2, 1);
-                break;
-            case 8:
-                pack.missile('sn', 0.07, 0, 2, 4, 2, 0, 7);
-                pack.repeat(0.008, 5, 1, true);
-                pack.missile('sn', 0.05, 0, 3, 5, 4, 12, 8);
-                pack.repeat(0.015, 9, 1, true);
-                pack.laser('ln', 0, 3, 0);
-                pack.insert(-7);
-                pack.laser('ln', 0, 9, 0);
-                pack.insert(-5);
-                pack.laser('ln', 0, 6, 0);
-                pack.missile('sn', 0.02, 1, 12, 4, 6, 12, 2);
-                pack.repeat(0.02, 5, 1, true);
-                pack.missile('sn', 0.17, 12, 12, 8, 3, 2, 6, 12, 7);
-                pack.repeat(0.01, 12, 1);
-                pack.laser('ln', 0, 3, 0);
-                pack.insert(-10);
-                pack.laser('ln', 0, 9, 0);
-                pack.insert(-5);
-                pack.suicide('mn', 0.05, 0, 0, 3, 4);
-                pack.repeat(0.01, 3);
-                pack.laser('ms', 0.23, 4, 0);
-                pack.mirror(0.01);
-                pack.laser('ls', 0.01, 6, 0);
-                pack.laser('ss', 0.04, 0, 4);
-                pack.mirror(0.022);
-                pack.offset(0.022, 0, 3);
-                pack.mirror(0.022);
-                pack.missile('ss', 0.22, 0, 12, 4, 3, 10, 6, 0, 6);
-                pack.repeat(0.03, 7, 1);
-                pack.laser('ls', 0, 5, 0);
-                pack.insert(-5);
-                pack.laser('ls', 0, 7, 0);
-                pack.insert(-1);
-                pack.suicide('mn', 0.13, 12, 0, 9, 4);
-                pack.repeat(0.01, 3);
-                pack.laser('ls', 0.3, 2, 0);
-                pack.offset(0.01, 2);
-                pack.offset(0.01, 2);
-                pack.offset(0.01, 2);
-                pack.offset(0.01, 2);
-                pack.suicide('mn', 0.13, 0, 12, 2, 5);
-                pack.repeat(0.01, 7, 1, true);
-                break;
-            case 9:
-                pack.missile('ln', 0.05, -1, -1, 5, 6, 13, 13);
-                pack.mirror(0.01);
-                pack.missile('mn', 0.1, 0, 1, 9, 3, 0, 6);
-                pack.missile('mn', 0.013, 12, 8, 3, 6, 12, 3);
-                pack.repeat(0.013, 3, 2);
-                pack.missile('ln', 0.03, -1, 3, 6, 5, 13, 3);
-                pack.missile('ln', 0, 13, 5, 6, 3, -1, 4);
-                pack.laser('lb', 0.06, 4.5, 0);
-                pack.laser('lb', 0.01, 7.5, 0);
-                pack.missile('ln', 0.3, 3, -1, 3, 5, 3, 13);
-                pack.mirror();
-                pack.missile('ln', 0.04, -1, 1, 6, 3, 9, 13);
-                pack.mirror();
-                pack.laser('lt', 0.04, 0, 5);
-                pack.mirror();
-                pack.missile('mn', 0.14, 0, 1, 5, 5, 12, 1);
-                pack.missile('mn', 0, 0, 9, 6, 6, 0, 3);
-                pack.missile('mn', 0, 12, 9, 7, 5, 0, 9);
-                pack.missile('mn', 0, 12, 1, 6, 4, 12, 10);
-                pack.missile('ss', 0.14, 2, 12, 2, 3, 9, 2.5, 10, 12);
-                pack.repeat(0.01, 7);
-                pack.missile('ls', 0.07, -1, 6, 8, 6, 13, 6);
-                pack.offset(0, 0, 2);
-                pack.laser('lb', 0.05, 0, 7);
-                pack.ship('lmt', 0.1, 3, 0, [pack.move(3, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
-                pack.mirror();
-                pack.ship('lmt', 0.05, 5, 0, [pack.move(5, 3), pack.halt(15), pack.halt(10, true), pack.move(0, 3)]);
-                pack.mirror();
-                pack.missile('mn', 0.06, 0, 12, 4, 7, 4, 0);
-                pack.mirror();
-                pack.missile('mn', 0.03, 6, 0, 6, 5, 1, 12);
-                pack.mirror();
-                pack.missile('ms', 0.23, 2, 0, 2, 6, 6, 4, 10, 12);
-                pack.mirror(0.018);
-                pack.missile('mn', 0.018, 2, 0, 2, 6, 6, 4, 10, 12);
-                pack.repeat(0.018, 5, 1, true);
-                pack.missile('ln', 0.04, -1, -1, 2, 3, -1, 13);
-                pack.mirror();
-                pack.laser('lb', 0.05, 6, 0);
-                pack.laser('lb', 0.35, 4, 0);
-                pack.mirror();
-                pack.stealth(0.05, 3, 5, 0, 12);
-                pack.mirror(0.01);
-                pack.stealth(0.01, 6, 4, 6, 0);
-                break;
-            case 10:
-                pack.missile('lb', 0.03, 2, -1, 2, 13);
-                pack.mirror();
-                pack.missile('lb', 0.05, -1, 2, 13, 2);
-                pack.mirror();
-                pack.laser('lb', 0.05, 0, 5);
-                pack.mirror();
-                pack.missile('lb', 0.05, 3, -1, 3, 6, 1, 13);
-                pack.mirror();
-                pack.missile('ss', 0.03, 6, 0, 6, 5, 1, 0);
-                pack.repeat(0.03, 3, 1, true);
-                pack.missile('sn', 0.1, 2, 12, 2, 3, 8, 4, 10, 12);
-                pack.repeat(0.01, 13, 1, true);
-                pack.laser('ss', 0.02, 5, 0);
-                pack.mirror();
-                pack.missile('sn', 0.05, 2, 0, 2, 7, 2, 12);
-                pack.repeat(0.01, 5, 1, true);
-                pack.stealth(0.05, 6, 7, 6, 0);
-                pack.missile('sn', 0.1, 6, 0, 6, 5, 3, 2, 12, 7);
-                pack.repeat(0.014, 9);
-                pack.missile('lb', 0.03, 2, -1, 2, 7, 2, 13);
-                pack.mirror(0.02);
-                pack.laser('ss', 0.04, 4, 0);
-                pack.mirror(0.02);
-                pack.stealth(0.07, 5, 3, 0, 6);
-                pack.stealth(0.02, 8, 5, 12, 7);
-                pack.missile('lb', 0.2, 2, -1, 5, 4, 2, 13);
-                pack.mirror();
-                pack.laser('sn', 0.02, 0, 7);
-                pack.mirror(0.015);
-                pack.offset(0.015, 0, -2);
-                pack.mirror(0.015);
-                pack.offset(0.015, 0, -2);
-                pack.mirror(0.015);
-                pack.laser('sn', 0.015, 3, 0);
-                pack.mirror(0.015);
-                pack.laser('sn', 0.015, 7, 0);
-                pack.mirror(0.015);
-                pack.missile('mn', 0.2, 0, 2, 6, 4, 12, 2);
-                pack.repeat(0.02, 3);
-                pack.missile('sn', 0.01, 12, 3, 6, 5, 0, 3);
-                pack.clone(0.01, -2);
-                pack.repeat(0.01, 4, 2);
-                pack.clone(0.01, -2);
-                pack.repeat(0.02, 3);
-                pack.laser('lb', 0.01, 0, 6);
-                pack.mirror(0.01);
-                pack.stealth(0.05, 5, 5, 5, 0);
-                pack.mirror(0.03);
-                pack.suicide('sn', 0.3, 1.4, 0, 1.4, 6);
-                pack.offset(0, 3.8);
-                pack.offset(0, 3.8);
-                pack.repeat(0.03, 2, 3, true);
-                pack.missile('sn', 0, 0, 6, 6, 7, 12, 10);
-                pack.repeat(0.01, 7);
-                pack.missile('mn', 0, 2, 0, 2, 5, 1, 12);
-                pack.mirror();
-                pack.missile('mn', 0.06, 4, 0, 4, 5, 1, 12);
-                pack.mirror();
-                pack.missile('ln', 0, 13, 5, 6, 7, -1, 10);
-                pack.laser('ms', 0.18, 4, 0);
-                pack.mirror(0.01);
-                pack.laser('ls', 0.01, 6, 0);
-                pack.laser('ss', 0.06, 0, 4);
-                pack.mirror(0.02);
-                pack.offset(0.02, 0, 3);
-                pack.mirror(0.02);
-                pack.stealth(0.05, 4, 5, 0, 12);
-                pack.mirror(0.02);
-                pack.suicide('mn', 0.2, 3, 0, 5, 2);
-                pack.mirror();
-                pack.repeat(0.06, 1, 2);
-                pack.suicide('mn', 0, 0, 0, 2, 2);
-                pack.mirror();
-                pack.repeat(0.06, 1, 4);
-                pack.suicide('mn', 0, 0, 7, 3, 6);
-                pack.mirror();
-                pack.repeat(0.06, 1, 6);
-                pack.suicide('ms', 0, 5, 0, 5, 3);
-                pack.mirror();
-                break;
-            case 11:
-                pack.missile('ln', 0.1, 1, -1, 4, 6, -1, 13);
-                pack.mirror();
-                pack.laser('ln', 0.06, 0, 5);
-                pack.mirror();
-                pack.missile('ls', 0.09, -1, 2, 6, 3.5, 13, 5);
-                pack.missile('ls', 0, 13, 8, 6, 6.5, -1, 5);
-                pack.laser('ls', 0.06, 3, 0);
-                pack.mirror();
-                pack.missile('lt', 0.09, 5, -1, 5, 4, -1, 8);
-                pack.mirror();
-                pack.laser('lt', 0.09, 0, 3);
-                pack.mirror();
-                pack.missile('lb', 0.09, -1, 1, 4, 2, -1, 12);
-                pack.mirror();
-                pack.laser('lb', 0.09, 5, 0);
-                pack.mirror();
-                pack.stealth(0.2, 3, 4, 0, 5);
-                pack.mirror(0.024);
-                pack.stealth(0.024, 6, 3, 6, 0, true);
-                pack.boss(0.02, 2);
-                break;
-            default: throw (new Error('Level number OOB: ' + level));
-        }
-        return pack.array;
-    }
-    exports.getLevel = getLevel;
-    function boss0Suicides(wpm) {
-        if (wpm === void 0) { wpm = 60; }
-        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
-        pack.ship('msn', 0, 1.6, 3, [pack.halt(16), pack.fire()]);
-        pack.ship('msn', 0, 2.2, 3.4, [pack.halt(13), pack.fire()]);
-        pack.ship('msn', 0, 2.8, 3.7, [pack.halt(10), pack.fire()]);
-        pack.ship('msn', 0, 6.8, 3.7, [pack.halt(10), pack.fire()]);
-        pack.ship('msn', 0, 7.4, 3.4, [pack.halt(13), pack.fire()]);
-        pack.ship('msn', 0, 8, 3, [pack.halt(16), pack.fire()]);
-        return pack.array;
-    }
-    exports.boss0Suicides = boss0Suicides;
-    function getBossLoop(bossType, wpm) {
-        if (wpm === void 0) { wpm = 60; }
-        var pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
-        switch (bossType) {
-            case 0:
-                pack.missile('sn', 0.3, 0, 4, 7, 6, 12, 6);
-                pack.missile('sn', 0.015, 12, 3, 5, 5, 0, 5);
-                pack.repeat(0.015, 2, 2);
-                pack.laser('ss', 0.2, 0, 9);
-                pack.mirror(0.01);
-                break;
-            case 1:
-                pack.missile('mn', 0.25, 0, 3 + Math.random() * 3, 5, 6, 12, 7);
-                pack.mirror();
-                pack.repeat(0.03, 1, 2);
-                pack.laser('ms', 0.35, 0, 8);
-                pack.mirror(0.01);
-                break;
-            case 2:
-                pack.laser('ms', 0.3, 0, 6 + Math.random() * 3);
-                pack.mirror();
-                pack.missile('mn', 0.3, 0, 0, 2, 4, 5, 6, 12, 10);
-                pack.repeat(0.02, 5, 1, true);
-                pack.stealth(0.3, 2 + Math.random() * 8, 5 + Math.random() * 2, (Math.random() > 0.5 ? 0 : 12), 5);
-                break;
-        }
-        return pack.array;
-    }
-    exports.getBossLoop = getBossLoop;
-    var MethodPack = (function () {
-        function MethodPack(mult) {
-            this.array = [];
-            this.distance = 0;
-        }
-        MethodPack.prototype.setDist = function (distance) {
-            this.distance += distance;
-        };
-        MethodPack.prototype.loopBack = function (jumpIndex) {
-            if (jumpIndex === void 0) { jumpIndex = 0; }
-            if (jumpIndex < 0) {
-                jumpIndex = this.array.length + jumpIndex;
-            }
-            this.array.push({ type: EventType.LOOP, distance: this.distance, jumpIndex: jumpIndex });
-        };
-        MethodPack.prototype.wait = function (distance) {
-            if (distance === void 0) { distance = 0; }
-            this.setDist(distance);
-            var m = { type: EventType.WAIT, distance: this.distance, waitTime: distance };
-            this.array.push(m);
-            return m;
-        };
-        MethodPack.prototype.jump = function (jumpIndex) {
-            if (jumpIndex === void 0) { jumpIndex = 0; }
-            this.array.push({ distance: this.distance, type: EventType.JUMP, jumpIndex: jumpIndex });
-        };
-        MethodPack.prototype.insert = function (insertAt) {
-            if (insertAt < 0) {
-                insertAt = this.array.length + insertAt;
-            }
-            this.array[this.array.length - 1].distance = this.array[insertAt].distance;
-            this.array.splice(insertAt, 0, this.array.pop());
-        };
-        MethodPack.prototype.ship = function (type, distance, x, y, commands) {
-            if (commands === void 0) { commands = null; }
-            this.setDist(distance);
-            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: type, x: x, y: y, commands: commands } });
-        };
-        MethodPack.prototype.laser = function (type, distance, x, y, speed) {
-            if (speed === void 0) { speed = 0; }
-            var commands;
-            if (x === 0) {
-                commands = [this.move(2, y), this.halt(10 - speed), this.halt(20 - speed, true), this.move(-2, y)];
-            }
-            else if (x === 12) {
-                commands = [this.move(10, y), this.halt(10 - speed), this.halt(20 - speed, true), this.move(14, y)];
-            }
-            else if (y === 0) {
-                commands = [this.move(x, 2), this.halt(10 - speed), this.halt(20 - speed, true), this.move(x, -2)];
-            }
-            else if (y === 12) {
-                commands = [this.move(x, 10), this.halt(10 - speed), this.halt(20 - speed, true), this.move(x, 14)];
-            }
-            else {
-                throw (new Error('Invalid spawn location: ' + x + ' ' + y));
-            }
-            this.ship(type.charAt(0) + 'l' + type.charAt(1), distance, x, y, commands);
-        };
-        MethodPack.prototype.suicide = function (_type, _distance, _x, _y, _xTo, _yTo) {
-            this.ship(_type.charAt(0) + 's' + _type.charAt(1), _distance, _x, _y, [this.move(_xTo, _yTo), this.fire()]);
-        };
-        MethodPack.prototype.stealth = function (_distance, _x, _y, _xTo, _yTo, _shield) {
-            if (_shield === void 0) { _shield = false; }
-            this.ship(_shield ? 'xms' : 'xmn', _distance, _x, _y, [this.halt(8), this.halt(10, true), this.halt(10, true), this.halt(10, true), this.halt(10, true), this.halt(5, true), this.move(_xTo, _yTo)]);
-        };
-        MethodPack.prototype.missile = function (_type, _distance, _x, _y, _xTo1, _yTo1, _xTo2, _yTo2, _xTo3, _yTo3) {
-            if (_xTo2 === void 0) { _xTo2 = -1; }
-            if (_yTo2 === void 0) { _yTo2 = -1; }
-            if (_xTo3 === void 0) { _xTo3 = -1; }
-            if (_yTo3 === void 0) { _yTo3 = -1; }
-            this.ship(_type.charAt(0) + 'm' + _type.charAt(1), _distance, _x, _y, [this.move(_xTo1, _yTo1), this.move(_xTo2, _yTo2, ((_xTo3 === -1) ? true : false)), ((_xTo3 !== -1) ? this.move(_xTo3, _yTo3, true) : this.halt(1))]);
-        };
-        MethodPack.prototype.boss = function (_distance, _type) {
-            this.setDist(_distance);
-            this.array.push({ type: EventType.BOSS, distance: this.distance, bossType: _type });
-        };
-        MethodPack.prototype.clone = function (_distance, index) {
-            if (_distance === void 0) { _distance = 0; }
-            if (index === void 0) { index = -1; }
-            this.setDist(_distance);
-            if (index < 0) {
-                index = this.array.length + index;
-            }
-            var oldSpawn = this.array[index].spawnEvent;
-            var commands = this.cloneCommands(oldSpawn.commands);
-            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: oldSpawn.x, y: oldSpawn.y, commands: commands } });
-        };
-        MethodPack.prototype.mirror = function (distance, index) {
-            if (distance === void 0) { distance = 0; }
-            if (index === void 0) { index = -1; }
-            this.setDist(distance);
-            if (index < 0) {
-                index = this.array.length + index;
-            }
-            var oldSpawn = this.array[index].spawnEvent;
-            var commands = this.mirrorCommands(oldSpawn.commands);
-            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: 12 - oldSpawn.x, y: oldSpawn.y, commands: commands } });
-        };
-        MethodPack.prototype.offset = function (_distance, xOff, yOff, index) {
-            if (_distance === void 0) { _distance = 0; }
-            if (xOff === void 0) { xOff = 0; }
-            if (yOff === void 0) { yOff = 0; }
-            if (index === void 0) { index = -1; }
-            this.setDist(_distance);
-            if (index < 0) {
-                index = this.array.length + index;
-            }
-            var oldSpawn = this.array[index].spawnEvent;
-            var commands = this.cloneCommands(oldSpawn.commands, xOff, yOff);
-            this.array.push({ type: EventType.SPAWN, distance: this.distance, spawnEvent: { type: oldSpawn.type, x: oldSpawn.x + xOff, y: oldSpawn.y + yOff, commands: commands } });
-        };
-        MethodPack.prototype.repeat = function (distance, repeatN, repeatC, reverse) {
-            if (repeatN === void 0) { repeatN = 1; }
-            if (repeatC === void 0) { repeatC = 1; }
-            for (var i = 0; i < repeatN * repeatC; i++) {
-                if (i % repeatC === 0) {
-                    if (reverse) {
-                        this.mirror(distance, 0 - repeatC);
-                    }
-                    else {
-                        this.clone(distance, 0 - repeatC);
-                    }
-                }
-                else {
-                    if (reverse) {
-                        this.mirror((this.array[this.array.length - repeatC].distance - this.array[this.array.length - repeatC - 1].distance), 0 - repeatC);
-                    }
-                    else {
-                        this.clone((this.array[this.array.length - repeatC].distance - this.array[this.array.length - repeatC - 1].distance), 0 - repeatC);
-                    }
-                }
-            }
-        };
-        MethodPack.prototype.move = function (x, y, fire) {
-            if (fire === void 0) { fire = false; }
-            return { x: x, y: y, fire: fire, move: true, timer: 0 };
-        };
-        MethodPack.prototype.halt = function (timer, fire) {
-            if (fire === void 0) { fire = false; }
-            return { x: 6, y: 12, timer: timer, fire: fire, move: false };
-        };
-        MethodPack.prototype.fire = function () {
-            return { timer: 1, move: false, fire: true };
-        };
-        MethodPack.prototype.cloneCommand = function (command, xOff, yOff) {
-            if (xOff === void 0) { xOff = 0; }
-            if (yOff === void 0) { yOff = 0; }
-            return { x: command.x + xOff, y: command.y + yOff, timer: command.timer, move: command.move, fire: command.fire };
-        };
-        MethodPack.prototype.mirrorCommand = function (command) {
-            return { x: 12 - command.x, y: command.y, timer: command.timer, move: command.move, fire: command.fire };
-        };
-        MethodPack.prototype.cloneCommands = function (commands, xOff, yOff) {
-            var _this = this;
-            if (xOff === void 0) { xOff = 0; }
-            if (yOff === void 0) { yOff = 0; }
-            var m = [];
-            commands.forEach(function (command) { return m.push(_this.cloneCommand(command, xOff, yOff)); });
-            return m;
-        };
-        MethodPack.prototype.mirrorCommands = function (commands, xOff, yOff) {
-            var _this = this;
-            if (xOff === void 0) { xOff = 0; }
-            if (yOff === void 0) { yOff = 0; }
-            var m = [];
-            commands.forEach(function (command) { return m.push(_this.mirrorCommand(command)); });
-            return m;
-        };
-        return MethodPack;
-    }());
-});
 define("JMGE/effects/Charge", ["require", "exports", "JMGE/others/Colors"], function (require, exports, Colors_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -3357,7 +3474,6 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: -1,
             value: 0,
             moveSpeed: 7,
-            turnRate: 2,
             killBy: Misc_5.ActionType.LASER,
             health: 1,
         },
@@ -3367,7 +3483,6 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 3,
             value: 1,
             moveSpeed: 2,
-            turnRate: 2,
             killBy: Misc_5.ActionType.LASER,
             health: 1,
         },
@@ -3390,16 +3505,12 @@ define("game/objects/EnemyShip", ["require", "exports", "game/objects/GameSprite
                         _this.charge.update(speed);
                     }
                     if (_this.config.commands[0].move) {
-                        var command = _this.config.commands[0];
-                        var dx = command.x - _this.x;
-                        var dy = command.y - _this.y;
-                        var angle = Math.atan2(dy, dx);
-                        _this.x += speed * Math.cos(angle);
-                        _this.y += speed * Math.sin(angle);
+                        _this.moveTo(_this.config.commands[0], speed);
                     }
-                    if (_this.config.commands[0].x !== undefined && _this.config.commands[0].y !== undefined) {
-                        var angle = Math.atan2(_this.config.commands[0].y - _this.y, _this.config.commands[0].x - _this.x);
-                        _this.rotation = angle + Math.PI / 2;
+                    else if (_this.config.commands[0].x !== undefined && _this.config.commands[0].y !== undefined) {
+                        _this.rotateTo(_this.config.commands[0], speed);
+                    }
+                    else {
                     }
                     if (_this.turret) {
                         _this.turret.update(speed);
@@ -3458,6 +3569,10 @@ define("game/objects/EnemyShip", ["require", "exports", "game/objects/GameSprite
             if (enemyConfig.turnRate || enemyConfig.turnRate === 0) {
                 _this.turnRate = enemyConfig.turnRate;
             }
+            else {
+                _this.turnRate = _this.a / 7;
+            }
+            _this.n = Math.atan2(config.commands[0].y - config.y, config.commands[0].x - config.x);
             _this.addChild(_this.charge);
             _this.shieldView.scale.set(enemyConfig.shield.width / 200, enemyConfig.shield.height / 200);
             _this.shieldView.position.set(enemyConfig.shield.x, enemyConfig.shield.y);
@@ -4053,18 +4168,15 @@ define("game/objects/Missile", ["require", "exports", "game/objects/GameSprite",
                     if (_this.target.toDestroy) {
                         _this.toDestroy = true;
                     }
+                    _this.moveTo(_this.target, speed);
                     var dx = _this.target.x - _this.x;
                     var dy = _this.target.y - _this.y;
-                    var angle = Math.atan2(dy, dx);
-                    _this.rotation = angle + Math.PI / 2;
                     var distance = Math.sqrt(dy * dy + dx * dx);
                     if (distance < Math.max(30, speed * _this.speed * 2)) {
                         _this.config.onComplete(_this.target);
                         _this.toDestroy = true;
                     }
                     else {
-                        _this.x += speed * _this.speed * Math.cos(angle);
-                        _this.y += speed * _this.speed * Math.sin(angle);
                         if (_this.target.turret) {
                             if (_this.target.turret.targetInRange(_this)) {
                                 _this.toDestroy = true;
@@ -4094,14 +4206,19 @@ define("game/objects/Missile", ["require", "exports", "game/objects/GameSprite",
             _this.speed = missileConfig.moveSpeed;
             _this.killBy = missileConfig.killBy;
             _this.health = missileConfig.health;
+            _this.a = missileConfig.moveSpeed;
             if (missileConfig.turnRate || missileConfig.turnRate === 0) {
                 _this.turnRate = missileConfig.turnRate;
+            }
+            else {
+                _this.turnRate = _this.a / 7;
             }
             if (_this.wordSize > 0) {
                 _this.addWord();
             }
             _this.x = origin.x;
             _this.y = origin.y;
+            _this.n = origin.n;
             return _this;
         }
         return Missile;
@@ -4226,6 +4343,7 @@ define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectMa
             var _this = this;
             origin.replaceCommands([{ x: target.x, y: target.y, move: true }]);
             origin.callbacks.onFinishCommands = function () { return _this.manager.player.addHealth(-1); };
+            origin.a *= 2;
             origin.priority = 3;
         };
         return ActionControl;
@@ -4469,7 +4587,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.starfield = new Starfield_1.Starfield(Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT);
             _this.actionC.missileRate = 0.4;
             _this.levelEvents = new EventInterpreter_1.EventInterpreter(_this.addEnemy, _this.addBoss);
-            _this.levelEvents.loadLevel(level, 60);
+            _this.levelEvents.loadLevel(level, 60 * _this.gameSpeed);
             _this.player.x = Config_7.CONFIG.INIT.STAGE_WIDTH / 2;
             _this.player.y = Config_7.CONFIG.INIT.STAGE_HEIGHT - 150;
             _this.player.setHealth(5);
@@ -4578,10 +4696,10 @@ define("menus/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "game/data/
             hsText.y = 5;
             _this.addChild(hsText);
             _this.makeButton(StringData_1.StringData.EASY, 1, 35, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.NORMAL, 1, 70, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.HARD, 1, 105, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.EXTREME, 1, 140, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.INSANE, 1, 175, 0xf1f1f1);
+            _this.makeButton(StringData_1.StringData.NORMAL, 2, 70, 0xf1f1f1);
+            _this.makeButton(StringData_1.StringData.HARD, 3, 105, 0xf1f1f1);
+            _this.makeButton(StringData_1.StringData.EXTREME, 4, 140, 0xf1f1f1);
+            _this.makeButton(StringData_1.StringData.INSANE, 5, 175, 0xf1f1f1);
             return _this;
         }
         DifficultyPopup.prototype.makeButton = function (text, index, y, color) {
@@ -4619,6 +4737,7 @@ define("menus/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JM
                 _this.startGame();
             };
             _this.startGame = function () {
+                console.log(_this.currentDifficulty);
                 _this.navForward(new GameManager_1.GameManager(_this.currentLevel, _this.currentDifficulty));
                 if (_this.difficultyPopup) {
                     _this.difficultyPopup.destroy();

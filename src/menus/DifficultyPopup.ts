@@ -18,10 +18,10 @@ export class DifficultyPopup extends PIXI.Container {
     this.addChild(hsText);
 
     this.makeButton(StringData.EASY, 1, 35, 0xf1f1f1);
-    this.makeButton(StringData.NORMAL, 1, 70, 0xf1f1f1);
-    this.makeButton(StringData.HARD, 1, 105, 0xf1f1f1);
-    this.makeButton(StringData.EXTREME, 1, 140, 0xf1f1f1);
-    this.makeButton(StringData.INSANE, 1, 175, 0xf1f1f1);
+    this.makeButton(StringData.NORMAL, 2, 70, 0xf1f1f1);
+    this.makeButton(StringData.HARD, 3, 105, 0xf1f1f1);
+    this.makeButton(StringData.EXTREME, 4, 140, 0xf1f1f1);
+    this.makeButton(StringData.INSANE, 5, 175, 0xf1f1f1);
 
   }
 

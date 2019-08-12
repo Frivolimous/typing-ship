@@ -1,6 +1,7 @@
 import { BaseObject } from './BaseObject';
 import { Shield } from './Shield';
 import { Turret } from './Turret';
+import { ICommand } from '../data/LevelData';
 
 export enum Animation {
   IDLE,
@@ -107,8 +108,70 @@ export class GameSprite extends BaseObject {
     // return;
   }
 
-  public moreUpdate(): boolean {
-    return true;
+  public rotateTo = (target: {x?: number, y?: number}, speed: number) => {
+    let rMult = 0.1 * speed;
+    let rate = rMult * this.turnRate;
+    // console.log(rate);
+
+    if (isNaN(this.n)) {
+      this.n = Math.atan2(target.y - this.y, target.x - this.x);
+    } else {
+      let dx = target.x - this.x;
+      let dy = target.y - this.y;
+      let angle = Math.atan2(dy, dx);
+      while (angle < (this.n - Math.PI)) angle += Math.PI * 2;
+      while (angle > (this.n + Math.PI)) angle -= Math.PI * 2;
+
+      if (angle < this.n) {
+        this.n -= rate;
+        if (this.n < angle) this.n = angle;
+      } else if (angle > this.n) {
+        this.n += rate;
+        if (this.n > angle) this.n = angle;
+      }
+
+      // let n = Math.atan2(this.vY, this.vX);
+      this.rotation = this.n + Math.PI / 2;
+    }
+  }
+
+  public moveTo = (target: {x?: number, y?: number}, speed: number) => {
+    this.rotateTo(target, speed);
+    let aMult = speed;
+    let accel = aMult * this.a;
+
+    if (this.vT < accel) {
+      this.vT += accel;
+    } else {
+      this.vT = accel;
+    }
+
+    this.vX = Math.cos(this.n) * this.vT;
+    this.vY = Math.sin(this.n) * this.vT;
+
+    // if (Math.abs(this.vX) < this.a * aMult && Math.abs(this.vY) < this.a * aMult) {
+    //   this.vX = 0;
+    //   this.vY = 0;
+    // } else {
+    this.x += this.vX;
+    this.y += this.vY;
+    // }
+    // this.x += speed * Math.cos(angle);
+    // this.y += speed * Math.sin(angle);
+    
+    // this.vT += this.a - this.vT * 0.1;
+    // this.vX = this.vT * Math.cos(this.n);
+    // this.vY = this.vT * Math.sin(this.n);
+    
+    // if (Math.abs(this.vT) < Math.abs(this.a)) {
+      //   this.vX = 0;
+      //   this.vY = 0;
+      //   this.vT = 0;
+      // } else {
+        //   this.x += this.vX;
+        //   this.y += this.vY;
+        // }
+    // this.rotation = angle + Math.PI / 2;
   }
 
   public homeTarget(_target: BaseObject) {
