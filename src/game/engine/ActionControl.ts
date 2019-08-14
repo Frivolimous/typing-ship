@@ -84,14 +84,14 @@ export class ActionControl {
       origin.priority = 0;
       origin.value -= 1;
       this.missileCount -= 1;
-      this.manager.container.addObject(new Missile(origin, target, { onComplete: () => this.manager.player.addHealth(-1), onWordComplete: missile => this.playerFires(this.manager.player, missile) }), DisplayLayer.PROJECTILES, false);
+      this.manager.container.addObject(new Missile(origin, target, { onComplete: () => this.damagePlayer(), onWordComplete: missile => this.playerFires(this.manager.player, missile) }), DisplayLayer.PROJECTILES, false);
     }
   }
 
   public shootEnemyLaser(origin: EnemyShip, target: PlayerShip, instant?: boolean) {
     if (instant) {
       this.manager.container.makeLaser(origin, target, 0xff0000);
-      this.manager.player.addHealth(-1);
+      this.damagePlayer();
       // soundC.sound(SoundControl.LASER);
       origin.priority = 0;
     } else {
@@ -99,7 +99,7 @@ export class ActionControl {
       // soundC.sound(SoundControl.CHARGE);
       origin.startCharge(() => {
         this.manager.container.makeLaser(origin, target, 0xff0000);
-        this.manager.player.addHealth(-1);
+        this.damagePlayer();
         // soundC.sound(SoundControl.LASER);
         origin.priority = 0;
       });
@@ -116,9 +116,14 @@ export class ActionControl {
 
   public shootSuicide(origin: EnemyShip, target: GameSprite) {
     origin.replaceCommands([{ x: target.x, y: target.y, move: true }]);
-    origin.callbacks.onFinishCommands = () => this.manager.player.addHealth(-1);
+    origin.callbacks.onFinishCommands = () => this.damagePlayer();
     origin.a *= 2;
     origin.priority = 3;
+  }
+
+  public damagePlayer(amount: number = -1) {
+    this.manager.container.makeExplosionAt(this.manager.player.x, this.manager.player.y, amount * -3);
+    this.manager.player.addHealth(-1);
   }
 
   public enemyDestroyed = (enemy: GameSprite) => {

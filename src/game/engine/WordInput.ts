@@ -31,6 +31,7 @@ export class WordInput {
   }
 
   public addLetter(letter: string) {
+    letter = letter.toLowerCase();
     if (this.checkLetter(letter)) {
       this.text += letter;
       for (let object of TextObject.allTextObjects) {
@@ -91,7 +92,6 @@ export class WordInput {
     if (letter.length > 1) {
       return false;
     }
-    letter = letter.toLowerCase();
     if (letter >= 'a' && letter <= 'z') {
       return true;
     } else {

@@ -13,6 +13,6 @@ export class Laser extends PIXI.Graphics {
     this.lineTo(origin.x, origin.y);
     this.alpha = 2;
 
-    new JMTween<Laser>(this).to({ alpha: 0 }, 30).onComplete(() => this.destroy()).start();
+    new JMTween<Laser>(this).to({ alpha: 0 }, 500).onComplete(() => this.destroy()).start();
   }
 }

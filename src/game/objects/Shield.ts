@@ -10,14 +10,14 @@ export class Shield extends PIXI.Graphics {
 
   public fadeIn(alpha: number = 1) {
     this.alpha = 0;
-    new JMTween<Shield>(this).to({ alpha }, 13).start();
+    new JMTween<Shield>(this).to({ alpha }, 200).start();
   }
 
   public fadeTo(alpha: number) {
-    new JMTween<Shield>(this).to({ alpha }, 13).start();
+    new JMTween<Shield>(this).to({ alpha }, 200).start();
   }
 
   public fadeOut() {
-    new JMTween<Shield>(this).to({ alpha: 0 }, 13).onComplete( () => this.parent.removeChild(this)).start();
+    new JMTween<Shield>(this).to({ alpha: 0 }, 200).onComplete( () => this.parent.removeChild(this)).start();
   }
 }

@@ -10,8 +10,8 @@ export class FlyingText extends PIXI.Text {
 
     if (parent) parent.addChild(this);
 
-    new JMTween<FlyingText>(this).wait(20).to({ alpha: 0}, 60).start();
-    new JMTween<FlyingText>(this).to({ y: this.y - 20 }, 80).onComplete(() => {
+    new JMTween<FlyingText>(this).wait(20).to({ alpha: 0}, 1000).start();
+    new JMTween<FlyingText>(this).to({ y: this.y - 20 }, 1200).onComplete(() => {
       this.destroy();
     }).start();
   }

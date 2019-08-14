@@ -51,7 +51,7 @@ export enum EventType {
 export const events = new class {
   private registry: { [key: string]: JMERegister } = {};
   private activeRegistry: JMERegister[] = [];
-  private tickEvents: Array<() => void> = [];
+  private tickEvents: Array<(delta?: number) => void> = [];
 
   public clearAllEvents() {
     this.registry = {};
@@ -59,8 +59,8 @@ export const events = new class {
     this.tickEvents = [];
   }
   public ticker = {
-    add: (output: () => void) => events.tickEvents.push(output),
-    remove: (output: () => void) => _.pull(events.tickEvents, output),
+    add: (output: (delta?: number) => void) => events.tickEvents.push(output),
+    remove: (output: (delta?: number) => void) => _.pull(events.tickEvents, output),
   }
 
   private createRegister(type: string) {
@@ -107,7 +107,7 @@ export const events = new class {
     }
   }
 
-  onTick = () => {
+  onTick = (delta: number) => {
     while (this.activeRegistry.length > 0) {
       let register = this.activeRegistry.shift();
       register.active = false;
@@ -122,7 +122,7 @@ export const events = new class {
       }
     }
 
-    this.tickEvents.forEach(output => output());
+    this.tickEvents.forEach(output => output(delta));
   }
 }
 

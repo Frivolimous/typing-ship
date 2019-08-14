@@ -70,11 +70,11 @@ export class BasicElement extends PIXI.Container {
   }
 
   flashing: boolean;
-  colorFlash(color: number, ticksUp: number, wait: number, ticksDown: number) {
+  colorFlash(color: number, timeUp: number, wait: number, timeDown: number) {
     if (this.flashing) return;
     this.flashing = true;
-    new JMTween(this.graphics).colorTo({ tint: color }, ticksUp).onComplete(() => {
-      new JMTween(this.graphics).wait(wait).to({ tint: this.baseTint }, ticksDown).onComplete(() => {
+    new JMTween(this.graphics).colorTo({ tint: color }, timeUp).onComplete(() => {
+      new JMTween(this.graphics).wait(wait).to({ tint: this.baseTint }, timeDown).onComplete(() => {
         this.flashing = false;
       }).start();
     }).start();

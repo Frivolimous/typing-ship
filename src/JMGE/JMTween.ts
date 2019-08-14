@@ -1,5 +1,3 @@
-import * as JMBL from './JMBL';
-
 interface ITweenProperty {
   key: string;
   start: number;
@@ -7,26 +5,68 @@ interface ITweenProperty {
 
   inc?: number;
 
+  isColor?: boolean;
   incR?: number;
   incG?: number;
   incB?: number;
+
+  eased?: boolean;
 }
+
+let running = false;
+let tweenFuncs: ((time: number) => void)[] = [];
+
+let _add = (func: (time: number) => void) => {
+  tweenFuncs.push(func);
+  _tryRun();
+};
+
+let _remove = (func: (time: number) => void) => {
+  let index = tweenFuncs.indexOf(func);
+  if (index >= 0) {
+    tweenFuncs.splice(index, 1);
+  }
+};
+
+let _tryRun = () => {
+  if (!running && tweenFuncs.length > 0) {
+    running = true;
+    requestAnimationFrame(_tick);
+  }
+};
+
+let _tick = (time: number) => {
+  running = false;
+  tweenFuncs.forEach(func => func(time));
+  if (!running && tweenFuncs.length > 0) {
+    running = true;
+    requestAnimationFrame(_tick);
+  }
+};
 
 export class JMTween<T = any> {
   public running = false;
+  private started = false;
 
   private onUpdateCallback: (object: T) => void;
   private onCompleteCallback: (object: T) => void;
   private onWaitCompleteCallback: (object: T) => void;
-  private properties: ITweenProperty[];
+  private properties: ITweenProperty[] = [];
   private hasWait: boolean;
-  private isColor: boolean;
 
-  private cTicks: number = 0;
-  private maxTicks: number = 0;
-  private waitTicks: number = 0;
+  private _Easing: (percent: number) => number;
 
-  constructor(private object: T) { }
+  private waitTime: number;
+  private totalTime: number;
+
+  private startTime: number;
+  private endTime: number;
+
+  private tickThis: (tick: number) => void;
+
+  constructor(private object: T) {
+    this.tickThis = this.firstTick;
+  }
 
   public onUpdate = (callback: (object: T) => void) => {
     this.onUpdateCallback = callback;
@@ -53,7 +93,7 @@ export class JMTween<T = any> {
       this.object[property.key] = property.start;
     });
 
-    JMBL.events.ticker.add(this.tickThis);
+    _add(this.tickThis);
 
     return this;
   }
@@ -61,7 +101,7 @@ export class JMTween<T = any> {
   public stop = () => {
     this.running = false;
 
-    JMBL.events.ticker.remove(this.tickThis);
+    _remove(this.tickThis);
 
     return this;
   }
@@ -69,7 +109,8 @@ export class JMTween<T = any> {
   public complete = () => {
     this.running = false;
 
-    JMBL.events.ticker.remove(this.tickThis);
+    _remove(this.tickThis);
+    console.log('DONE!');
 
     this.properties.forEach(property => {
       this.object[property.key] = property.end;
@@ -81,94 +122,142 @@ export class JMTween<T = any> {
   }
 
   public reset = () => {
-    this.cTicks = this.waitTicks;
-    if (this.waitTicks > 0) {
-      this.hasWait = true;
-    }
+    this.started = false;
+    this.tickThis = this.firstTick;
+    if (this.waitTime) this.hasWait = true;
 
     return this;
   }
 
-  public wait = (ticks: number) => {
-    this.waitTicks = ticks;
-    this.cTicks = -ticks;
+  public wait = (time: number) => {
+    this.waitTime = time;
     this.hasWait = true;
 
     return this;
   }
 
-  public to = (props: Partial<T>, ticks: number) => {
-    this.maxTicks = ticks;
-
-    this.properties = [];
+  public to = (props: Partial<T>, time: number, eased = true) => {
+    this.totalTime = time;
 
     for (let key of Object.keys(props)) {
-      this.properties.push({key, start: this.object[key], end: props[key], inc: (props[key] - this.object[key]) / ticks});
+      this.properties.push({ key, start: this.object[key], end: props[key], inc: (props[key] - this.object[key]), eased });
     }
 
     return this;
   }
 
-  public from = (props: Partial<T>, ticks: number) => {
-    this.maxTicks = ticks;
+  public from = (props: Partial<T>, time: number, eased = true) => {
+    this.totalTime = time;
 
-    this.properties = [];
-
-    for (let  key of Object.keys(props)) {
-      this.properties.push({key, start: props[key], end: this.object[key], inc: (this.object[key] - props[key]) / ticks});
+    for (let key of Object.keys(props)) {
+      this.properties.push({ key, start: props[key], end: this.object[key], inc: (this.object[key] - props[key]), eased });
     }
 
     return this;
   }
 
-  public colorTo = (props: Partial<T>, ticks: number) => {
-    this.isColor = true;
-    this.maxTicks = ticks;
-
-    this.properties = [];
+  public colorTo = (props: Partial<T>, time: number, eased = true) => {
+    this.totalTime = time;
 
     for (let key of Object.keys(props)) {
       this.properties.push({
         key,
         start: this.object[key],
         end: props[key],
-        incR: Math.floor(props[key] / 0x010000) - Math.floor(this.object[key] / 0x010000) / ticks,
-        incG: Math.floor((props[key] % 0x010000) / 0x000100) - Math.floor((this.object[key] % 0x010000) / 0x000100) / ticks,
-        incB: Math.floor(props[key] % 0x000100) - Math.floor(this.object[key] % 0x000100) / ticks,
+        incR: Math.floor(props[key] / 0x010000) - Math.floor(this.object[key] / 0x010000),
+        incG: Math.floor((props[key] % 0x010000) / 0x000100) - Math.floor((this.object[key] % 0x010000) / 0x000100),
+        incB: Math.floor(props[key] % 0x000100) - Math.floor(this.object[key] % 0x000100),
+        eased,
+        isColor: true,
       });
     }
 
     return this;
   }
 
-  private tickThis = () => {
-    this.cTicks ++;
+  public easing = (func: (percent: number) => number) => {
+    this._Easing = func;
 
-    if (this.hasWait && this.cTicks > 0) {
+    return this;
+  }
+
+  private firstTick = (time: number) => {
+    this.started = true;
+    if (this.hasWait) {
+      this.startTime = time + this.waitTime;
+    } else {
+      this.startTime = time;
+    }
+    this.endTime = this.startTime + (this.totalTime || 0);
+    console.log('START', time, this.endTime);
+    this.tickThis = this.tailTick;
+  }
+
+  private tailTick = (time: number) => {
+    if (this.hasWait && time > this.startTime) {
       this.hasWait = false;
       if (this.onWaitCompleteCallback) this.onWaitCompleteCallback(this.object);
-    } else if (this.cTicks <= 0) {
-      return;
     }
 
-    if (this.cTicks > this.maxTicks) {
+    if (time > this.endTime) {
       this.complete();
-    } else {
-      if (this.isColor) {
-        this.properties.forEach(property => {
-          this.object[property.key] = property.start + property.inc * this.cTicks;
-          this.object[property.key] = property.start +
-            Math.floor(property.incR * this.cTicks) * 0x010000 +
-            Math.floor(property.incG * this.cTicks) * 0x000100 +
-            Math.floor(property.incB * this.cTicks);
-        });
-      } else {
-        this.properties.forEach(property => {
-          this.object[property.key] = property.start + property.inc * this.cTicks;
-        });
-      }
+    } else if (time > this.startTime) {
+      let raw = (time - this.startTime) / this.totalTime;
+      let eased: number = this._Easing ? this._Easing(raw) : raw;
+
+      this.properties.forEach(property => {
+        let percent = property.eased ? eased : raw;
+
+        if (property.isColor) {
+          this.object[property.key] = Math.round(property.start +
+            Math.floor(property.incR * percent) * 0x010000 +
+            Math.floor(property.incG * percent) * 0x000100 +
+            Math.floor(property.incB * percent));
+        } else {
+          this.object[property.key] = property.start + property.inc * percent;
+        }
+      });
 
       if (this.onUpdateCallback) this.onUpdateCallback(this.object);
     }
   }
 }
+
+export const JMEasings = {
+  linear: (p: number) => {
+    return p;
+  },
+  quadIn: (p: number) => {
+    return p * p;
+  },
+  quadOut: (p: number) => {
+    return - p * (p - 2);
+  },
+  quad: (p: number) => {
+    p *= 2;
+    if (p < 1) {
+      return p * p / 2;
+    } else {
+      p--;
+      return - (p * (p - 2) - 1) / 2;
+    }
+  },
+  cubicIn: (p: number) => {
+    return p * p * p;
+  },
+
+  cubicOut: (p: number) => {
+    p--;
+    return p * p * p + 1;
+  },
+
+  cubic: (p: number) => {
+    p *= 2;
+    if (p < 1) {
+      return p * p * p / 2;
+    } else {
+      p -= 2;
+      return (p * p * p + 2) / 2;
+    }
+  },
+};

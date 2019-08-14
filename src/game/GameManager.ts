@@ -15,9 +15,12 @@ import { ISpawnEvent } from './data/LevelData';
 import { WordInput } from './engine/WordInput';
 import { GameEvents } from './data/Misc';
 import { TextObject } from './text/TextObject';
+import { JMTween } from '../JMGE/JMTween';
+import { ScreenCover } from './objects/ScreenCover';
 
 export class GameManager extends BaseUI {
   public running = true;
+  public interactive = true;
 
   public container: ObjectManager = new ObjectManager();
   public actionC: ActionControl = new ActionControl(this);
@@ -76,7 +79,7 @@ export class GameManager extends BaseUI {
   }
 
   public keyDown = (e: JMBL.IKeyboardEvent) => {
-    if (!this.running) {
+    if (!this.running || !this.interactive) {
       if (e.key === ' ') {
         this.togglePause();
       }
@@ -85,8 +88,8 @@ export class GameManager extends BaseUI {
     switch (e.key) {
       case 'Escape': this.navBack(); break;
       case ' ': this.togglePause(); break;
-      case '=': this.gameSpeed += 1; break;
-      case '-': this.gameSpeed -= 1; break;
+      // case '=': this.gameSpeed += 1; break;
+      // case '-': this.gameSpeed -= 1; break;
       case 'Backspace': this.wordInput.deleteLetters(1); break;
       default: this.wordInput.addLetter(e.key); break;
     }
@@ -145,9 +148,27 @@ export class GameManager extends BaseUI {
     // }
 
     JMBL.events.publish(GameEvents.NOTIFY_SET_PROGRESS, { current: this.levelEvents.distance, total: this.levelEvents.finalDistance });
+
+    if (!this.interactive) return;
+    if (this.player.health <= 0) {
+      console.log('dead');
+      this.interactive = false;
+      this.container.makeExplosionAt(this.player.x, this.player.y, 50);
+      this.player.visible = false;
+      let i = 500;
+      let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT));
+      this.addChild(screen);
+      new JMTween(screen).from({alpha: 0}, 2000).wait(3000).onComplete(() => {
+        this.running = false;
+        this.navBack();
+      }).onUpdate(() => {
+        console.log(i--);
+      }).start();
+    }
   }
 
   public togglePause = () => {
+    if (!this.interactive) return;
     this.running = !this.running;
     TextObject.allTextObjects.forEach(object => object.visible = this.running);
   }
