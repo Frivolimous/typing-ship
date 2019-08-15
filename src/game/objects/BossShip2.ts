@@ -105,6 +105,6 @@ export class BossShip2 extends BossShip {
 
   public newCommands() {
     this.bossFire();
-    this.commands.push({ x: CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 820, move: false, fire: true });
+    this.commands.push({ x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 820, move: false, fire: true });
   }
 }

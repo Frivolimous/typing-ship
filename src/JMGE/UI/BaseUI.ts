@@ -1,8 +1,8 @@
 import * as JMBUI from '../JMBUI';
 
 export class BaseUI extends JMBUI.BasicElement {
+  protected previousUI: BaseUI;
   private saveCallback?: (finishNav: () => void) => void;
-  private previousUI: BaseUI;
 
   constructor(UIConfig?: JMBUI.GraphicOptions) {
     super(UIConfig);

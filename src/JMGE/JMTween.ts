@@ -14,22 +14,22 @@ interface ITweenProperty {
 }
 
 let running = false;
-let tweenFuncs: ((time: number) => void)[] = [];
+let tweens: JMTween[] = [];
 
-let _add = (func: (time: number) => void) => {
-  tweenFuncs.push(func);
+let _add = (tween: JMTween) => {
+  tweens.push(tween);
   _tryRun();
 };
 
-let _remove = (func: (time: number) => void) => {
-  let index = tweenFuncs.indexOf(func);
+let _remove = (tween: JMTween) => {
+  let index = tweens.indexOf(tween);
   if (index >= 0) {
-    tweenFuncs.splice(index, 1);
+    tweens.splice(index, 1);
   }
 };
 
 let _tryRun = () => {
-  if (!running && tweenFuncs.length > 0) {
+  if (!running && tweens.length > 0) {
     running = true;
     requestAnimationFrame(_tick);
   }
@@ -37,8 +37,8 @@ let _tryRun = () => {
 
 let _tick = (time: number) => {
   running = false;
-  tweenFuncs.forEach(func => func(time));
-  if (!running && tweenFuncs.length > 0) {
+  tweens.forEach(tween => tween.tickThis(time));
+  if (!running && tweens.length > 0) {
     running = true;
     requestAnimationFrame(_tick);
   }
@@ -46,6 +46,7 @@ let _tick = (time: number) => {
 
 export class JMTween<T = any> {
   public running = false;
+  public tickThis: (tick: number) => void;
   private started = false;
 
   private onUpdateCallback: (object: T) => void;
@@ -57,14 +58,12 @@ export class JMTween<T = any> {
   private _Easing: (percent: number) => number;
 
   private waitTime: number;
-  private totalTime: number;
+  // private totalTime: number;
 
   private startTime: number;
   private endTime: number;
 
-  private tickThis: (tick: number) => void;
-
-  constructor(private object: T) {
+  constructor(private object: T, private totalTime: number = 200) {
     this.tickThis = this.firstTick;
   }
 
@@ -93,7 +92,7 @@ export class JMTween<T = any> {
       this.object[property.key] = property.start;
     });
 
-    _add(this.tickThis);
+    _add(this);
 
     return this;
   }
@@ -101,7 +100,7 @@ export class JMTween<T = any> {
   public stop = () => {
     this.running = false;
 
-    _remove(this.tickThis);
+    _remove(this);
 
     return this;
   }
@@ -109,13 +108,14 @@ export class JMTween<T = any> {
   public complete = () => {
     this.running = false;
 
-    _remove(this.tickThis);
+    _remove(this);
     console.log('DONE!');
 
     this.properties.forEach(property => {
       this.object[property.key] = property.end;
     });
 
+    this.tickThis = () => {};
     if (this.onCompleteCallback) this.onCompleteCallback(this.object);
 
     return this;
@@ -136,9 +136,13 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public to = (props: Partial<T>, time: number, eased = true) => {
+  public over = (time: number) => {
     this.totalTime = time;
 
+    return this;
+  }
+
+  public to = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
       this.properties.push({ key, start: this.object[key], end: props[key], inc: (props[key] - this.object[key]), eased });
     }
@@ -146,9 +150,7 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public from = (props: Partial<T>, time: number, eased = true) => {
-    this.totalTime = time;
-
+  public from = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
       this.properties.push({ key, start: props[key], end: this.object[key], inc: (this.object[key] - props[key]), eased });
     }
@@ -156,9 +158,7 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public colorTo = (props: Partial<T>, time: number, eased = true) => {
-    this.totalTime = time;
-
+  public colorTo = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
       this.properties.push({
         key,
@@ -223,41 +223,320 @@ export class JMTween<T = any> {
   }
 }
 
-export const JMEasings = {
-  linear: (p: number) => {
-    return p;
-  },
-  quadIn: (p: number) => {
-    return p * p;
-  },
-  quadOut: (p: number) => {
-    return - p * (p - 2);
-  },
-  quad: (p: number) => {
-    p *= 2;
-    if (p < 1) {
-      return p * p / 2;
-    } else {
-      p--;
-      return - (p * (p - 2) - 1) / 2;
-    }
-  },
-  cubicIn: (p: number) => {
-    return p * p * p;
+export const JMEasing = {
+
+  Linear: {
+
+    None: (k: number) => {
+
+      return k;
+
+    },
+
   },
 
-  cubicOut: (p: number) => {
-    p--;
-    return p * p * p + 1;
+  Quadratic: {
+
+    In: (k: number) => {
+
+      return k * k;
+
+    },
+
+    Out: (k: number) => {
+
+      return k * (2 - k);
+
+    },
+
+    InOut: (k: number) => {
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * k * k;
+      }
+
+      return - 0.5 * (--k * (k - 2) - 1);
+
+    },
+
   },
 
-  cubic: (p: number) => {
-    p *= 2;
-    if (p < 1) {
-      return p * p * p / 2;
-    } else {
-      p -= 2;
-      return (p * p * p + 2) / 2;
-    }
+  Cubic: {
+
+    In: (k: number) => {
+
+      return k * k * k;
+
+    },
+
+    Out: (k: number) => {
+
+      return --k * k * k + 1;
+
+    },
+
+    InOut: (k: number) => {
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * k * k * k;
+      }
+
+      return 0.5 * ((k -= 2) * k * k + 2);
+
+    },
+
   },
+
+  Quartic: {
+
+    In: (k: number) => {
+
+      return k * k * k * k;
+
+    },
+
+    Out: (k: number) => {
+
+      return 1 - (--k * k * k * k);
+
+    },
+
+    InOut: (k: number) => {
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * k * k * k * k;
+      }
+
+      return - 0.5 * ((k -= 2) * k * k * k - 2);
+
+    },
+
+  },
+
+  Quintic: {
+
+    In: (k: number) => {
+
+      return k * k * k * k * k;
+
+    },
+
+    Out: (k: number) => {
+
+      return --k * k * k * k * k + 1;
+
+    },
+
+    InOut: (k: number) => {
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * k * k * k * k * k;
+      }
+
+      return 0.5 * ((k -= 2) * k * k * k * k + 2);
+
+    },
+
+  },
+
+  Sinusoidal: {
+
+    In: (k: number) => {
+
+      return 1 - Math.cos(k * Math.PI / 2);
+
+    },
+
+    Out: (k: number) => {
+
+      return Math.sin(k * Math.PI / 2);
+
+    },
+
+    InOut: (k: number) => {
+
+      return 0.5 * (1 - Math.cos(Math.PI * k));
+
+    },
+
+  },
+
+  Exponential: {
+
+    In: (k: number) => {
+
+      return k === 0 ? 0 : Math.pow(1024, k - 1);
+
+    },
+
+    Out: (k: number) => {
+
+      return k === 1 ? 1 : 1 - Math.pow(2, - 10 * k);
+
+    },
+
+    InOut: (k: number) => {
+
+      if (k === 0) {
+        return 0;
+      }
+
+      if (k === 1) {
+        return 1;
+      }
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * Math.pow(1024, k - 1);
+      }
+
+      return 0.5 * (- Math.pow(2, - 10 * (k - 1)) + 2);
+
+    },
+
+  },
+
+  Circular: {
+
+    In: (k: number) => {
+
+      return 1 - Math.sqrt(1 - k * k);
+
+    },
+
+    Out: (k: number) => {
+
+      return Math.sqrt(1 - (--k * k));
+
+    },
+
+    InOut: (k: number) => {
+      k *= 2;
+      if (k < 1) {
+        return - 0.5 * (Math.sqrt(1 - k * k) - 1);
+      }
+
+      return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
+
+    },
+
+  },
+
+  Elastic: {
+
+    In: (k: number) => {
+
+      if (k === 0) {
+        return 0;
+      }
+
+      if (k === 1) {
+        return 1;
+      }
+
+      return -Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
+
+    },
+
+    Out: (k: number) => {
+
+      if (k === 0) {
+        return 0;
+      }
+
+      if (k === 1) {
+        return 1;
+      }
+
+      return Math.pow(2, -10 * k) * Math.sin((k - 0.1) * 5 * Math.PI) + 1;
+
+    },
+
+    InOut: (k: number) => {
+
+      if (k === 0) {
+        return 0;
+      }
+
+      if (k === 1) {
+        return 1;
+      }
+
+      k *= 2;
+
+      if (k < 1) {
+        return -0.5 * Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
+      }
+
+      return 0.5 * Math.pow(2, -10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI) + 1;
+
+    },
+
+  },
+
+  Back: {
+
+    In: (k: number) => {
+
+      let s = 1.70158;
+
+      return k * k * ((s + 1) * k - s);
+
+    },
+
+    Out: (k: number) => {
+
+      let s = 1.70158;
+
+      return --k * k * ((s + 1) * k + s) + 1;
+
+    },
+
+    InOut: (k: number) => {
+
+      let s = 1.70158 * 1.525;
+      k *= 2;
+      if (k < 1) {
+        return 0.5 * (k * k * ((s + 1) * k - s));
+      }
+
+      return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
+
+    },
+
+  },
+
+  Bounce: {
+
+    In: (k: number) => {
+
+      return 1 - JMEasing.Bounce.Out(1 - k);
+
+    },
+
+    Out: (k: number) => {
+
+      if (k < (1 / 2.75)) {
+        return 7.5625 * k * k;
+      } else if (k < (2 / 2.75)) {
+        return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+      } else if (k < (2.5 / 2.75)) {
+        return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
+      } else {
+        return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
+      }
+
+    },
+
+    InOut: (k: number) => {
+
+      if (k < 0.5) {
+        return JMEasing.Bounce.In(k * 2) * 0.5;
+      }
+
+      return JMEasing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
+
+    },
+
+  },
+
 };

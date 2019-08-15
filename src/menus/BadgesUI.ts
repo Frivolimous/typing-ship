@@ -1,7 +1,7 @@
 import * as JMBUI from '../JMGE/JMBUI';
 import * as JMBL from '../JMGE/JMBL';
 import { CONFIG } from '../Config';
-import { IInventoryUI, InventoryWindow, ItemObject } from '../JMGE/UI/InventoryUI';
+import { IInventoryUI, InventoryWindow } from '../JMGE/UI/InventoryUI';
 import { SaveData } from '../utils/SaveData';
 import { MenuUI } from './MenuUI';
 import { TextureData } from '../TextureData';
@@ -17,9 +17,9 @@ export class BadgesUI extends BaseUI {
   public spellStorageWindow: InventoryWindow;
 
   constructor() {
-    super({ width: CONFIG.INIT.STAGE_WIDTH, height: CONFIG.INIT.STAGE_HEIGHT, bgColor: 0x666666 });
+    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
 
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.STAGE_WIDTH - 120, y: CONFIG.INIT.STAGE_HEIGHT - 50, label: 'Menu', output: this.leave });
+    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 120, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
     this.addChild(_button);
     let scrollCanvas = new PIXI.Container();
     let scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: 300, autoSort: true });

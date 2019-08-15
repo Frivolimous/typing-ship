@@ -482,35 +482,37 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var running = false;
-    var tweenFuncs = [];
-    var _add = function (func) {
-        tweenFuncs.push(func);
+    var tweens = [];
+    var _add = function (tween) {
+        tweens.push(tween);
         _tryRun();
     };
-    var _remove = function (func) {
-        var index = tweenFuncs.indexOf(func);
+    var _remove = function (tween) {
+        var index = tweens.indexOf(tween);
         if (index >= 0) {
-            tweenFuncs.splice(index, 1);
+            tweens.splice(index, 1);
         }
     };
     var _tryRun = function () {
-        if (!running && tweenFuncs.length > 0) {
+        if (!running && tweens.length > 0) {
             running = true;
             requestAnimationFrame(_tick);
         }
     };
     var _tick = function (time) {
         running = false;
-        tweenFuncs.forEach(function (func) { return func(time); });
-        if (!running && tweenFuncs.length > 0) {
+        tweens.forEach(function (tween) { return tween.tickThis(time); });
+        if (!running && tweens.length > 0) {
             running = true;
             requestAnimationFrame(_tick);
         }
     };
     var JMTween = (function () {
-        function JMTween(object) {
+        function JMTween(object, totalTime) {
             var _this = this;
+            if (totalTime === void 0) { totalTime = 200; }
             this.object = object;
+            this.totalTime = totalTime;
             this.running = false;
             this.started = false;
             this.properties = [];
@@ -531,21 +533,22 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _this.properties.forEach(function (property) {
                     _this.object[property.key] = property.start;
                 });
-                _add(_this.tickThis);
+                _add(_this);
                 return _this;
             };
             this.stop = function () {
                 _this.running = false;
-                _remove(_this.tickThis);
+                _remove(_this);
                 return _this;
             };
             this.complete = function () {
                 _this.running = false;
-                _remove(_this.tickThis);
+                _remove(_this);
                 console.log('DONE!');
                 _this.properties.forEach(function (property) {
                     _this.object[property.key] = property.end;
                 });
+                _this.tickThis = function () { };
                 if (_this.onCompleteCallback)
                     _this.onCompleteCallback(_this.object);
                 return _this;
@@ -562,27 +565,28 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _this.hasWait = true;
                 return _this;
             };
-            this.to = function (props, time, eased) {
-                if (eased === void 0) { eased = true; }
+            this.over = function (time) {
                 _this.totalTime = time;
+                return _this;
+            };
+            this.to = function (props, eased) {
+                if (eased === void 0) { eased = true; }
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
                     _this.properties.push({ key: key, start: _this.object[key], end: props[key], inc: (props[key] - _this.object[key]), eased: eased });
                 }
                 return _this;
             };
-            this.from = function (props, time, eased) {
+            this.from = function (props, eased) {
                 if (eased === void 0) { eased = true; }
-                _this.totalTime = time;
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
                     _this.properties.push({ key: key, start: props[key], end: _this.object[key], inc: (_this.object[key] - props[key]), eased: eased });
                 }
                 return _this;
             };
-            this.colorTo = function (props, time, eased) {
+            this.colorTo = function (props, eased) {
                 if (eased === void 0) { eased = true; }
-                _this.totalTime = time;
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
                     _this.properties.push({
@@ -647,42 +651,194 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
         return JMTween;
     }());
     exports.JMTween = JMTween;
-    exports.JMEasings = {
-        linear: function (p) {
-            return p;
+    exports.JMEasing = {
+        Linear: {
+            None: function (k) {
+                return k;
+            },
         },
-        quadIn: function (p) {
-            return p * p;
+        Quadratic: {
+            In: function (k) {
+                return k * k;
+            },
+            Out: function (k) {
+                return k * (2 - k);
+            },
+            InOut: function (k) {
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * k * k;
+                }
+                return -0.5 * (--k * (k - 2) - 1);
+            },
         },
-        quadOut: function (p) {
-            return -p * (p - 2);
+        Cubic: {
+            In: function (k) {
+                return k * k * k;
+            },
+            Out: function (k) {
+                return --k * k * k + 1;
+            },
+            InOut: function (k) {
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * k * k * k;
+                }
+                return 0.5 * ((k -= 2) * k * k + 2);
+            },
         },
-        quad: function (p) {
-            p *= 2;
-            if (p < 1) {
-                return p * p / 2;
-            }
-            else {
-                p--;
-                return -(p * (p - 2) - 1) / 2;
-            }
+        Quartic: {
+            In: function (k) {
+                return k * k * k * k;
+            },
+            Out: function (k) {
+                return 1 - (--k * k * k * k);
+            },
+            InOut: function (k) {
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * k * k * k * k;
+                }
+                return -0.5 * ((k -= 2) * k * k * k - 2);
+            },
         },
-        cubicIn: function (p) {
-            return p * p * p;
+        Quintic: {
+            In: function (k) {
+                return k * k * k * k * k;
+            },
+            Out: function (k) {
+                return --k * k * k * k * k + 1;
+            },
+            InOut: function (k) {
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * k * k * k * k * k;
+                }
+                return 0.5 * ((k -= 2) * k * k * k * k + 2);
+            },
         },
-        cubicOut: function (p) {
-            p--;
-            return p * p * p + 1;
+        Sinusoidal: {
+            In: function (k) {
+                return 1 - Math.cos(k * Math.PI / 2);
+            },
+            Out: function (k) {
+                return Math.sin(k * Math.PI / 2);
+            },
+            InOut: function (k) {
+                return 0.5 * (1 - Math.cos(Math.PI * k));
+            },
         },
-        cubic: function (p) {
-            p *= 2;
-            if (p < 1) {
-                return p * p * p / 2;
-            }
-            else {
-                p -= 2;
-                return (p * p * p + 2) / 2;
-            }
+        Exponential: {
+            In: function (k) {
+                return k === 0 ? 0 : Math.pow(1024, k - 1);
+            },
+            Out: function (k) {
+                return k === 1 ? 1 : 1 - Math.pow(2, -10 * k);
+            },
+            InOut: function (k) {
+                if (k === 0) {
+                    return 0;
+                }
+                if (k === 1) {
+                    return 1;
+                }
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * Math.pow(1024, k - 1);
+                }
+                return 0.5 * (-Math.pow(2, -10 * (k - 1)) + 2);
+            },
+        },
+        Circular: {
+            In: function (k) {
+                return 1 - Math.sqrt(1 - k * k);
+            },
+            Out: function (k) {
+                return Math.sqrt(1 - (--k * k));
+            },
+            InOut: function (k) {
+                k *= 2;
+                if (k < 1) {
+                    return -0.5 * (Math.sqrt(1 - k * k) - 1);
+                }
+                return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
+            },
+        },
+        Elastic: {
+            In: function (k) {
+                if (k === 0) {
+                    return 0;
+                }
+                if (k === 1) {
+                    return 1;
+                }
+                return -Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
+            },
+            Out: function (k) {
+                if (k === 0) {
+                    return 0;
+                }
+                if (k === 1) {
+                    return 1;
+                }
+                return Math.pow(2, -10 * k) * Math.sin((k - 0.1) * 5 * Math.PI) + 1;
+            },
+            InOut: function (k) {
+                if (k === 0) {
+                    return 0;
+                }
+                if (k === 1) {
+                    return 1;
+                }
+                k *= 2;
+                if (k < 1) {
+                    return -0.5 * Math.pow(2, 10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI);
+                }
+                return 0.5 * Math.pow(2, -10 * (k - 1)) * Math.sin((k - 1.1) * 5 * Math.PI) + 1;
+            },
+        },
+        Back: {
+            In: function (k) {
+                var s = 1.70158;
+                return k * k * ((s + 1) * k - s);
+            },
+            Out: function (k) {
+                var s = 1.70158;
+                return --k * k * ((s + 1) * k + s) + 1;
+            },
+            InOut: function (k) {
+                var s = 1.70158 * 1.525;
+                k *= 2;
+                if (k < 1) {
+                    return 0.5 * (k * k * ((s + 1) * k - s));
+                }
+                return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
+            },
+        },
+        Bounce: {
+            In: function (k) {
+                return 1 - exports.JMEasing.Bounce.Out(1 - k);
+            },
+            Out: function (k) {
+                if (k < (1 / 2.75)) {
+                    return 7.5625 * k * k;
+                }
+                else if (k < (2 / 2.75)) {
+                    return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+                }
+                else if (k < (2.5 / 2.75)) {
+                    return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
+                }
+                else {
+                    return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
+                }
+            },
+            InOut: function (k) {
+                if (k < 0.5) {
+                    return exports.JMEasing.Bounce.In(k * 2) * 0.5;
+                }
+                return exports.JMEasing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
+            },
         },
     };
 });
@@ -757,8 +913,8 @@ define("JMGE/JMBUI", ["require", "exports", "JMGE/JMBL", "lodash", "JMGE/JMTween
             if (this.flashing)
                 return;
             this.flashing = true;
-            new JMTween_1.JMTween(this.graphics).colorTo({ tint: color }, timeUp).onComplete(function () {
-                new JMTween_1.JMTween(_this.graphics).wait(wait).to({ tint: _this.baseTint }, timeDown).onComplete(function () {
+            new JMTween_1.JMTween(this.graphics).colorTo({ tint: color }).over(timeUp).onComplete(function () {
+                new JMTween_1.JMTween(_this.graphics).wait(wait).to({ tint: _this.baseTint }).over(timeDown).onComplete(function () {
                     _this.flashing = false;
                 }).start();
             }).start();
@@ -1358,10 +1514,9 @@ define("Config", ["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CONFIG = {
         INIT: {
-            SCREEN_WIDTH: 500,
-            SCREEN_HEIGHT: 500,
-            STAGE_WIDTH: 560,
-            STAGE_HEIGHT: 560,
+            SCREEN_WIDTH: 600,
+            SCREEN_HEIGHT: 600,
+            STAGE_BUFFER: 60,
             RESOLUTION: 1,
             BACKGROUND_COLOR: 0,
             MOUSE_HOLD: 200,
@@ -1372,6 +1527,7 @@ define("Config", ["require", "exports"], function (require, exports) {
         },
         GAME: {
             skillPerLevel: 0.2,
+            godmode: true,
         },
         toPS: function (n) {
             return Math.floor(exports.CONFIG.INIT.FPS * 10 / n) / 10;
@@ -1640,8 +1796,8 @@ define("JMGE/effects/FlyingText", ["require", "exports", "lodash", "JMGE/JMTween
             _this.position.set(x, y);
             if (parent)
                 parent.addChild(_this);
-            new JMTween_2.JMTween(_this).wait(20).to({ alpha: 0 }, 1000).start();
-            new JMTween_2.JMTween(_this).to({ y: _this.y - 20 }, 1200).onComplete(function () {
+            new JMTween_2.JMTween(_this).wait(20).to({ alpha: 0 }).over(1000).start();
+            new JMTween_2.JMTween(_this).to({ y: _this.y - 20 }).over(1200).onComplete(function () {
                 _this.destroy();
             }).start();
             return _this;
@@ -1933,7 +2089,7 @@ define("JMGE/effects/Laser", ["require", "exports", "JMGE/others/Colors", "JMGE/
             _this.lineStyle(thickness, color);
             _this.lineTo(origin.x, origin.y);
             _this.alpha = 2;
-            new JMTween_3.JMTween(_this).to({ alpha: 0 }, 500).onComplete(function () { return _this.destroy(); }).start();
+            new JMTween_3.JMTween(_this).to({ alpha: 0 }).over(500).onComplete(function () { return _this.destroy(); }).start();
             return _this;
         }
         return Laser;
@@ -2020,14 +2176,14 @@ define("game/objects/Shield", ["require", "exports", "JMGE/JMTween"], function (
         Shield.prototype.fadeIn = function (alpha) {
             if (alpha === void 0) { alpha = 1; }
             this.alpha = 0;
-            new JMTween_4.JMTween(this).to({ alpha: alpha }, 200).start();
+            new JMTween_4.JMTween(this).to({ alpha: alpha }).over(200).start();
         };
         Shield.prototype.fadeTo = function (alpha) {
-            new JMTween_4.JMTween(this).to({ alpha: alpha }, 200).start();
+            new JMTween_4.JMTween(this).to({ alpha: alpha }).over(200).start();
         };
         Shield.prototype.fadeOut = function () {
             var _this = this;
-            new JMTween_4.JMTween(this).to({ alpha: 0 }, 200).onComplete(function () { return _this.parent.removeChild(_this); }).start();
+            new JMTween_4.JMTween(this).to({ alpha: 0 }).over(200).onComplete(function () { return _this.parent.removeChild(_this); }).start();
         };
         return Shield;
     }(PIXI.Graphics));
@@ -3143,7 +3299,7 @@ define("game/engine/ObjectManager", ["require", "exports", "JMGE/JMBL", "lodash"
         };
         ObjectManager.prototype.newLayer = function () {
             var layer = new PIXI.Container();
-            layer.x = layer.y = (Config_2.CONFIG.INIT.SCREEN_WIDTH - Config_2.CONFIG.INIT.STAGE_WIDTH) / 2;
+            layer.x = layer.y = -Config_2.CONFIG.INIT.STAGE_BUFFER / 2;
             this.layers.push(layer);
             this.addChild(layer);
             this.objectsByLayer.push([]);
@@ -3551,6 +3707,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: -1,
             value: 0,
             moveSpeed: 7,
+            turnRate: 0,
+            turnRateAccel: 0.002,
             killBy: Misc_5.ActionType.LASER,
             health: 1,
         },
@@ -3560,6 +3718,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 3,
             value: 1,
             moveSpeed: 2,
+            turnRate: 0,
+            turnRateAccel: 0.002,
             killBy: Misc_5.ActionType.LASER,
             health: 1,
         },
@@ -3804,7 +3964,7 @@ define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite"
             var _this = _super.call(this) || this;
             _this.bossType = bossType;
             _this.manager = manager;
-            _this.commands = [{ x: Config_3.CONFIG.INIT.STAGE_WIDTH / 2, y: 200, move: true }, { x: Config_3.CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 6, move: false, fire: true }];
+            _this.commands = [{ x: (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];
             _this.overOffset = new PIXI.Point(0, 0);
             _this.delay = -1;
             _this.moveWith = [];
@@ -3858,7 +4018,7 @@ define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite"
             };
             _this.health = 3;
             _this.wordSize = -1;
-            _this.x = Config_3.CONFIG.INIT.STAGE_WIDTH / 2;
+            _this.x = (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2;
             _this.y = -50;
             return _this;
         }
@@ -3968,7 +4128,7 @@ define("game/objects/BossShip0", ["require", "exports", "game/objects/BossShip",
         };
         BossShip0.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: Config_4.CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 480, move: false, fire: true });
+            this.commands.push({ x: (Config_4.CONFIG.INIT.SCREEN_WIDTH + Config_4.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 480, move: false, fire: true });
         };
         return BossShip0;
     }(BossShip_1.BossShip));
@@ -4005,7 +4165,7 @@ define("game/objects/BossShip1", ["require", "exports", "game/objects/BossShip",
         };
         BossShip1.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: Config_5.CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 138 + this.health * 18, move: false, fire: true });
+            this.commands.push({ x: (Config_5.CONFIG.INIT.SCREEN_WIDTH + Config_5.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 138 + this.health * 18, move: false, fire: true });
         };
         return BossShip1;
     }(BossShip_2.BossShip));
@@ -4118,7 +4278,7 @@ define("game/objects/BossShip2", ["require", "exports", "game/objects/BossShip",
         };
         BossShip2.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: Config_6.CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 820, move: false, fire: true });
+            this.commands.push({ x: (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 820, move: false, fire: true });
         };
         return BossShip2;
     }(BossShip_3.BossShip));
@@ -4246,6 +4406,7 @@ define("game/objects/Missile", ["require", "exports", "game/objects/GameSprite",
                         _this.toDestroy = true;
                     }
                     _this.moveTo(_this.target, speed);
+                    _this.turnRate += _this.turnRateAccel * speed;
                     var dx = _this.target.x - _this.x;
                     var dy = _this.target.y - _this.y;
                     var distance = Math.sqrt(dy * dy + dx * dx);
@@ -4290,6 +4451,7 @@ define("game/objects/Missile", ["require", "exports", "game/objects/GameSprite",
             else {
                 _this.turnRate = _this.a / 7;
             }
+            _this.turnRateAccel = missileConfig.turnRateAccel;
             if (_this.wordSize > 0) {
                 _this.addWord();
             }
@@ -4550,7 +4712,7 @@ define("game/engine/WordInput", ["require", "exports", "game/text/TextObject", "
     }());
     exports.WordInput = WordInput;
 });
-define("game/objects/ScreenCover", ["require", "exports"], function (require, exports) {
+define("JMGE/effects/ScreenCover", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ScreenCover = (function (_super) {
@@ -4558,6 +4720,48 @@ define("game/objects/ScreenCover", ["require", "exports"], function (require, ex
         function ScreenCover(rect, color) {
             if (color === void 0) { color = 0; }
             var _this = _super.call(this) || this;
+            _this.onFadeComplete = function (callback) {
+                _this._onFadeComplete = callback;
+                return _this;
+            };
+            _this.fadeIn = function (duration, waitPre, waitPost) {
+                if (waitPre === void 0) { waitPre = 0; }
+                if (waitPost === void 0) { waitPost = 0; }
+                new JMTween_5.JMTween(_this).wait(waitPre).from({ alpha: 0 }).over(duration).onComplete(function () {
+                    if (waitPost) {
+                        new JMTween_5.JMTween({}).wait(waitPost).onWaitComplete(function () {
+                            _this.destroy();
+                            if (_this._onFadeComplete)
+                                _this._onFadeComplete();
+                        }).start();
+                    }
+                    else {
+                        _this.destroy();
+                        if (_this._onFadeComplete)
+                            _this._onFadeComplete();
+                    }
+                }).start();
+                return _this;
+            };
+            _this.fadeOut = function (duration, waitPre, waitPost) {
+                if (waitPre === void 0) { waitPre = 0; }
+                if (waitPost === void 0) { waitPost = 0; }
+                new JMTween_5.JMTween(_this).wait(waitPre).to({ alpha: 0 }).over(duration).onComplete(function () {
+                    if (waitPost) {
+                        new JMTween_5.JMTween({}).wait(waitPost).onWaitComplete(function () {
+                            _this.destroy();
+                            if (_this._onFadeComplete)
+                                _this._onFadeComplete();
+                        }).start();
+                    }
+                    else {
+                        _this.destroy();
+                        if (_this._onFadeComplete)
+                            _this._onFadeComplete();
+                    }
+                }).start();
+                return _this;
+            };
             _this.beginFill(color);
             _this.drawRect(rect.x, rect.y, rect.width, rect.height);
             return _this;
@@ -4566,7 +4770,81 @@ define("game/objects/ScreenCover", ["require", "exports"], function (require, ex
     }(PIXI.Graphics));
     exports.ScreenCover = ScreenCover;
 });
-define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "JMGE/JMBL", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/data/Misc", "game/text/TextObject", "JMGE/JMTween", "game/objects/ScreenCover"], function (require, exports, ObjectManager_4, BaseUI_1, Starfield_1, JMBL, Config_7, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, Misc_12, TextObject_4, JMTween_5, ScreenCover_1) {
+define("menus/MuterOverlay", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var MuterOverlay = (function (_super) {
+        __extends(MuterOverlay, _super);
+        function MuterOverlay() {
+            var _this = _super.call(this) || this;
+            _this.beginFill(0x666666);
+            _this.lineStyle(2);
+            _this.drawRect(0, 0, 100, 50);
+            return _this;
+        }
+        MuterOverlay.prototype.getWidth = function () {
+            return 100;
+        };
+        MuterOverlay.prototype.getHeight = function () {
+            return 50;
+        };
+        return MuterOverlay;
+    }(PIXI.Graphics));
+    exports.MuterOverlay = MuterOverlay;
+});
+define("menus/LossUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "menus/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_1, Config_7, MuterOverlay_1, ScreenCover_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'LossUI';
+    var LossUI = (function (_super) {
+        __extends(LossUI, _super);
+        function LossUI() {
+            var _this = _super.call(this, { width: Config_7.CONFIG.INIT.SCREEN_WIDTH, height: Config_7.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_7.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_7.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_1.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            var screen = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT))
+                .fadeOut(1000);
+            _this.addChild(screen);
+            return _this;
+        }
+        return LossUI;
+    }(BaseUI_1.BaseUI));
+    exports.LossUI = LossUI;
+});
+define("menus/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "menus/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_2, Config_8, MuterOverlay_2, ScreenCover_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'WinUI';
+    var WinUI = (function (_super) {
+        __extends(WinUI, _super);
+        function WinUI() {
+            var _this = _super.call(this, { width: Config_8.CONFIG.INIT.SCREEN_WIDTH, height: Config_8.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_8.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_8.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_2.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            var screen = new ScreenCover_2.ScreenCover(new PIXI.Rectangle(0, 0, Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff)
+                .fadeOut(500);
+            _this.addChild(screen);
+            return _this;
+        }
+        return WinUI;
+    }(BaseUI_2.BaseUI));
+    exports.WinUI = WinUI;
+});
+define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "JMGE/JMBL", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/data/Misc", "game/text/TextObject", "JMGE/effects/ScreenCover", "menus/LossUI", "menus/WinUI"], function (require, exports, ObjectManager_4, BaseUI_3, Starfield_1, JMBL, Config_9, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, Misc_12, TextObject_4, ScreenCover_3, LossUI_1, WinUI_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameManager = (function (_super) {
@@ -4623,10 +4901,14 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 _this.starfield.update(_this.gameSpeed);
                 _this.container.updateAll(_this.gameSpeed);
                 if (_this.levelEvents.isComplete()) {
-                    if (_this.container.numObjects() <= 1) {
-                        if (!_this.levelEnded) {
+                    if (!_this.levelEnded) {
+                        if (_this.container.numObjects() <= 1) {
                             _this.levelEnded = true;
-                            console.log('END LEVEL');
+                            var screen_1 = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_9.CONFIG.INIT.SCREEN_WIDTH, Config_9.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(function () {
+                                _this.running = false;
+                                _this.navForward(new WinUI_1.WinUI(), _this.previousUI);
+                            }).fadeIn(1000, 1000, 1000);
+                            _this.addChild(screen_1);
                         }
                     }
                 }
@@ -4636,20 +4918,16 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 JMBL.events.publish(Misc_12.GameEvents.NOTIFY_SET_PROGRESS, { current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
                 if (!_this.interactive)
                     return;
-                if (_this.player.health <= 0) {
+                if (_this.player.health <= 0 && !Config_9.CONFIG.GAME.godmode) {
                     console.log('dead');
                     _this.interactive = false;
                     _this.container.makeExplosionAt(_this.player.x, _this.player.y, 50);
                     _this.player.visible = false;
-                    var i_1 = 500;
-                    var screen_1 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT));
-                    _this.addChild(screen_1);
-                    new JMTween_5.JMTween(screen_1).from({ alpha: 0 }, 2000).wait(3000).onComplete(function () {
+                    var screen_2 = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_9.CONFIG.INIT.SCREEN_WIDTH, Config_9.CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(function () {
                         _this.running = false;
-                        _this.navBack();
-                    }).onUpdate(function () {
-                        console.log(i_1--);
-                    }).start();
+                        _this.navForward(new LossUI_1.LossUI(), _this.previousUI);
+                    }).fadeIn(2000, 3000, 1000);
+                    _this.addChild(screen_2);
                 }
             };
             _this.togglePause = function () {
@@ -4667,11 +4945,11 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 JMBL.events.publish(Misc_12.GameEvents.NOTIFY_SET_SCORE, _this.score);
             };
             _this.addEnemy = function (spawnEvent) {
-                spawnEvent.x *= Config_7.CONFIG.INIT.STAGE_WIDTH / 12;
-                spawnEvent.y *= Config_7.CONFIG.INIT.STAGE_HEIGHT / 12;
+                spawnEvent.x *= (Config_9.CONFIG.INIT.SCREEN_WIDTH + Config_9.CONFIG.INIT.STAGE_BUFFER) / 12;
+                spawnEvent.y *= (Config_9.CONFIG.INIT.SCREEN_HEIGHT + Config_9.CONFIG.INIT.STAGE_BUFFER) / 12;
                 spawnEvent.commands.forEach(function (command) {
-                    command.x *= Config_7.CONFIG.INIT.STAGE_WIDTH / 12;
-                    command.y *= Config_7.CONFIG.INIT.STAGE_HEIGHT / 12;
+                    command.x *= (Config_9.CONFIG.INIT.SCREEN_WIDTH + Config_9.CONFIG.INIT.STAGE_BUFFER) / 12;
+                    command.y *= (Config_9.CONFIG.INIT.SCREEN_HEIGHT + Config_9.CONFIG.INIT.STAGE_BUFFER) / 12;
                     command.timer *= 6;
                 });
                 var newShip = new EnemyShip_1.EnemyShip(spawnEvent, { onFire: function (enemy) { return _this.actionC.enemyFires(_this.player, enemy); }, onWordComplete: function (enemy) { return _this.actionC.playerFires(_this.player, enemy); } });
@@ -4696,12 +4974,12 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             };
             _this.gameSpeed = difficulty * 0.5;
             _this.container.gameUI.addHealWord(_this.wordInput.healWord);
-            _this.starfield = new Starfield_1.Starfield(Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT);
+            _this.starfield = new Starfield_1.Starfield(Config_9.CONFIG.INIT.SCREEN_WIDTH, Config_9.CONFIG.INIT.SCREEN_HEIGHT);
             _this.actionC.missileRate = 0.4;
             _this.levelEvents = new EventInterpreter_1.EventInterpreter(_this.addEnemy, _this.addBoss);
             _this.levelEvents.loadLevel(level, 60 * _this.gameSpeed);
-            _this.player.x = Config_7.CONFIG.INIT.STAGE_WIDTH / 2;
-            _this.player.y = Config_7.CONFIG.INIT.STAGE_HEIGHT - 150;
+            _this.player.x = Config_9.CONFIG.INIT.SCREEN_WIDTH / 2;
+            _this.player.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 150;
             _this.player.setHealth(5);
             _this.setScore(0);
             _this.addChild(_this.starfield, _this.container);
@@ -4714,7 +4992,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             return _this;
         }
         return GameManager;
-    }(BaseUI_1.BaseUI));
+    }(BaseUI_3.BaseUI));
     exports.GameManager = GameManager;
 });
 define("game/data/StringData", ["require", "exports"], function (require, exports) {
@@ -4823,13 +5101,13 @@ define("menus/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "game/data/
     }(PIXI.Container));
     exports.DifficultyPopup = DifficultyPopup;
 });
-define("menus/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "game/GameManager", "menus/DifficultyPopup"], function (require, exports, JMBUI, Config_8, BaseUI_2, GameManager_1, DifficultyPopup_1) {
+define("menus/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "game/GameManager", "menus/DifficultyPopup"], function (require, exports, JMBUI, Config_10, BaseUI_4, GameManager_1, DifficultyPopup_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LevelSelectUI = (function (_super) {
         __extends(LevelSelectUI, _super);
         function LevelSelectUI() {
-            var _this = _super.call(this, { width: Config_8.CONFIG.INIT.STAGE_WIDTH, height: Config_8.CONFIG.INIT.STAGE_HEIGHT, bgColor: 0x666666 }) || this;
+            var _this = _super.call(this, { width: Config_10.CONFIG.INIT.SCREEN_WIDTH, height: Config_10.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
             _this.currentLevel = 0;
             _this.currentDifficulty = 1;
             _this.NUMSHOWN = 3;
@@ -4859,9 +5137,9 @@ define("menus/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JM
             _this.leave = function () {
                 _this.navBack();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_8.CONFIG.INIT.STAGE_HEIGHT - 50, label: 'Menu', output: _this.leave });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: Config_8.CONFIG.INIT.STAGE_WIDTH - 120, y: Config_8.CONFIG.INIT.STAGE_HEIGHT - 50, label: 'Start', output: _this.startGame });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: Config_10.CONFIG.INIT.SCREEN_WIDTH - 120, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Start', output: _this.startGame });
             _this.addChild(_button);
             for (var i = 0; i < 12; i++) {
                 _this.makeLevelButton(i, 5 + Math.floor(i / 6) * 60, 20 + (i % 6) * 40);
@@ -4874,10 +5152,81 @@ define("menus/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JM
             this.addChild(_button);
         };
         return LevelSelectUI;
-    }(BaseUI_2.BaseUI));
+    }(BaseUI_4.BaseUI));
     exports.LevelSelectUI = LevelSelectUI;
 });
-define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/JMBL"], function (require, exports, JMBUI, JMBL) {
+define("JMGE/UI/ItemObject", ["require", "exports", "JMGE/JMBUI"], function (require, exports, JMBUI) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ItemObject = (function (_super) {
+        __extends(ItemObject, _super);
+        function ItemObject(data, config) {
+            var _this = _super.call(this, config) || this;
+            _this.index = -1;
+            _this.data = data;
+            _this.buttonMode = true;
+            _this.draggable = true;
+            return _this;
+        }
+        ItemObject.prototype.update = function (data) {
+            this.data = data;
+        };
+        Object.defineProperty(ItemObject.prototype, "tooltipName", {
+            get: function () {
+                return '';
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ItemObject.prototype, "tooltipDesc", {
+            get: function () {
+                return '';
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return ItemObject;
+    }(JMBUI.InteractiveElement));
+    exports.ItemObject = ItemObject;
+});
+define("JMGE/UI/ItemSlot", ["require", "exports", "JMGE/JMBUI"], function (require, exports, JMBUI) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ItemSlot = (function (_super) {
+        __extends(ItemSlot, _super);
+        function ItemSlot(index, location, type, options) {
+            var _this = _super.call(this, options || {}) || this;
+            _this.type = type;
+            _this.interactive = false;
+            return _this;
+        }
+        ItemSlot.prototype.check = function (item) {
+            if (this.disabled) {
+                return false;
+            }
+            if (this.type && item.type && this.type !== item.type) {
+                return false;
+            }
+            return true;
+        };
+        ItemSlot.prototype.toggleDisabled = function (b) {
+            if (b) {
+                this.setDisplayState(JMBUI.DisplayState.DARKENED);
+                this.disabled = true;
+            }
+            else if (b === false) {
+                this.setDisplayState(JMBUI.DisplayState.NORMAL);
+                this.disabled = false;
+            }
+            else {
+                this.toggleDisabled(!this.disabled);
+            }
+        };
+        return ItemSlot;
+    }(JMBUI.InteractiveElement));
+    exports.ItemSlot = ItemSlot;
+});
+define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/JMBL", "JMGE/UI/ItemSlot"], function (require, exports, JMBUI, JMBL, ItemSlot_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function baseEquipFunction(data, index) {
@@ -4960,7 +5309,7 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/JMBL"],
             _this.slotWidth = options.slotOptions.width + options.padding;
             _this.slotHeight = options.slotOptions.height + options.padding;
             for (var i = 0; i < options.numSlots; i++) {
-                _this.slots[i] = new ItemSlot(i, _this, null, options.slotOptions);
+                _this.slots[i] = new ItemSlot_1.ItemSlot(i, _this, null, options.slotOptions);
                 _this.slots[i].x = options.startX + (i % options.numAcross) * _this.slotWidth;
                 _this.slots[i].y = options.startY + Math.floor(i / options.numAcross) * _this.slotHeight;
                 _this.addChild(_this.slots[i]);
@@ -5060,69 +5409,6 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/JMBL"],
         return InventoryWindow;
     }(JMBUI.BasicElement));
     exports.InventoryWindow = InventoryWindow;
-    var ItemSlot = (function (_super) {
-        __extends(ItemSlot, _super);
-        function ItemSlot(index, location, type, options) {
-            var _this = _super.call(this, options || {}) || this;
-            _this.type = type;
-            _this.interactive = false;
-            return _this;
-        }
-        ItemSlot.prototype.check = function (item) {
-            if (this.disabled) {
-                return false;
-            }
-            if (this.type && item.type && this.type !== item.type) {
-                return false;
-            }
-            return true;
-        };
-        ItemSlot.prototype.toggleDisabled = function (b) {
-            if (b) {
-                this.setDisplayState(JMBUI.DisplayState.DARKENED);
-                this.disabled = true;
-            }
-            else if (b === false) {
-                this.setDisplayState(JMBUI.DisplayState.NORMAL);
-                this.disabled = false;
-            }
-            else {
-                this.toggleDisabled(!this.disabled);
-            }
-        };
-        return ItemSlot;
-    }(JMBUI.InteractiveElement));
-    exports.ItemSlot = ItemSlot;
-    var ItemObject = (function (_super) {
-        __extends(ItemObject, _super);
-        function ItemObject(data, config) {
-            var _this = _super.call(this, config) || this;
-            _this.index = -1;
-            _this.data = data;
-            _this.buttonMode = true;
-            _this.draggable = true;
-            return _this;
-        }
-        ItemObject.prototype.update = function (data) {
-            this.data = data;
-        };
-        Object.defineProperty(ItemObject.prototype, "tooltipName", {
-            get: function () {
-                return "";
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ItemObject.prototype, "tooltipDesc", {
-            get: function () {
-                return "";
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return ItemObject;
-    }(JMBUI.InteractiveElement));
-    exports.ItemObject = ItemObject;
 });
 define("game/data/PlayerData", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -5290,17 +5576,17 @@ define("menus/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "g
     }(JMBUI.BasicElement));
     exports.BadgeLine = BadgeLine;
 });
-define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/data/PlayerData", "menus/BadgeLine", "JMGE/UI/BaseUI"], function (require, exports, JMBUI, Config_9, PlayerData_3, BadgeLine_1, BaseUI_3) {
+define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/data/PlayerData", "menus/BadgeLine", "JMGE/UI/BaseUI"], function (require, exports, JMBUI, Config_11, PlayerData_3, BadgeLine_1, BaseUI_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgesUI = (function (_super) {
         __extends(BadgesUI, _super);
         function BadgesUI() {
-            var _this = _super.call(this, { width: Config_9.CONFIG.INIT.STAGE_WIDTH, height: Config_9.CONFIG.INIT.STAGE_HEIGHT, bgColor: 0x666666 }) || this;
+            var _this = _super.call(this, { width: Config_11.CONFIG.INIT.SCREEN_WIDTH, height: Config_11.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
             _this.leave = function () {
                 _this.navBack();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_9.CONFIG.INIT.STAGE_WIDTH - 120, y: Config_9.CONFIG.INIT.STAGE_HEIGHT - 50, label: 'Menu', output: _this.leave });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_11.CONFIG.INIT.SCREEN_WIDTH - 120, y: Config_11.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
             var scrollCanvas = new PIXI.Container();
             var scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: 300, autoSort: true });
@@ -5325,38 +5611,62 @@ define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/da
             return _this;
         }
         return BadgesUI;
-    }(BaseUI_3.BaseUI));
+    }(BaseUI_5.BaseUI));
     exports.BadgesUI = BadgesUI;
 });
-define("menus/MuterOverlay", ["require", "exports"], function (require, exports) {
+define("menus/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "menus/MuterOverlay"], function (require, exports, JMBUI, BaseUI_6, Config_12, MuterOverlay_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var MuterOverlay = (function (_super) {
-        __extends(MuterOverlay, _super);
-        function MuterOverlay() {
-            var _this = _super.call(this) || this;
-            _this.beginFill(0x666666);
-            _this.lineStyle(2);
-            _this.drawRect(0, 0, 100, 50);
+    var LABEL = 'CreditsUI';
+    var CreditsUI = (function (_super) {
+        __extends(CreditsUI, _super);
+        function CreditsUI() {
+            var _this = _super.call(this, { width: Config_12.CONFIG.INIT.SCREEN_WIDTH, height: Config_12.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_12.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_12.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_3.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
             return _this;
         }
-        MuterOverlay.prototype.getWidth = function () {
-            return 100;
-        };
-        MuterOverlay.prototype.getHeight = function () {
-            return 50;
-        };
-        return MuterOverlay;
-    }(PIXI.Graphics));
-    exports.MuterOverlay = MuterOverlay;
+        return CreditsUI;
+    }(BaseUI_6.BaseUI));
+    exports.CreditsUI = CreditsUI;
 });
-define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "menus/LevelSelectUI", "Config", "menus/BadgesUI", "menus/MuterOverlay"], function (require, exports, JMBUI, BaseUI_4, LevelSelectUI_1, Config_10, BadgesUI_1, MuterOverlay_1) {
+define("menus/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "menus/MuterOverlay"], function (require, exports, JMBUI, BaseUI_7, Config_13, MuterOverlay_4) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'HighScoreUI';
+    var HighScoreUI = (function (_super) {
+        __extends(HighScoreUI, _super);
+        function HighScoreUI() {
+            var _this = _super.call(this, { width: Config_13.CONFIG.INIT.SCREEN_WIDTH, height: Config_13.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_13.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_13.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_4.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            return _this;
+        }
+        return HighScoreUI;
+    }(BaseUI_7.BaseUI));
+    exports.HighScoreUI = HighScoreUI;
+});
+define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "menus/LevelSelectUI", "Config", "menus/BadgesUI", "menus/CreditsUI", "menus/HighScoreUI", "menus/MuterOverlay"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_14, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MenuUI = (function (_super) {
         __extends(MenuUI, _super);
         function MenuUI() {
-            var _this = _super.call(this, { width: Config_10.CONFIG.INIT.SCREEN_WIDTH, height: Config_10.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            var _this = _super.call(this, { width: Config_14.CONFIG.INIT.SCREEN_WIDTH, height: Config_14.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.nullFunc = function () { };
             _this.startGame = function () {
                 _this.navForward(new LevelSelectUI_1.LevelSelectUI());
@@ -5364,25 +5674,29 @@ define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "m
             _this.navBadges = function () {
                 _this.navForward(new BadgesUI_1.BadgesUI());
             };
+            _this.navCredits = function () {
+                _this.navForward(new CreditsUI_1.CreditsUI());
+            };
+            _this.navHighScore = function () {
+                _this.navForward(new HighScoreUI_1.HighScoreUI());
+            };
             _this.label.x += 50;
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 200, label: 'Start', output: _this.startGame });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: _this.startGame });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 240, label: 'High Score', output: _this.nullFunc });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'High Score', output: _this.navHighScore });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 280, label: 'View Badges', output: _this.navBadges });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 280, label: 'View Badges', output: _this.navBadges });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 320, label: 'More Games', output: _this.nullFunc });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: _this.navCredits });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 360, label: 'Credits', output: _this.nullFunc });
-            _this.addChild(_button);
-            var muter = new MuterOverlay_1.MuterOverlay();
+            var muter = new MuterOverlay_5.MuterOverlay();
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
             return _this;
         }
         return MenuUI;
-    }(BaseUI_4.BaseUI));
+    }(BaseUI_8.BaseUI));
     exports.MenuUI = MenuUI;
 });
 define("utils/ScoreTracker", ["require", "exports", "JMGE/JMBL", "game/data/Misc", "utils/SaveData"], function (require, exports, JMBL, Misc_13, SaveData_1) {
@@ -5410,14 +5724,14 @@ define("utils/ScoreTracker", ["require", "exports", "JMGE/JMBL", "game/data/Misc
     }());
     exports.ScoreTracker = ScoreTracker;
 });
-define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_8, MenuUI_1, Config_11, SaveData_2) {
+define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_8, MenuUI_1, Config_15, SaveData_2) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     new (_a = (function () {
             function Facade() {
                 var _this = this;
-                this._Resolution = Config_11.CONFIG.INIT.RESOLUTION;
+                this._Resolution = Config_15.CONFIG.INIT.RESOLUTION;
                 this.init = function () {
                     initializeDatas();
                     SaveData_2.SaveData.init();
@@ -5450,7 +5764,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI
                 }
                 catch (e) {
                 }
-                this.stageBorders = new JMBL.Rect(0, 0, Config_11.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_11.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
+                this.stageBorders = new JMBL.Rect(0, 0, Config_15.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_15.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
                 this.app = new PIXI.Application(this.stageBorders.width, this.stageBorders.height, {
                     backgroundColor: 0xff0000,
                     antialias: true,
@@ -5466,7 +5780,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI
                 this.stageBorders.y = this.app.view.offsetTop;
                 this.app.stage.interactive = true;
                 var _background = new PIXI.Graphics();
-                _background.beginFill(Config_11.CONFIG.INIT.BACKGROUND_COLOR);
+                _background.beginFill(Config_15.CONFIG.INIT.BACKGROUND_COLOR);
                 _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
                 this.app.stage.addChild(_background);
                 JMBL.init(this.app);

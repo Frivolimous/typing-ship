@@ -73,8 +73,8 @@ export class BasicElement extends PIXI.Container {
   colorFlash(color: number, timeUp: number, wait: number, timeDown: number) {
     if (this.flashing) return;
     this.flashing = true;
-    new JMTween(this.graphics).colorTo({ tint: color }, timeUp).onComplete(() => {
-      new JMTween(this.graphics).wait(wait).to({ tint: this.baseTint }, timeDown).onComplete(() => {
+    new JMTween(this.graphics).colorTo({ tint: color }).over(timeUp).onComplete(() => {
+      new JMTween(this.graphics).wait(wait).to({ tint: this.baseTint }).over(timeDown).onComplete(() => {
         this.flashing = false;
       }).start();
     }).start();

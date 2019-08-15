@@ -16,7 +16,9 @@ import { WordInput } from './engine/WordInput';
 import { GameEvents } from './data/Misc';
 import { TextObject } from './text/TextObject';
 import { JMTween } from '../JMGE/JMTween';
-import { ScreenCover } from './objects/ScreenCover';
+import { ScreenCover } from '../JMGE/effects/ScreenCover';
+import { LossUI } from '../menus/LossUI';
+import { WinUI } from '../menus/WinUI';
 
 export class GameManager extends BaseUI {
   public running = true;
@@ -48,8 +50,8 @@ export class GameManager extends BaseUI {
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
     this.levelEvents.loadLevel(level, 60 * this.gameSpeed);
 
-    this.player.x = CONFIG.INIT.STAGE_WIDTH / 2;
-    this.player.y = CONFIG.INIT.STAGE_HEIGHT - 150;
+    this.player.x = CONFIG.INIT.SCREEN_WIDTH / 2;
+    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 150;
     this.player.setHealth(5);
     this.setScore(0);
 
@@ -124,11 +126,16 @@ export class GameManager extends BaseUI {
 
     this.starfield.update(this.gameSpeed);
     this.container.updateAll(this.gameSpeed);
+
     if (this.levelEvents.isComplete()) {
-      if (this.container.numObjects() <= 1) {
-        if (!this.levelEnded) {
+      if (!this.levelEnded) {
+        if (this.container.numObjects() <= 1) {
           this.levelEnded = true;
-          console.log('END LEVEL');
+          let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(() => {
+            this.running = false;
+            this.navForward(new WinUI(), this.previousUI);
+          }).fadeIn(1000, 1000, 1000);
+          this.addChild(screen);
         }
         // this.endLevel();
       }
@@ -150,20 +157,16 @@ export class GameManager extends BaseUI {
     JMBL.events.publish(GameEvents.NOTIFY_SET_PROGRESS, { current: this.levelEvents.distance, total: this.levelEvents.finalDistance });
 
     if (!this.interactive) return;
-    if (this.player.health <= 0) {
+    if (this.player.health <= 0 && !CONFIG.GAME.godmode) {
       console.log('dead');
       this.interactive = false;
       this.container.makeExplosionAt(this.player.x, this.player.y, 50);
       this.player.visible = false;
-      let i = 500;
-      let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT));
-      this.addChild(screen);
-      new JMTween(screen).from({alpha: 0}, 2000).wait(3000).onComplete(() => {
+      let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(() => {
         this.running = false;
-        this.navBack();
-      }).onUpdate(() => {
-        console.log(i--);
-      }).start();
+        this.navForward(new LossUI(), this.previousUI);
+      }).fadeIn(2000, 3000, 1000);
+      this.addChild(screen);
     }
   }
 
@@ -184,11 +187,11 @@ export class GameManager extends BaseUI {
   }
 
   public addEnemy = (spawnEvent: ISpawnEvent): EnemyShip => {
-    spawnEvent.x *= CONFIG.INIT.STAGE_WIDTH / 12;
-    spawnEvent.y *= CONFIG.INIT.STAGE_HEIGHT / 12;
+    spawnEvent.x *= (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 12;
+    spawnEvent.y *= (CONFIG.INIT.SCREEN_HEIGHT + CONFIG.INIT.STAGE_BUFFER) / 12;
     spawnEvent.commands.forEach(command => {
-      command.x *= CONFIG.INIT.STAGE_WIDTH / 12;
-      command.y *= CONFIG.INIT.STAGE_HEIGHT / 12;
+      command.x *= (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 12;
+      command.y *= (CONFIG.INIT.SCREEN_HEIGHT + CONFIG.INIT.STAGE_BUFFER) / 12;
       command.timer *= 6;
     });
     let newShip = new EnemyShip(spawnEvent, { onFire: enemy => this.actionC.enemyFires(this.player, enemy), onWordComplete: enemy => this.actionC.playerFires(this.player, enemy) });

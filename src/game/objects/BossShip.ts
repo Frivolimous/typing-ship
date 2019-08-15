@@ -7,7 +7,7 @@ import { GameEvents } from '../data/Misc';
 import { GameManager } from '../GameManager';
 
 export class BossShip extends GameSprite {
-  public commands: ICommand[] = [{ x: CONFIG.INIT.STAGE_WIDTH / 2, y: 200, move: true }, { x: CONFIG.INIT.STAGE_WIDTH / 2, y: 500, timer: 6, move: false, fire: true }];
+  public commands: ICommand[] = [{ x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];
   public scanner: Scanner;
   public over: PIXI.Sprite;
   public overOffset: PIXI.Point = new PIXI.Point(0, 0);
@@ -26,7 +26,7 @@ export class BossShip extends GameSprite {
     // graphics.drawEllipse(0,0,150,100);
     // this.addChild(graphics);
 
-    this.x = CONFIG.INIT.STAGE_WIDTH / 2;
+    this.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
     this.y = -50;
     // this.onWordComplete=this.scan;
   }

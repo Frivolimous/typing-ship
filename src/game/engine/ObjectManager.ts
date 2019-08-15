@@ -52,7 +52,7 @@ export class ObjectManager extends PIXI.Container {
 
   public newLayer() {
     let layer = new PIXI.Container();
-    layer.x = layer.y = (CONFIG.INIT.SCREEN_WIDTH - CONFIG.INIT.STAGE_WIDTH) / 2;
+    layer.x = layer.y = - CONFIG.INIT.STAGE_BUFFER / 2;
     this.layers.push(layer);
     this.addChild(layer);
     this.objectsByLayer.push([]);

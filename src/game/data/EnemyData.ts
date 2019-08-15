@@ -22,6 +22,7 @@ export interface IMissileConfig {
   value: number;
   moveSpeed: number;
   turnRate?: number;
+  turnRateAccel?: number;
   killBy: ActionType;
   health: number;
 }
@@ -157,7 +158,8 @@ export const MissileData: { player: IMissileConfig, enemy: IMissileConfig } = {
     wordSize: -1,
     value: 0,
     moveSpeed: 7,
-    // turnRate: 2,
+    turnRate: 0,
+    turnRateAccel: 0.002,
     killBy: ActionType.LASER,
     health: 1,
   },
@@ -167,7 +169,8 @@ export const MissileData: { player: IMissileConfig, enemy: IMissileConfig } = {
     wordSize: 3,
     value: 1,
     moveSpeed: 2,
-    // turnRate: 2,
+    turnRate: 0,
+    turnRateAccel: 0.002,
     killBy: ActionType.LASER,
     health: 1,
   },

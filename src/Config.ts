@@ -1,9 +1,8 @@
 export const CONFIG = {
   INIT: {
-    SCREEN_WIDTH: 500,
-    SCREEN_HEIGHT: 500,
-    STAGE_WIDTH: 560,
-    STAGE_HEIGHT: 560,
+    SCREEN_WIDTH: 600,
+    SCREEN_HEIGHT: 600,
+    STAGE_BUFFER: 60,
     RESOLUTION: 1,
     BACKGROUND_COLOR: 0,
     MOUSE_HOLD: 200,
@@ -14,6 +13,7 @@ export const CONFIG = {
   },
   GAME: {
     skillPerLevel: 0.2,
+    godmode: true,
   },
   toPS: (n: number): number => {
     return Math.floor(CONFIG.INIT.FPS * 10 / n) / 10;

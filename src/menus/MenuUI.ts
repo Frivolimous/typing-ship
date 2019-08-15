@@ -3,8 +3,10 @@ import { BaseUI } from '../JMGE/UI/BaseUI';
 import { LevelSelectUI } from './LevelSelectUI';
 import { CONFIG } from '../Config';
 import { BadgesUI } from './BadgesUI';
+import { CreditsUI } from './CreditsUI';
+import { HighScoreUI } from './HighScoreUI';
 import { MuterOverlay } from './MuterOverlay';
-import { JMTween, JMEasings } from '../JMGE/JMTween';
+import { JMTween, JMEasing } from '../JMGE/JMTween';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
@@ -12,15 +14,15 @@ export class MenuUI extends BaseUI {
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } });
     this.label.x += 50;
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 200, label: 'Start', output: this.startGame });
+    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
     this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 240, label: 'High Score', output: this.nullFunc });
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'High Score', output: this.navHighScore });
     this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 280, label: 'View Badges', output: this.navBadges });
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 280, label: 'View Badges', output: this.navBadges });
     this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 320, label: 'More Games', output: this.nullFunc });
-    this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 200, y: 360, label: 'Credits', output: this.nullFunc });
+    // _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 320, label: 'More Games', output: this.nullFunc });
+    // this.addChild(_button);
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: this.navCredits });
     this.addChild(_button);
 
     let muter = new MuterOverlay();
@@ -40,6 +42,14 @@ export class MenuUI extends BaseUI {
 
   public navBadges = () => {
     this.navForward(new BadgesUI());
+  }
+
+  public navCredits = () => {
+    this.navForward(new CreditsUI());
+  }
+
+  public navHighScore = () => {
+    this.navForward(new HighScoreUI());
   }
 
   // public tweenTestPre = (e: any) => {
