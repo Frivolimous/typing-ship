@@ -11,7 +11,6 @@ export interface IMissile {
 
 export class Missile extends GameSprite {
   public speed: number;
-  public turnRateAccel: number;
 
   constructor(origin: GameSprite, private target: GameSprite, private config: IMissile) {
     super();
@@ -40,7 +39,7 @@ export class Missile extends GameSprite {
       this.turnRate = this.a / 7;
     }
 
-    this.turnRateAccel = missileConfig.turnRateAccel;
+    this.turnRateAccel = missileConfig.turnRateAccel || 0;
 
     if (this.wordSize > 0) {
       this.addWord();
@@ -59,7 +58,6 @@ export class Missile extends GameSprite {
         this.toDestroy = true;
       }
       this.moveTo(this.target, speed);
-      this.turnRate += this.turnRateAccel * speed;
 
       let dx = this.target.x - this.x;
       let dy = this.target.y - this.y;

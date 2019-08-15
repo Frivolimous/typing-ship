@@ -35,6 +35,7 @@ export class GameSprite extends BaseObject {
   public value: number;
   public killBy: number;
   public turnRate: number;
+  public turnRateAccel: number = 0;
   public shieldOn: boolean;
   public turret: Turret;
   public halt: boolean;
@@ -132,6 +133,8 @@ export class GameSprite extends BaseObject {
 
       // let n = Math.atan2(this.vY, this.vX);
       this.rotation = this.n + Math.PI / 2;
+
+      this.turnRate += this.turnRateAccel * speed;
     }
   }
 
@@ -158,11 +161,11 @@ export class GameSprite extends BaseObject {
     // }
     // this.x += speed * Math.cos(angle);
     // this.y += speed * Math.sin(angle);
-    
+
     // this.vT += this.a - this.vT * 0.1;
     // this.vX = this.vT * Math.cos(this.n);
     // this.vY = this.vT * Math.sin(this.n);
-    
+
     // if (Math.abs(this.vT) < Math.abs(this.a)) {
       //   this.vX = 0;
       //   this.vY = 0;

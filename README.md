@@ -18,28 +18,28 @@ TO-DO:
 - Stealth Effect
 
 #Game UI
-- Death screen
-- Victory Screen
-- Game UI
-- Pause Screen
-- Sound FX UI
+- Death screen - INIT
+- Victory Screen - INIT
+- Game UI - INIT / FUNC
+- Pause Screen - NONE
+- Sound FX UI - INIT
 - Fade Transition (in and out)
 
 - RESPONSIVE
 
 #Menu UI
-- Title
-- Level Select
-- Difficulty Select
-- Badges
-- Scores / Stats?
-- Credits
+- Title - INIT
+- Level Select - INIT
+- Difficulty Select - INIT / FUNC
+- Badges - INIT
+- Scores / Stats? - INIT
+- Credits - INIT
 - Fade Transition (in and out)
 
 - RESPONSIVE
 
 #Systems
 - Achievements
-- Tutorials
+- Tutorials - BASICS
 - New Graphics
 - Sound FX

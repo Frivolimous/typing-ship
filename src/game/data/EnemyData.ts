@@ -8,6 +8,7 @@ export interface IEnemyConfig {
   value: number;
   moveSpeed: number;
   turnRate?: number;
+  turnRateAccel?: number;
   fires: ActionType;
   killBy: ActionType;
   firePoint: PIXI.Point;

@@ -53,6 +53,8 @@ export class EnemyShip extends GameSprite {
       this.turnRate = this.a / 7;
     }
 
+    this.turnRateAccel = enemyConfig.turnRateAccel || 0;
+
     this.n = Math.atan2(config.commands[0].y - config.y, config.commands[0].x - config.x);
 
     this.addChild(this.charge);

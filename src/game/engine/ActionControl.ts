@@ -118,6 +118,7 @@ export class ActionControl {
     origin.replaceCommands([{ x: target.x, y: target.y, move: true }]);
     origin.callbacks.onFinishCommands = () => this.damagePlayer();
     origin.a *= 2;
+    origin.turnRateAccel = 0.0001;
     origin.priority = 3;
   }
 

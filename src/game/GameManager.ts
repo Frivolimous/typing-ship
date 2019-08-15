@@ -19,12 +19,14 @@ import { JMTween } from '../JMGE/JMTween';
 import { ScreenCover } from '../JMGE/effects/ScreenCover';
 import { LossUI } from '../menus/LossUI';
 import { WinUI } from '../menus/WinUI';
+import { TutorialManager } from './engine/TutorialManager';
 
 export class GameManager extends BaseUI {
   public running = true;
   public interactive = true;
 
   public container: ObjectManager = new ObjectManager();
+  public tutorials: TutorialManager = new TutorialManager(this);
   public actionC: ActionControl = new ActionControl(this);
   public starfield: Starfield;
   public player: PlayerShip = new PlayerShip();
@@ -83,13 +85,14 @@ export class GameManager extends BaseUI {
   public keyDown = (e: JMBL.IKeyboardEvent) => {
     if (!this.running || !this.interactive) {
       if (e.key === ' ') {
-        this.togglePause();
+        JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, false);
+        // this.togglePause();
       }
       return;
     }
     switch (e.key) {
       case 'Escape': this.navBack(); break;
-      case ' ': this.togglePause(); break;
+      case ' ': JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, true); break;
       // case '=': this.gameSpeed += 1; break;
       // case '-': this.gameSpeed -= 1; break;
       case 'Backspace': this.wordInput.deleteLetters(1); break;
@@ -170,9 +173,9 @@ export class GameManager extends BaseUI {
     }
   }
 
-  public togglePause = () => {
+  public togglePause = (b: boolean) => {
     if (!this.interactive) return;
-    this.running = !this.running;
+    this.running = !b;
     TextObject.allTextObjects.forEach(object => object.visible = this.running);
   }
 
