@@ -527,14 +527,6 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _this.onWaitCompleteCallback = callback;
                 return _this;
             };
-            this.start = function () {
-                _this.running = true;
-                _this.properties.forEach(function (property) {
-                    _this.object[property.key] = property.start;
-                });
-                _add(_this);
-                return _this;
-            };
             this.stop = function () {
                 _this.running = false;
                 _remove(_this);
@@ -549,6 +541,11 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _this.tickThis = function () { };
                 if (_this.onCompleteCallback)
                     _this.onCompleteCallback(_this.object);
+                if (_this.nextTween) {
+                    _this.nextTween.reset();
+                    _this.nextTween.start();
+                    _this.nextTween.tickThis(time);
+                }
                 return _this;
             };
             this.reset = function () {
@@ -566,11 +563,35 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _this.totalTime = time;
                 return _this;
             };
+            this.start = function () {
+                _this.running = true;
+                _this.properties.forEach(function (property) {
+                    if (property.to) {
+                        property.start = _this.object[property.key];
+                        property.end = property.to;
+                    }
+                    else if (property.from) {
+                        property.start = property.from;
+                        property.end = _this.object[property.key];
+                    }
+                    if (property.isColor) {
+                        property.incR = Math.floor(property.end / 0x010000) - Math.floor(property.start / 0x010000);
+                        property.incG = Math.floor((property.end % 0x010000) / 0x000100) - Math.floor((property.start % 0x010000) / 0x000100);
+                        property.incB = Math.floor(property.end % 0x000100) - Math.floor(property.start % 0x000100);
+                    }
+                    else {
+                        property.inc = property.end - property.start;
+                    }
+                    _this.object[property.key] = property.start;
+                });
+                _add(_this);
+                return _this;
+            };
             this.to = function (props, eased) {
                 if (eased === void 0) { eased = true; }
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
-                    _this.properties.push({ key: key, start: _this.object[key], end: props[key], inc: (props[key] - _this.object[key]), eased: eased });
+                    _this.properties.push({ key: key, eased: eased, to: props[key] });
                 }
                 return _this;
             };
@@ -578,7 +599,7 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 if (eased === void 0) { eased = true; }
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
-                    _this.properties.push({ key: key, start: props[key], end: _this.object[key], inc: (_this.object[key] - props[key]), eased: eased });
+                    _this.properties.push({ key: key, eased: eased, from: props[key] });
                 }
                 return _this;
             };
@@ -586,16 +607,7 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 if (eased === void 0) { eased = true; }
                 for (var _i = 0, _a = Object.keys(props); _i < _a.length; _i++) {
                     var key = _a[_i];
-                    _this.properties.push({
-                        key: key,
-                        start: _this.object[key],
-                        end: props[key],
-                        incR: Math.floor(props[key] / 0x010000) - Math.floor(_this.object[key] / 0x010000),
-                        incG: Math.floor((props[key] % 0x010000) / 0x000100) - Math.floor((_this.object[key] % 0x010000) / 0x000100),
-                        incB: Math.floor(props[key] % 0x000100) - Math.floor(_this.object[key] % 0x000100),
-                        eased: eased,
-                        isColor: true,
-                    });
+                    _this.properties.push({ key: key, eased: eased, to: props[key], isColor: true });
                 }
                 return _this;
             };
@@ -643,6 +655,14 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
             };
             this.tickThis = this.firstTick;
         }
+        JMTween.prototype.chain = function (nextObj, totalTime) {
+            this.nextTween = new JMTween(nextObj, totalTime);
+            return this.nextTween;
+        };
+        JMTween.prototype.chainTween = function (tween) {
+            this.nextTween = tween;
+            return tween;
+        };
         return JMTween;
     }());
     exports.JMTween = JMTween;
@@ -5762,7 +5782,7 @@ define("menus/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI
     }(BaseUI_7.BaseUI));
     exports.HighScoreUI = HighScoreUI;
 });
-define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "menus/LevelSelectUI", "Config", "menus/BadgesUI", "menus/CreditsUI", "menus/HighScoreUI", "menus/MuterOverlay"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_14, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_5) {
+define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "menus/LevelSelectUI", "Config", "menus/BadgesUI", "menus/CreditsUI", "menus/HighScoreUI", "menus/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_14, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_5, JMTween_7) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MenuUI = (function (_super) {
@@ -5782,6 +5802,55 @@ define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "m
             _this.navHighScore = function () {
                 _this.navForward(new HighScoreUI_1.HighScoreUI());
             };
+            _this.tweenTestPre = function (e) {
+                switch (e.key) {
+                    case '1':
+                        _this.tweenTest(JMTween_7.JMEasing.Linear.None);
+                        break;
+                    case '2':
+                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.In);
+                        break;
+                    case '3':
+                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.Out);
+                        break;
+                    case '4':
+                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.InOut);
+                        break;
+                    case '5':
+                        _this.tweenTest2();
+                        break;
+                }
+            };
+            _this.tweenTest = function (func) {
+                var ball = new PIXI.Graphics();
+                ball.beginFill(0xffffff);
+                ball.lineStyle(1);
+                ball.drawCircle(0, 0, 20);
+                ball.x = 100;
+                ball.y = 100;
+                ball.tint = 0xff0000;
+                var ball2 = new PIXI.Graphics();
+                ball2.beginFill(0xffff00);
+                ball2.lineStyle(1);
+                ball2.drawCircle(0, 0, 10);
+                ball2.x = 100;
+                ball2.y = 100;
+                _this.addChild(ball2, ball);
+                new JMTween_7.JMTween(ball, 1000).to({ x: 300 }, false).to({ y: 300 }, true).easing(func).start().onComplete(function () { return ball.destroy(); });
+                new JMTween_7.JMTween(ball2, 1000).to({ x: 300, y: 300 }).start().onComplete(function () { return ball2.destroy(); });
+            };
+            _this.tweenTest2 = function () {
+                var ball = new PIXI.Graphics();
+                ball.beginFill(0xffffff);
+                ball.lineStyle(1);
+                ball.drawCircle(0, 0, 20);
+                ball.x = 100;
+                ball.y = 100;
+                ball.tint = 0xff0000;
+                _this.addChild(ball);
+                var t1 = new JMTween_7.JMTween(ball, 1000).to({ x: 300 }).start();
+                t1.chain(ball, 1000).to({ x: 500 }).chain(ball, 1000).to({ y: 300 }).chain(ball, 1000).to({ x: 100 }).chain(ball, 1000).to({ y: 100 }).chainTween(t1);
+            };
             _this.label.x += 50;
             var _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: _this.startGame });
             _this.addChild(_button);
@@ -5795,6 +5864,7 @@ define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "m
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
+            window.addEventListener('keydown', _this.tweenTestPre);
             return _this;
         }
         return MenuUI;

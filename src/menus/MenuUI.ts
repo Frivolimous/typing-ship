@@ -30,7 +30,7 @@ export class MenuUI extends BaseUI {
     muter.y = this.getHeight() - muter.getHeight();
     this.addChild(muter);
 
-    // window.addEventListener('keydown', this.tweenTestPre);
+    window.addEventListener('keydown', this.tweenTestPre);
   }
 
   public nullFunc = () => { };
@@ -52,36 +52,50 @@ export class MenuUI extends BaseUI {
     this.navForward(new HighScoreUI());
   }
 
-  // public tweenTestPre = (e: any) => {
-  //   switch (e.key) {
-  //     case '1': this.tweenTest(JMEasings.linear); break;
-  //     case '2': this.tweenTest(JMEasings.quadIn); break;
-  //     case '3': this.tweenTest(JMEasings.quadOut); break;
-  //     case '4': this.tweenTest(JMEasings.quad); break;
+  public tweenTestPre = (e: any) => {
+    switch (e.key) {
+      case '1': this.tweenTest(JMEasing.Linear.None); break;
+      case '2': this.tweenTest(JMEasing.Quadratic.In); break;
+      case '3': this.tweenTest(JMEasing.Quadratic.Out); break;
+      case '4': this.tweenTest(JMEasing.Quadratic.InOut); break;
+      case '5': this.tweenTest2(); break;
 
-  //   }
-  // }
-  // public tweenTest = (func: any) => {
-  //   let ball = new PIXI.Graphics();
-  //   ball.beginFill(0xffffff);
-  //   ball.lineStyle(1);
-  //   ball.drawCircle(0, 0, 20);
-  //   ball.x = 100;
-  //   ball.y = 100;
-  //   ball.tint = 0xff0000;
-  //   // this.addChild(ball);
+    }
+  }
+  public tweenTest = (func: any) => {
+    let ball = new PIXI.Graphics();
+    ball.beginFill(0xffffff);
+    ball.lineStyle(1);
+    ball.drawCircle(0, 0, 20);
+    ball.x = 100;
+    ball.y = 100;
+    ball.tint = 0xff0000;
+    // this.addChild(ball);
 
-  //   let ball2 = new PIXI.Graphics();
-  //   ball2.beginFill(0xffff00);
-  //   ball2.lineStyle(1);
-  //   ball2.drawCircle(0, 0, 10);
-  //   ball2.x = 100;
-  //   ball2.y = 100;
-  //   this.addChild(ball2, ball);
+    let ball2 = new PIXI.Graphics();
+    ball2.beginFill(0xffff00);
+    ball2.lineStyle(1);
+    ball2.drawCircle(0, 0, 10);
+    ball2.x = 100;
+    ball2.y = 100;
+    this.addChild(ball2, ball);
 
-  //   // new JMTween(ball).to({y: 300}, 1000).easing(func).start();
-  //   // new JMTween(ball).to({x: 300}, 1000).start().onComplete(() => ball.destroy());
-  //   new JMTween(ball).to({x: 300}, 1000, false).to({y: 300}, 1000, true).easing(func).start().onComplete(() => ball.destroy());
-  //   new JMTween(ball2).to({x: 300, y: 300}, 1000).start().onComplete(() => ball2.destroy());
-  // }
+    // new JMTween(ball).to({y: 300}, 1000).easing(func).start();
+    // new JMTween(ball).to({x: 300}, 1000).start().onComplete(() => ball.destroy());
+    new JMTween(ball, 1000).to({x: 300}, false).to({y: 300}, true).easing(func).start().onComplete(() => ball.destroy());
+    new JMTween(ball2, 1000).to({x: 300, y: 300}).start().onComplete(() => ball2.destroy());
+  }
+
+  public tweenTest2 = () => {
+    let ball = new PIXI.Graphics();
+    ball.beginFill(0xffffff);
+    ball.lineStyle(1);
+    ball.drawCircle(0, 0, 20);
+    ball.x = 100;
+    ball.y = 100;
+    ball.tint = 0xff0000;
+    this.addChild(ball);
+    let t1 = new JMTween(ball, 1000).to({x: 300}).start();
+    t1.chain(ball, 1000).to({x: 500}).chain(ball, 1000).to({y: 300}).chain(ball, 1000).to({x: 100}).chain(ball, 1000).to({y: 100}).chainTween(t1);
+  }
 }
