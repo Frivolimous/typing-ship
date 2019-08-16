@@ -24,7 +24,9 @@ export class SaveData {
   }
 
   public static getExtrinsic(): ExtrinsicModel {
-    return SaveData.extrinsic;
+    if (SaveData.extrinsic) {
+      return SaveData.extrinsic;
+    }
   }
 
   public static saveExtrinsic(callback?: (extrinsic?: ExtrinsicModel) => void, extrinsic?: ExtrinsicModel) {
@@ -56,8 +58,8 @@ export class SaveData {
     if (typeof Storage !== undefined) {
       let extrinsicStr = window.localStorage.getItem('Extrinsic');
       if (extrinsicStr !== 'undefined') {
-          let extrinsicObj = JSON.parse(extrinsicStr);
-          return ExtrinsicModel.loadExtrinsic(extrinsicObj);
+        let extrinsicObj = JSON.parse(extrinsicStr);
+        return ExtrinsicModel.loadExtrinsic(extrinsicObj);
       }
     } else {
       console.log('NO STORAGE!');

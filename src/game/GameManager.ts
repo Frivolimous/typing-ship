@@ -20,6 +20,7 @@ import { ScreenCover } from '../JMGE/effects/ScreenCover';
 import { LossUI } from '../menus/LossUI';
 import { WinUI } from '../menus/WinUI';
 import { TutorialManager } from './engine/TutorialManager';
+import { AchievementManager } from './engine/AchievementManager';
 
 export class GameManager extends BaseUI {
   public running = true;
@@ -27,6 +28,7 @@ export class GameManager extends BaseUI {
 
   public container: ObjectManager = new ObjectManager();
   public tutorials: TutorialManager = new TutorialManager(this);
+  public achievements: AchievementManager = new AchievementManager(this);
   public actionC: ActionControl = new ActionControl(this);
   public starfield: Starfield;
   public player: PlayerShip = new PlayerShip();

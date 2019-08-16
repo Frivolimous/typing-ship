@@ -514,7 +514,6 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
             this.object = object;
             this.totalTime = totalTime;
             this.running = false;
-            this.started = false;
             this.properties = [];
             this.onUpdate = function (callback) {
                 _this.onUpdateCallback = callback;
@@ -541,10 +540,9 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 _remove(_this);
                 return _this;
             };
-            this.complete = function () {
+            this.complete = function (time) {
                 _this.running = false;
                 _remove(_this);
-                console.log('DONE!');
                 _this.properties.forEach(function (property) {
                     _this.object[property.key] = property.end;
                 });
@@ -554,7 +552,6 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 return _this;
             };
             this.reset = function () {
-                _this.started = false;
                 _this.tickThis = _this.firstTick;
                 if (_this.waitTime)
                     _this.hasWait = true;
@@ -607,7 +604,6 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                 return _this;
             };
             this.firstTick = function (time) {
-                _this.started = true;
                 if (_this.hasWait) {
                     _this.startTime = time + _this.waitTime;
                 }
@@ -615,7 +611,6 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                     _this.startTime = time;
                 }
                 _this.endTime = _this.startTime + (_this.totalTime || 0);
-                console.log('START', time, _this.endTime);
                 _this.tickThis = _this.tailTick;
             };
             this.tailTick = function (time) {
@@ -625,7 +620,7 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
                         _this.onWaitCompleteCallback(_this.object);
                 }
                 if (time > _this.endTime) {
-                    _this.complete();
+                    _this.complete(time);
                 }
                 else if (time > _this.startTime) {
                     var raw_1 = (time - _this.startTime) / _this.totalTime;
@@ -4894,7 +4889,206 @@ define("game/engine/TutorialManager", ["require", "exports", "JMGE/JMBL", "game/
     }());
     exports.TutorialManager = TutorialManager;
 });
-define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "JMGE/JMBL", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/data/Misc", "game/text/TextObject", "JMGE/effects/ScreenCover", "menus/LossUI", "menus/WinUI", "game/engine/TutorialManager"], function (require, exports, ObjectManager_4, BaseUI_3, Starfield_1, JMBL, Config_9, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, Misc_13, TextObject_4, ScreenCover_3, LossUI_1, WinUI_1, TutorialManager_1) {
+define("game/data/PlayerData", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var BadgeState;
+    (function (BadgeState) {
+        BadgeState[BadgeState["NONE"] = 0] = "NONE";
+        BadgeState[BadgeState["BRONZE"] = 1] = "BRONZE";
+        BadgeState[BadgeState["SILVER"] = 2] = "SILVER";
+        BadgeState[BadgeState["GOLD"] = 3] = "GOLD";
+        BadgeState[BadgeState["PLATINUM"] = 4] = "PLATINUM";
+    })(BadgeState = exports.BadgeState || (exports.BadgeState = {}));
+    var Badges;
+    (function (Badges) {
+        Badges[Badges["SOLDIER_BRONZE"] = 0] = "SOLDIER_BRONZE";
+        Badges[Badges["SOLDIER_SILVER"] = 1] = "SOLDIER_SILVER";
+        Badges[Badges["SOLDIER_GOLD"] = 2] = "SOLDIER_GOLD";
+        Badges[Badges["CONQUEROR_BRONZE"] = 3] = "CONQUEROR_BRONZE";
+        Badges[Badges["CONQUEROR_SILVER"] = 4] = "CONQUEROR_SILVER";
+        Badges[Badges["CONQUEROR_GOLD"] = 5] = "CONQUEROR_GOLD";
+        Badges[Badges["RIDDLER_BRONZE"] = 6] = "RIDDLER_BRONZE";
+        Badges[Badges["RIDDLER_SILVER"] = 7] = "RIDDLER_SILVER";
+        Badges[Badges["RIDDLER_GOLD"] = 8] = "RIDDLER_GOLD";
+        Badges[Badges["DEFENDER_BRONZE"] = 9] = "DEFENDER_BRONZE";
+        Badges[Badges["DEFENDER_SILVER"] = 10] = "DEFENDER_SILVER";
+        Badges[Badges["DEFENDER_GOLD"] = 11] = "DEFENDER_GOLD";
+        Badges[Badges["PERFECTION_BRONZE"] = 12] = "PERFECTION_BRONZE";
+        Badges[Badges["PERFECTION_SILVER"] = 13] = "PERFECTION_SILVER";
+        Badges[Badges["PERFECTION_GOLD"] = 14] = "PERFECTION_GOLD";
+        Badges[Badges["EXPLORER_BRONZE"] = 15] = "EXPLORER_BRONZE";
+        Badges[Badges["EXPLORER_SILVER"] = 16] = "EXPLORER_SILVER";
+        Badges[Badges["EXPLORER_GOLD"] = 17] = "EXPLORER_GOLD";
+    })(Badges = exports.Badges || (exports.Badges = {}));
+    var ExtrinsicModel = (function () {
+        function ExtrinsicModel(data) {
+            this.data = data;
+            if (!data) {
+                this.data = {
+                    badges: [],
+                    levels: [],
+                    scores: {
+                        kills: 0,
+                        deaths: 0,
+                        playtime: 0,
+                    },
+                };
+            }
+        }
+        ExtrinsicModel.loadExtrinsic = function (data) {
+            return new ExtrinsicModel(data);
+        };
+        return ExtrinsicModel;
+    }());
+    exports.ExtrinsicModel = ExtrinsicModel;
+});
+define("game/ui/AchievementPopup", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_6) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var AchievementPopup = (function (_super) {
+        __extends(AchievementPopup, _super);
+        function AchievementPopup(text, tier) {
+            if (tier === void 0) { tier = 0; }
+            var _this = _super.call(this) || this;
+            var background = new PIXI.Graphics();
+            background.beginFill(0xffff00);
+            background.drawRect(0, 0, 300, 100);
+            var field = new PIXI.Text(text);
+            _this.addChild(background, field);
+            new JMTween_6.JMTween(_this).to({ alpha: 0 }).over(1000).wait(5000).onComplete(function () {
+                _this.destroy();
+            }).start();
+            return _this;
+        }
+        return AchievementPopup;
+    }(PIXI.Container));
+    exports.AchievementPopup = AchievementPopup;
+});
+define("utils/SaveData", ["require", "exports", "game/data/PlayerData"], function (require, exports, PlayerData_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SaveData = (function () {
+        function SaveData() {
+        }
+        SaveData.init = function () {
+            this.loadVersion(function (version) {
+                if (version < SaveData.VERSION) {
+                    SaveData.confirmReset();
+                    SaveData.saveVersion(SaveData.VERSION);
+                    SaveData.saveExtrinsic();
+                }
+                else {
+                    SaveData.loadExtrinsic(function (extrinsic) {
+                        if (extrinsic) {
+                            SaveData.extrinsic = extrinsic;
+                        }
+                        else {
+                            SaveData.confirmReset();
+                        }
+                    });
+                }
+            });
+        };
+        SaveData.resetData = function () {
+            return this.confirmReset;
+        };
+        SaveData.getExtrinsic = function () {
+            if (SaveData.extrinsic) {
+                return SaveData.extrinsic;
+            }
+        };
+        SaveData.saveExtrinsic = function (callback, extrinsic) {
+            extrinsic = extrinsic || this.extrinsic;
+            SaveData.saveExtrinsicToLocal(extrinsic);
+            if (callback) {
+                callback(extrinsic);
+            }
+        };
+        SaveData.loadExtrinsic = function (callback) {
+            var extrinsic = this.loadExtrinsicFromLocal();
+            if (callback) {
+                callback(extrinsic);
+            }
+        };
+        SaveData.saveExtrinsicToLocal = function (extrinsic) {
+            extrinsic = extrinsic || this.extrinsic;
+            if (typeof Storage !== undefined) {
+                window.localStorage.setItem('Extrinsic', JSON.stringify(extrinsic.data));
+            }
+            else {
+                console.log('NO STORAGE!');
+            }
+        };
+        SaveData.loadExtrinsicFromLocal = function () {
+            if (typeof Storage !== undefined) {
+                var extrinsicStr = window.localStorage.getItem('Extrinsic');
+                if (extrinsicStr !== 'undefined') {
+                    var extrinsicObj = JSON.parse(extrinsicStr);
+                    return PlayerData_1.ExtrinsicModel.loadExtrinsic(extrinsicObj);
+                }
+            }
+            else {
+                console.log('NO STORAGE!');
+            }
+        };
+        SaveData.loadVersion = function (callback) {
+            if (typeof Storage !== undefined) {
+                callback(Number(window.localStorage.getItem('Version')));
+            }
+            else {
+                console.log('NO STORAGE!');
+                callback(0);
+            }
+        };
+        SaveData.saveVersion = function (version) {
+            if (typeof Storage !== undefined) {
+                window.localStorage.setItem('Version', String(version));
+            }
+            else {
+                console.log('NO STORAGE!');
+            }
+        };
+        SaveData.VERSION = 6;
+        SaveData.confirmReset = function () {
+            SaveData.extrinsic = new PlayerData_1.ExtrinsicModel();
+        };
+        return SaveData;
+    }());
+    exports.SaveData = SaveData;
+});
+define("game/engine/AchievementManager", ["require", "exports", "JMGE/JMBL", "game/data/Misc", "game/ui/AchievementPopup", "game/data/PlayerData", "utils/SaveData"], function (require, exports, JMBL, Misc_13, AchievementPopup_1, PlayerData_2, SaveData_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var AchievementManager = (function () {
+        function AchievementManager(canvas) {
+            var _this = this;
+            this.canvas = canvas;
+            this.wordCompleted = function (n) {
+                _this.currentPopup = new AchievementPopup_1.AchievementPopup('you finished 1 word!');
+                _this.canvas.addChild(_this.currentPopup);
+                _this.extrinsic.data.badges[0] = true;
+                SaveData_1.SaveData.saveExtrinsic();
+                JMBL.events.remove(Misc_13.GameEvents.NOTIFY_OBJECT_WORD_COMPLETED, _this.wordCompleted);
+            };
+            this.onPause = function (b) {
+                if (!b) {
+                    _this.currentPopup.destroy();
+                    _this.currentPopup = null;
+                }
+            };
+            this.extrinsic = SaveData_1.SaveData.getExtrinsic();
+            console.log(this.extrinsic);
+            if (!this.extrinsic.data.badges[PlayerData_2.Badges.CONQUEROR_GOLD]) {
+                JMBL.events.add(Misc_13.GameEvents.NOTIFY_OBJECT_WORD_COMPLETED, this.wordCompleted);
+            }
+            JMBL.events.add(Misc_13.GameEvents.REQUEST_PAUSE_GAME, this.onPause);
+        }
+        return AchievementManager;
+    }());
+    exports.AchievementManager = AchievementManager;
+});
+define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "JMGE/JMBL", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/data/Misc", "game/text/TextObject", "JMGE/effects/ScreenCover", "menus/LossUI", "menus/WinUI", "game/engine/TutorialManager", "game/engine/AchievementManager"], function (require, exports, ObjectManager_4, BaseUI_3, Starfield_1, JMBL, Config_9, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, Misc_14, TextObject_4, ScreenCover_3, LossUI_1, WinUI_1, TutorialManager_1, AchievementManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameManager = (function (_super) {
@@ -4907,6 +5101,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.interactive = true;
             _this.container = new ObjectManager_4.ObjectManager();
             _this.tutorials = new TutorialManager_1.TutorialManager(_this);
+            _this.achievements = new AchievementManager_1.AchievementManager(_this);
             _this.actionC = new ActionControl_1.ActionControl(_this);
             _this.player = new PlayerShip_3.PlayerShip();
             _this.wordInput = new WordInput_1.WordInput();
@@ -4916,9 +5111,9 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.dispose = function () {
                 JMBL.events.ticker.remove(_this.onTick);
                 JMBL.events.remove(JMBL.EventType.KEY_DOWN, _this.keyDown);
-                JMBL.events.remove(Misc_13.GameEvents.NOTIFY_LETTER_DELETED, function (i) { return _this.addScore(-i); });
-                JMBL.events.remove(Misc_13.GameEvents.REQUEST_HEAL_PLAYER, _this.player.addHealth);
-                JMBL.events.remove(Misc_13.GameEvents.REQUEST_PAUSE_GAME, _this.togglePause);
+                JMBL.events.remove(Misc_14.GameEvents.NOTIFY_LETTER_DELETED, function (i) { return _this.addScore(-i); });
+                JMBL.events.remove(Misc_14.GameEvents.REQUEST_HEAL_PLAYER, _this.player.addHealth);
+                JMBL.events.remove(Misc_14.GameEvents.REQUEST_PAUSE_GAME, _this.togglePause);
                 _this.player.dispose();
                 _this.container.dispose();
                 _this.wordInput.dispose();
@@ -4927,7 +5122,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.keyDown = function (e) {
                 if (!_this.running || !_this.interactive) {
                     if (e.key === ' ') {
-                        JMBL.events.publish(Misc_13.GameEvents.REQUEST_PAUSE_GAME, false);
+                        JMBL.events.publish(Misc_14.GameEvents.REQUEST_PAUSE_GAME, false);
                     }
                     return;
                 }
@@ -4936,7 +5131,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                         _this.navBack();
                         break;
                     case ' ':
-                        JMBL.events.publish(Misc_13.GameEvents.REQUEST_PAUSE_GAME, true);
+                        JMBL.events.publish(Misc_14.GameEvents.REQUEST_PAUSE_GAME, true);
                         break;
                     case 'Backspace':
                         _this.wordInput.deleteLetters(1);
@@ -4966,7 +5161,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 else {
                     _this.levelEvents.addDistance(_this.gameSpeed);
                 }
-                JMBL.events.publish(Misc_13.GameEvents.NOTIFY_SET_PROGRESS, { current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
+                JMBL.events.publish(Misc_14.GameEvents.NOTIFY_SET_PROGRESS, { current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
                 if (!_this.interactive)
                     return;
                 if (_this.player.health <= 0 && !Config_9.CONFIG.GAME.godmode) {
@@ -4989,11 +5184,11 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             };
             _this.setScore = function (score) {
                 _this.score = score;
-                JMBL.events.publish(Misc_13.GameEvents.NOTIFY_SET_SCORE, _this.score);
+                JMBL.events.publish(Misc_14.GameEvents.NOTIFY_SET_SCORE, _this.score);
             };
             _this.addScore = function (add) {
                 _this.score += add;
-                JMBL.events.publish(Misc_13.GameEvents.NOTIFY_SET_SCORE, _this.score);
+                JMBL.events.publish(Misc_14.GameEvents.NOTIFY_SET_SCORE, _this.score);
             };
             _this.addEnemy = function (spawnEvent) {
                 spawnEvent.x *= (Config_9.CONFIG.INIT.SCREEN_WIDTH + Config_9.CONFIG.INIT.STAGE_BUFFER) / 12;
@@ -5037,9 +5232,9 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.container.addObject(_this.player, ObjectManager_4.DisplayLayer.DEFAULT);
             JMBL.events.ticker.add(_this.onTick);
             JMBL.events.add(JMBL.EventType.KEY_DOWN, _this.keyDown);
-            JMBL.events.add(Misc_13.GameEvents.NOTIFY_LETTER_DELETED, function (i) { return _this.addScore(-i); });
-            JMBL.events.add(Misc_13.GameEvents.REQUEST_HEAL_PLAYER, _this.player.addHealth);
-            JMBL.events.add(Misc_13.GameEvents.REQUEST_PAUSE_GAME, _this.togglePause);
+            JMBL.events.add(Misc_14.GameEvents.NOTIFY_LETTER_DELETED, function (i) { return _this.addScore(-i); });
+            JMBL.events.add(Misc_14.GameEvents.REQUEST_HEAL_PLAYER, _this.player.addHealth);
+            JMBL.events.add(Misc_14.GameEvents.REQUEST_PAUSE_GAME, _this.togglePause);
             return _this;
         }
         return GameManager;
@@ -5461,158 +5656,14 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/JMBL", 
     }(JMBUI.BasicElement));
     exports.InventoryWindow = InventoryWindow;
 });
-define("game/data/PlayerData", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var BadgeState;
-    (function (BadgeState) {
-        BadgeState[BadgeState["NONE"] = 0] = "NONE";
-        BadgeState[BadgeState["BRONZE"] = 1] = "BRONZE";
-        BadgeState[BadgeState["SILVER"] = 2] = "SILVER";
-        BadgeState[BadgeState["GOLD"] = 3] = "GOLD";
-        BadgeState[BadgeState["PLATINUM"] = 4] = "PLATINUM";
-    })(BadgeState = exports.BadgeState || (exports.BadgeState = {}));
-    var Badges;
-    (function (Badges) {
-        Badges[Badges["SOLDIER_BRONZE"] = 0] = "SOLDIER_BRONZE";
-        Badges[Badges["SOLDIER_SILVER"] = 1] = "SOLDIER_SILVER";
-        Badges[Badges["SOLDIER_GOLD"] = 2] = "SOLDIER_GOLD";
-        Badges[Badges["CONQUEROR_BRONZE"] = 3] = "CONQUEROR_BRONZE";
-        Badges[Badges["CONQUEROR_SILVER"] = 4] = "CONQUEROR_SILVER";
-        Badges[Badges["CONQUEROR_GOLD"] = 5] = "CONQUEROR_GOLD";
-        Badges[Badges["RIDDLER_BRONZE"] = 6] = "RIDDLER_BRONZE";
-        Badges[Badges["RIDDLER_SILVER"] = 7] = "RIDDLER_SILVER";
-        Badges[Badges["RIDDLER_GOLD"] = 8] = "RIDDLER_GOLD";
-        Badges[Badges["DEFENDER_BRONZE"] = 9] = "DEFENDER_BRONZE";
-        Badges[Badges["DEFENDER_SILVER"] = 10] = "DEFENDER_SILVER";
-        Badges[Badges["DEFENDER_GOLD"] = 11] = "DEFENDER_GOLD";
-        Badges[Badges["PERFECTION_BRONZE"] = 12] = "PERFECTION_BRONZE";
-        Badges[Badges["PERFECTION_SILVER"] = 13] = "PERFECTION_SILVER";
-        Badges[Badges["PERFECTION_GOLD"] = 14] = "PERFECTION_GOLD";
-        Badges[Badges["EXPLORER_BRONZE"] = 15] = "EXPLORER_BRONZE";
-        Badges[Badges["EXPLORER_SILVER"] = 16] = "EXPLORER_SILVER";
-        Badges[Badges["EXPLORER_GOLD"] = 17] = "EXPLORER_GOLD";
-    })(Badges = exports.Badges || (exports.Badges = {}));
-    var ExtrinsicModel = (function () {
-        function ExtrinsicModel(data) {
-            this.data = data;
-            if (!data) {
-                data = {
-                    badges: [],
-                    levels: [],
-                    scores: {
-                        kills: 0,
-                        deaths: 0,
-                        playtime: 0,
-                    },
-                };
-            }
-        }
-        ExtrinsicModel.loadExtrinsic = function (data) {
-            return new ExtrinsicModel(data);
-        };
-        return ExtrinsicModel;
-    }());
-    exports.ExtrinsicModel = ExtrinsicModel;
-});
-define("utils/SaveData", ["require", "exports", "game/data/PlayerData"], function (require, exports, PlayerData_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var SaveData = (function () {
-        function SaveData() {
-        }
-        SaveData.init = function () {
-            this.loadVersion(function (version) {
-                if (version < SaveData.VERSION) {
-                    SaveData.confirmReset();
-                    SaveData.saveVersion(SaveData.VERSION);
-                    SaveData.saveExtrinsic();
-                }
-                else {
-                    SaveData.loadExtrinsic(function (extrinsic) {
-                        if (extrinsic) {
-                            SaveData.extrinsic = extrinsic;
-                        }
-                        else {
-                            SaveData.confirmReset();
-                        }
-                    });
-                }
-            });
-        };
-        SaveData.resetData = function () {
-            return this.confirmReset;
-        };
-        SaveData.getExtrinsic = function () {
-            return SaveData.extrinsic;
-        };
-        SaveData.saveExtrinsic = function (callback, extrinsic) {
-            extrinsic = extrinsic || this.extrinsic;
-            SaveData.saveExtrinsicToLocal(extrinsic);
-            if (callback) {
-                callback(extrinsic);
-            }
-        };
-        SaveData.loadExtrinsic = function (callback) {
-            var extrinsic = this.loadExtrinsicFromLocal();
-            if (callback) {
-                callback(extrinsic);
-            }
-        };
-        SaveData.saveExtrinsicToLocal = function (extrinsic) {
-            extrinsic = extrinsic || this.extrinsic;
-            if (typeof Storage !== undefined) {
-                window.localStorage.setItem('Extrinsic', JSON.stringify(extrinsic.data));
-            }
-            else {
-                console.log('NO STORAGE!');
-            }
-        };
-        SaveData.loadExtrinsicFromLocal = function () {
-            if (typeof Storage !== undefined) {
-                var extrinsicStr = window.localStorage.getItem('Extrinsic');
-                if (extrinsicStr !== 'undefined') {
-                    var extrinsicObj = JSON.parse(extrinsicStr);
-                    return PlayerData_1.ExtrinsicModel.loadExtrinsic(extrinsicObj);
-                }
-            }
-            else {
-                console.log('NO STORAGE!');
-            }
-        };
-        SaveData.loadVersion = function (callback) {
-            if (typeof Storage !== undefined) {
-                callback(Number(window.localStorage.getItem('Version')));
-            }
-            else {
-                console.log('NO STORAGE!');
-                callback(0);
-            }
-        };
-        SaveData.saveVersion = function (version) {
-            if (typeof Storage !== undefined) {
-                window.localStorage.setItem('Version', String(version));
-            }
-            else {
-                console.log('NO STORAGE!');
-            }
-        };
-        SaveData.VERSION = 6;
-        SaveData.confirmReset = function () {
-            SaveData.extrinsic = new PlayerData_1.ExtrinsicModel();
-        };
-        return SaveData;
-    }());
-    exports.SaveData = SaveData;
-});
-define("menus/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "game/data/PlayerData"], function (require, exports, JMBUI, TextureData_7, PlayerData_2) {
+define("menus/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "game/data/PlayerData"], function (require, exports, JMBUI, TextureData_7, PlayerData_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgeLine = (function (_super) {
         __extends(BadgeLine, _super);
         function BadgeLine(label, state) {
             if (label === void 0) { label = 'Hello World!'; }
-            if (state === void 0) { state = PlayerData_2.BadgeState.NONE; }
+            if (state === void 0) { state = PlayerData_3.BadgeState.NONE; }
             var _this = _super.call(this, { width: 100, height: 50, label: label }) || this;
             _this.symbol = new PIXI.Sprite(TextureData_7.TextureData.medal);
             _this.label.x = 30;
@@ -5627,7 +5678,7 @@ define("menus/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "g
     }(JMBUI.BasicElement));
     exports.BadgeLine = BadgeLine;
 });
-define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/data/PlayerData", "menus/BadgeLine", "JMGE/UI/BaseUI"], function (require, exports, JMBUI, Config_11, PlayerData_3, BadgeLine_1, BaseUI_5) {
+define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/data/PlayerData", "menus/BadgeLine", "JMGE/UI/BaseUI"], function (require, exports, JMBUI, Config_11, PlayerData_4, BadgeLine_1, BaseUI_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgesUI = (function (_super) {
@@ -5645,19 +5696,19 @@ define("menus/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "game/da
             scroll.addScrollbar(scrollbar);
             _this.addChild(scroll);
             _this.addChild(scrollbar);
-            var badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.NONE);
+            var badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.NONE);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.BRONZE);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.BRONZE);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.SILVER);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.SILVER);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.GOLD);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.GOLD);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
             scroll.addObject(badge);
             return _this;
         }
@@ -5750,17 +5801,17 @@ define("menus/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "m
     }(BaseUI_8.BaseUI));
     exports.MenuUI = MenuUI;
 });
-define("utils/ScoreTracker", ["require", "exports", "JMGE/JMBL", "game/data/Misc", "utils/SaveData"], function (require, exports, JMBL, Misc_14, SaveData_1) {
+define("utils/ScoreTracker", ["require", "exports", "JMGE/JMBL", "game/data/Misc", "utils/SaveData"], function (require, exports, JMBL, Misc_15, SaveData_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ScoreTracker = (function () {
         function ScoreTracker() {
             var _this = this;
-            this.extrinsic = SaveData_1.SaveData.getExtrinsic();
+            this.extrinsic = SaveData_2.SaveData.getExtrinsic();
             var scores = this.extrinsic.data.scores;
             var achieves = this.extrinsic.data.badges;
             if (!achieves[1]) {
-                JMBL.events.add(Misc_14.GameEvents.NOTIFY_SET_SCORE, function () { return _this.toggleAchieve(1); });
+                JMBL.events.add(Misc_15.GameEvents.NOTIFY_SET_SCORE, function () { return _this.toggleAchieve(1); });
             }
         }
         ScoreTracker.prototype.init = function () {
@@ -5768,14 +5819,14 @@ define("utils/ScoreTracker", ["require", "exports", "JMGE/JMBL", "game/data/Misc
         ScoreTracker.prototype.toggleAchieve = function (i) {
             if (!this.extrinsic.data.badges[i]) {
                 this.extrinsic.data.badges[i] = true;
-                JMBL.events.publish(Misc_14.GameEvents.NOTIFY_ACHIEVEMENT, i);
+                JMBL.events.publish(Misc_15.GameEvents.NOTIFY_ACHIEVEMENT, i);
             }
         };
         return ScoreTracker;
     }());
     exports.ScoreTracker = ScoreTracker;
 });
-define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_8, MenuUI_1, Config_15, SaveData_2) {
+define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_8, MenuUI_1, Config_15, SaveData_3) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -5785,13 +5836,13 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI
                 this._Resolution = Config_15.CONFIG.INIT.RESOLUTION;
                 this.init = function () {
                     initializeDatas();
-                    SaveData_2.SaveData.init();
+                    SaveData_3.SaveData.init();
                     _this.currentModule = new MenuUI_1.MenuUI();
                     _this.currentModule.navOut = _this.updateCurrentModule;
                     _this.app.stage.addChild(_this.currentModule);
                 };
                 this.updateCurrentModule = function (o) {
-                    SaveData_2.SaveData.saveExtrinsic(function () {
+                    SaveData_3.SaveData.saveExtrinsic(function () {
                         if (_this.currentModule.dispose) {
                             _this.currentModule.dispose();
                         }
@@ -5804,7 +5855,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "menus/MenuUI
                     });
                 };
                 this.saveCallback = function (finish) {
-                    SaveData_2.SaveData.saveExtrinsic(finish);
+                    SaveData_3.SaveData.saveExtrinsic(finish);
                 };
                 if (Facade.exists)
                     throw new Error('Cannot instatiate more than one Facade Singleton.');

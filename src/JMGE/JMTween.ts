@@ -46,14 +46,15 @@ let _tick = (time: number) => {
 
 export class JMTween<T = any> {
   public running = false;
-  public tickThis: (tick: number) => void;
-  private started = false;
+  public tickThis: (time: number) => void;
 
   private onUpdateCallback: (object: T) => void;
   private onCompleteCallback: (object: T) => void;
   private onWaitCompleteCallback: (object: T) => void;
   private properties: ITweenProperty[] = [];
   private hasWait: boolean;
+
+  // private nextTween: JMTween;
 
   private _Easing: (percent: number) => number;
 
@@ -105,11 +106,10 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public complete = () => {
+  public complete = (time: number) => {
     this.running = false;
 
     _remove(this);
-    console.log('DONE!');
 
     this.properties.forEach(property => {
       this.object[property.key] = property.end;
@@ -118,11 +118,14 @@ export class JMTween<T = any> {
     this.tickThis = () => {};
     if (this.onCompleteCallback) this.onCompleteCallback(this.object);
 
+    // if (this.nextTween) {
+    //   this.nextTween.start();
+    //   this.nextTween.tickThis(time);
+    // }
     return this;
   }
 
   public reset = () => {
-    this.started = false;
     this.tickThis = this.firstTick;
     if (this.waitTime) this.hasWait = true;
 
@@ -181,15 +184,19 @@ export class JMTween<T = any> {
     return this;
   }
 
+  // public thenTween<U>(nextObj: U) {
+  //   this.nextTween = new JMTween<U>(nextObj);
+
+  //   return this.nextTween;
+  // }
+
   private firstTick = (time: number) => {
-    this.started = true;
     if (this.hasWait) {
       this.startTime = time + this.waitTime;
     } else {
       this.startTime = time;
     }
     this.endTime = this.startTime + (this.totalTime || 0);
-    console.log('START', time, this.endTime);
     this.tickThis = this.tailTick;
   }
 
@@ -200,7 +207,7 @@ export class JMTween<T = any> {
     }
 
     if (time > this.endTime) {
-      this.complete();
+      this.complete(time);
     } else if (time > this.startTime) {
       let raw = (time - this.startTime) / this.totalTime;
       let eased: number = this._Easing ? this._Easing(raw) : raw;

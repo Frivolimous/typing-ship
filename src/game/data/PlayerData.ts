@@ -32,7 +32,7 @@ export class ExtrinsicModel {
 
   constructor(public data?: IExtrinsicData) {
     if (!data) {
-      data = {
+      this.data = {
         badges: [],
         levels: [],
         scores: {
