@@ -3,7 +3,7 @@ import * as JMBL from '../JMGE/JMBL';
 import { FlyingText } from '../JMGE/effects/FlyingText';
 import { Gauge } from '../JMGE/JMBUI';
 import { TextObject } from './text/TextObject';
-import { GameEvents, ISetProgress } from './data/Misc';
+import { GameEvents, IProgressEvent, IWordEvent, IScoreEvent, IHealthEvent } from './engine/GameEvents';
 
 export class GameUI extends PIXI.Container {
   public healthBar: Gauge;
@@ -32,21 +32,21 @@ export class GameUI extends PIXI.Container {
     this.healthBar.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.healthBar);
 
-    JMBL.events.ticker.add(this.update);
-    JMBL.events.add(GameEvents.NOTIFY_UPDATE_INPUT_WORD, this.updateText);
-    JMBL.events.add(GameEvents.NOTIFY_LETTER_DELETED, this.showMinusText);
-    JMBL.events.add(GameEvents.NOTIFY_SET_SCORE, this.setScore);
-    JMBL.events.add(GameEvents.NOTIFY_SET_PROGRESS, this.updateProgress);
-    JMBL.events.add(GameEvents.NOTIFY_SET_HEALTH, this.setPlayerHealth);
+    GameEvents.ticker.add(this.update);
+    GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
+    GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
+    GameEvents.NOTIFY_SET_SCORE.addListener(this.setScore);
+    GameEvents.NOTIFY_SET_PROGRESS.addListener(this.updateProgress);
+    GameEvents.NOTIFY_SET_HEALTH.addListener(this.setPlayerHealth);
   }
 
   public dispose() {
-    JMBL.events.ticker.remove(this.update);
-    JMBL.events.remove(GameEvents.NOTIFY_UPDATE_INPUT_WORD, this.updateText);
-    JMBL.events.remove(GameEvents.NOTIFY_LETTER_DELETED, this.showMinusText);
-    JMBL.events.remove(GameEvents.NOTIFY_SET_SCORE, this.setScore);
-    JMBL.events.remove(GameEvents.NOTIFY_SET_PROGRESS, this.updateProgress);
-    JMBL.events.remove(GameEvents.NOTIFY_SET_HEALTH, this.setPlayerHealth);
+    GameEvents.ticker.remove(this.update);
+    GameEvents.NOTIFY_UPDATE_INPUT_WORD.removeListener(this.updateText);
+    GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.showMinusText);
+    GameEvents.NOTIFY_SET_SCORE.removeListener(this.setScore);
+    GameEvents.NOTIFY_SET_PROGRESS.removeListener(this.updateProgress);
+    GameEvents.NOTIFY_SET_HEALTH.removeListener(this.setPlayerHealth);
     this.destroy();
   }
 
@@ -54,25 +54,25 @@ export class GameUI extends PIXI.Container {
 
   }
 
-  public updateProgress = (e: ISetProgress) => {
+  public updateProgress = (e: IProgressEvent) => {
     let progress = Math.min(100, Math.round(e.current / e.total * 100));
     this.progress.text = String(progress) + '%';
   }
 
-  public updateText = (s: string) => {
-    this.wordDisplay.text = s;
+  public updateText = (e: IWordEvent) => {
+    this.wordDisplay.text = e.word;
   }
 
   public showMinusText = () => {
     new FlyingText('-1', { fontFamily: 'Arial', fontSize: 14, fill: 0xff0000 }, this.wordDisplay.x + this.wordDisplay.width, this.wordDisplay.y, this);
   }
 
-  public setScore = (score: number) => {
-    this.score.text = String(score);
+  public setScore = (e: IScoreEvent) => {
+    this.score.text = String(e.newScore);
   }
 
-  public setPlayerHealth = (i: number) => {
-    this.healthBar.setValue(i, 5);
+  public setPlayerHealth = (e: IHealthEvent) => {
+    this.healthBar.setValue(e.newHealth, 5);
   }
 
   public addHealWord = (healWord: TextObject) => {

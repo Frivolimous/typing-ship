@@ -1,5 +1,4 @@
-import * as JMBL from '../../JMGE/JMBL';
-import { GameEvents } from '../data/Misc';
+import { GameEvents, IPauseEvent } from './GameEvents';
 import { AchievementPopup } from '../ui/AchievementPopup';
 import { ExtrinsicModel, Badges } from '../data/PlayerData';
 import { SaveData } from '../../utils/SaveData';
@@ -14,24 +13,43 @@ export class AchievementManager {
     console.log(this.extrinsic);
 
     if (!this.extrinsic.data.badges[Badges.CONQUEROR_GOLD]) {
-      JMBL.events.add(GameEvents.NOTIFY_OBJECT_WORD_COMPLETED, this.wordCompleted);
+      GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
     }
-    JMBL.events.add(GameEvents.REQUEST_PAUSE_GAME, this.onPause);
+
+    // SOLDIER_BRONZE,
+    // SOLDIER_SILVER,
+    // SOLDIER_GOLD,
+    // CONQUEROR_BRONZE,
+    // CONQUEROR_SILVER,
+    // CONQUEROR_GOLD,
+    // RIDDLER_BRONZE,
+    // RIDDLER_SILVER,
+    // RIDDLER_GOLD,
+    // DEFENDER_BRONZE, DEFENDER_SILVER, DEFENDER_GOLD,
+    // PERFECTION_BRONZE,
+    // PERFECTION_SILVER,
+    // PERFECTION_GOLD,
+    // EXPLORER_BRONZE,
+    // EXPLORER_SILVER,
+    // EXPLORER_GOLD,
+    GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
   }
 
-  private wordCompleted = (n: number) => {
+  private wordCompleted = (e: {word: string}) => {
     this.currentPopup = new AchievementPopup('you finished 1 word!');
     // JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, true);
     this.canvas.addChild(this.currentPopup);
     this.extrinsic.data.badges[0] = true;
     SaveData.saveExtrinsic();
-    JMBL.events.remove(GameEvents.NOTIFY_OBJECT_WORD_COMPLETED, this.wordCompleted);
+    GameEvents.NOTIFY_WORD_COMPLETED.removeListener(this.wordCompleted);
   }
 
-  private onPause = (b: boolean) => {
-    if (!b) {
-      this.currentPopup.destroy();
-      this.currentPopup = null;
+  private onPause = (e: IPauseEvent) => {
+    if (!e.paused) {
+      if (this.currentPopup) {
+        this.currentPopup.destroy();
+        this.currentPopup = null;
+      }
     }
   }
 }

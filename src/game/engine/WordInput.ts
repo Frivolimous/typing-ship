@@ -1,7 +1,7 @@
 import { TextObject } from '../text/TextObject';
 import * as JMBL from '../../JMGE/JMBL';
-import { GameEvents } from '../data/Misc';
 import { PlayerShip } from '../objects/PlayerShip';
+import { GameEvents, IHealthEvent, IWordEvent } from './GameEvents';
 
 export class WordInput {
   public static OVERFLOW_DURATION: number = 100;
@@ -9,25 +9,25 @@ export class WordInput {
   public text: string = '';
   public healWord: TextObject = new TextObject(0, 0, null, () => {
     this.healWord.dispose();
-    JMBL.events.publish(GameEvents.REQUEST_HEAL_PLAYER, 1);
+    GameEvents.REQUEST_HEAL_PLAYER.publish({amount: 1});
   });
   public overflow: [string, number][] = [];
 
   private overflowTimer: number = 0;
 
   constructor() {
-    JMBL.events.add(GameEvents.NOTIFY_SET_HEALTH, this.checkHealth);
-    JMBL.events.add(GameEvents.REQUEST_OVERFLOW_WORD, this.addOverflow);
-    JMBL.events.ticker.add(this.update);
+    GameEvents.NOTIFY_SET_HEALTH.addListener(this.checkHealth);
+    GameEvents.REQUEST_OVERFLOW_WORD.addListener(this.addOverflow);
+    GameEvents.ticker.add(this.update);
   }
 
   public dispose() {
     if (this.healWord) {
       this.healWord.dispose();
     }
-    JMBL.events.remove(GameEvents.NOTIFY_SET_HEALTH, this.checkHealth);
-    JMBL.events.remove(GameEvents.REQUEST_OVERFLOW_WORD, this.addOverflow);
-    JMBL.events.ticker.remove(this.update);
+    GameEvents.NOTIFY_SET_HEALTH.removeListener(this.checkHealth);
+    GameEvents.REQUEST_OVERFLOW_WORD.removeListener(this.addOverflow);
+    GameEvents.ticker.remove(this.update);
   }
 
   public addLetter(letter: string) {
@@ -63,7 +63,7 @@ export class WordInput {
       }
       if (this.testWord('pause')) {
         this.removeWord('pause');
-        JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, true);
+        GameEvents.REQUEST_PAUSE_GAME.publish({paused: true});
         this.finishAddLetter();
         return;
       }
@@ -74,8 +74,9 @@ export class WordInput {
   public deleteLetters(i: number) {
     if (this.text.length > 0) {
       this.text = this.text.substr(0, this.text.length - i);
-      JMBL.events.publish(GameEvents.NOTIFY_LETTER_DELETED, i);
-      JMBL.events.publish(GameEvents.NOTIFY_UPDATE_INPUT_WORD, this.text);
+
+      GameEvents.NOTIFY_LETTER_DELETED.publish({numDeleted: i});
+      GameEvents.NOTIFY_UPDATE_INPUT_WORD.publish({word: this.text});
     }
   }
 
@@ -103,9 +104,9 @@ export class WordInput {
     if (this.text.length > 20) {
       let i = this.text.length - 20;
       this.text = this.text.substring(i);
-      JMBL.events.publish(GameEvents.NOTIFY_LETTER_DELETED, i);
+      GameEvents.NOTIFY_LETTER_DELETED.publish({numDeleted: i});
     }
-    JMBL.events.publish(GameEvents.NOTIFY_UPDATE_INPUT_WORD, this.text);
+    GameEvents.NOTIFY_UPDATE_INPUT_WORD.publish({word: this.text});
   }
 
   private testWord(word: string): boolean {
@@ -113,24 +114,24 @@ export class WordInput {
   }
 
   private removeWord(word: string) {
-    JMBL.events.publish(GameEvents.NOTIFY_WORD_COMPLETED, word);
+    GameEvents.NOTIFY_WORD_COMPLETED.publish({word});
     this.text = this.text.substr(0, this.text.length - word.length);
   }
 
-  private checkHealth = (health: number) => {
-    if (health < PlayerShip.MAX_HEALTH) {
+  private checkHealth = (e: IHealthEvent) => {
+    if (e.newHealth < PlayerShip.MAX_HEALTH) {
       if (!this.healWord.hasWord()) {
         this.healWord.newWord(8);
       }
-      this.healWord.setPriority(Math.min(3, 4 - health));
-    } else if (health >= PlayerShip.MAX_HEALTH) {
+      this.healWord.setPriority(Math.min(3, 4 - e.newHealth));
+    } else if (e.newHealth >= PlayerShip.MAX_HEALTH) {
       if (this.healWord) {
         this.healWord.dispose();
       }
     }
   }
 
-  private addOverflow = (word: string) => {
-    this.overflow.push([word, (this.overflowTimer + WordInput.OVERFLOW_DURATION - 1) % WordInput.OVERFLOW_DURATION]);
+  private addOverflow = (e: IWordEvent) => {
+    this.overflow.push([e.word, (this.overflowTimer + WordInput.OVERFLOW_DURATION - 1) % WordInput.OVERFLOW_DURATION]);
   }
 }

@@ -1,5 +1,8 @@
 import * as _ from 'lodash';
 
+import { JMEvents } from './events/JMEvents';
+import { JMInteractionEvents } from './events/JMESelfRegister';
+
 export let initialized: boolean = false;
 export let interactionMode: string = 'desktop';
 
@@ -7,7 +10,6 @@ export function setInteractionMode(s: string) {
   this.interactionMode = s;
 }
 export function init(app: PIXI.Application) {
-  app.ticker.add(events.onTick);
   textures.renderer = app.renderer;
   inputManager.init(app);
   initialized = true;
@@ -31,128 +33,6 @@ export const textures = new class {
     } else {
       return PIXI.Texture.WHITE;
     }
-  }
-}
-
-export enum EventType {
-  MOUSE_MOVE = 'mouseMove',
-  MOUSE_DOWN = 'mouseDown',
-  MOUSE_UP = 'mouseUp',
-  MOUSE_CLICK = 'mouseClick',
-  MOUSE_WHEEL = 'mouseWheel',
-
-  KEY_DOWN = 'keyDown',
-  KEY_UP = 'keyUp',
-
-  UI_OVER = 'uiOver',
-  UI_OFF = 'uiOff'
-}
-
-export const events = new class {
-  private registry: { [key: string]: JMERegister } = {};
-  private activeRegistry: JMERegister[] = [];
-  private tickEvents: Array<(delta?: number) => void> = [];
-
-  public clearAllEvents() {
-    this.registry = {};
-    this.activeRegistry = [];
-    this.tickEvents = [];
-  }
-  public ticker = {
-    add: (output: (delta?: number) => void) => events.tickEvents.push(output),
-    remove: (output: (delta?: number) => void) => _.pull(events.tickEvents, output),
-  }
-
-  private createRegister(type: string) {
-    this.registry[type] = new JMERegister;
-  }
-
-  add(type: string, output: (event: any) => void) {
-    if (!this.registry[type]) this.createRegister(type);
-
-    this.registry[type].listeners.push(output);
-  }
-
-  addOnce(type: string, output: (event: any) => void) {
-    if (!this.registry[type]) this.createRegister(type);
-
-    this.registry[type].once.push(output);
-  }
-
-  remove(type: string, output: (event: any) => void) {
-    if (this.registry[type]) {
-      _.pull(this.registry[type].listeners, output);
-    }
-  }
-
-  publish(type: string, event?: any) {
-    if (!this.registry[type]) this.createRegister(type);
-    this.registry[type].events.push(event);
-
-    if (!this.registry[type].active) {
-      this.registry[type].active = true;
-      this.activeRegistry.push(this.registry[type]);
-    }
-  }
-
-  selfPublish(register: JMERegister, event?: any, replaceCurrent?: boolean) {
-    if (replaceCurrent) {
-      register.events = [event];
-    } else {
-      register.events.push(event);
-    }
-    if (!register.active) {
-      register.active = true;
-      this.activeRegistry.push(register);
-    }
-  }
-
-  onTick = (delta: number) => {
-    while (this.activeRegistry.length > 0) {
-      let register = this.activeRegistry.shift();
-      register.active = false;
-
-      while (register.events.length > 0) {
-        let event = register.events.shift();
-        register.listeners.forEach(output => output(event));
-
-        while (register.once.length > 0) {
-          register.once.shift()(event);
-        }
-      }
-    }
-
-    this.tickEvents.forEach(output => output(delta));
-  }
-}
-
-class JMERegister {
-  listeners: Array<Function> = [];
-  once: Array<Function> = [];
-
-  events: Array<any> = [];
-  active: Boolean = false;
-}
-
-export class SelfRegister<T> extends JMERegister {
-  constructor(private onlyLast?: boolean) {
-    super();
-  }
-
-  add(output: (event: T) => void) {
-    this.listeners.push(output);
-  }
-
-  remove(output: (event: T) => void) {
-    _.pull(this.listeners, output);
-  }
-
-  addOnce(output: (event: T) => void) {
-    this.once.push(output);
-  }
-
-  publish(event?: T) {
-    events.selfPublish(this, event, this.onlyLast);
   }
 }
 
@@ -193,7 +73,7 @@ export const inputManager = new class {
   }
 
   onWheel = (e: WheelEvent) => {
-    events.publish(EventType.MOUSE_WHEEL, { mouse: this.mouse, deltaY: e.deltaY });
+    JMInteractionEvents.MOUSE_WHEEL.publish({mouse: this.mouse, deltaY: e.deltaY });
   }
 
   onKeyDown = (e: any) => {
@@ -203,7 +83,7 @@ export const inputManager = new class {
       case "Control": this.mouse.ctrlKey = true; break;
     }
 
-    events.publish(EventType.KEY_DOWN, { key: e.key });
+    JMInteractionEvents.KEY_DOWN.publish({key: e.key});
   }
 
   onKeyUp = (e: any) => {
@@ -211,7 +91,7 @@ export const inputManager = new class {
       case "Control": this.mouse.ctrlKey = false; break;
     }
 
-    events.publish(EventType.KEY_UP, { key: e.key });
+    JMInteractionEvents.KEY_UP.publish({ key: e.key });
   }
 }
 
@@ -318,11 +198,11 @@ export class MouseObject extends PIXI.Point {
         setTimeout(() => {
           this.timerRunning = false;
           if (this.down) {
-            events.publish(EventType.MOUSE_DOWN, this);
+            JMInteractionEvents.MOUSE_DOWN.publish(this);
           }
         }, MouseObject.HOLD);
       } else {
-        events.publish(EventType.MOUSE_DOWN, this);
+        JMInteractionEvents.MOUSE_DOWN.publish(this);
       }
     }
   }
@@ -338,9 +218,9 @@ export class MouseObject extends PIXI.Point {
       this.endDrag();
     } else {
       if (this.clickMode && this.timerRunning) {
-        events.publish(EventType.MOUSE_CLICK, this);
+        JMInteractionEvents.MOUSE_CLICK.publish(this);
       } else {
-        events.publish(EventType.MOUSE_UP, this);
+        JMInteractionEvents.MOUSE_UP.publish(this);
       }
     }
   }
@@ -369,7 +249,7 @@ export class MouseObject extends PIXI.Point {
       }
     }
 
-    events.publish(EventType.MOUSE_MOVE, this);
+    JMInteractionEvents.MOUSE_MOVE.publish(this);
   }
 }
 

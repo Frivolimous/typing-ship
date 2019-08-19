@@ -7,8 +7,8 @@ import { Laser } from '../../JMGE/effects/Laser';
 import { GameUI } from '../GameUI';
 import { CONFIG } from '../../Config';
 import { GameSprite } from '../objects/GameSprite';
-import { GameEvents } from '../data/Misc';
 import { TextObject } from '../text/TextObject';
+import { GameEvents } from './GameEvents';
 
 export enum DisplayLayer {
   DEFAULT,
@@ -178,9 +178,9 @@ export class ObjectManager extends PIXI.Container {
       let object = TextObject.allTextObjects[i];
       if (object.following) {
         if (object.following.toDestroy) {
-          let text = object.getText();
-          if (text) {
-            JMBL.events.publish(GameEvents.REQUEST_OVERFLOW_WORD, text);
+          let word = object.getText();
+          if (word) {
+            GameEvents.REQUEST_OVERFLOW_WORD.publish({word});
           }
           object.remove();
           i--;

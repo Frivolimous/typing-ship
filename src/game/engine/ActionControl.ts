@@ -124,7 +124,7 @@ export class ActionControl {
 
   public damagePlayer(amount: number = -1) {
     this.manager.container.makeExplosionAt(this.manager.player.x, this.manager.player.y, amount * -3);
-    this.manager.player.addHealth(-1);
+    this.manager.player.addHealth({amount: -1});
   }
 
   public enemyDestroyed = (enemy: GameSprite) => {

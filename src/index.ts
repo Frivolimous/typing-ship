@@ -3,7 +3,7 @@ import { TextureData } from './TextureData';
 import { MenuUI } from './menus/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
-import { ScoreTracker } from './utils/ScoreTracker';
+// import { ScoreTracker } from './utils/ScoreTracker';
 
 new class Facade {
   private static exists = false;

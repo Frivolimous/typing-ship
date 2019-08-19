@@ -78,7 +78,7 @@ export class BossShip2 extends BossShip {
                   this.manager.player.shieldTo(this.shieldCount * 0.2);
                 }
               } else {
-                this.manager.player.addHealth(-1);
+                this.manager.player.addHealth({amount: -1});
               }
             }
             if (this.delay === 0) {

@@ -2,6 +2,8 @@ import * as JMBUI from '../JMBUI';
 import * as JMBL from '../JMBL';
 import { ItemObject } from './ItemObject';
 import { ItemSlot } from './ItemSlot';
+import { JMEvents } from '../events/JMEvents';
+import { JMInteractionEvents } from '../events/JMESelfRegister';
 
 export interface IInventoryUI extends JMBUI.GraphicOptions {
   dragLayer: PIXI.Container;
@@ -60,7 +62,7 @@ export class InventoryWindow extends JMBUI.BasicElement {
       this.addChild(this.slots[i]);
     }
 
-    JMBL.events.add(JMBL.EventType.MOUSE_DOWN, this.mouseDown);
+    JMInteractionEvents.MOUSE_DOWN.addListener(this.mouseDown);
   }
 
   public getHeight = (): number => {

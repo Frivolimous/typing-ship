@@ -3,8 +3,8 @@ import { ICommand } from '../data/LevelData';
 import { CONFIG } from '../../Config';
 import { Scanner } from './Scanner';
 import * as JMBL from '../../JMGE/JMBL';
-import { GameEvents } from '../data/Misc';
 import { GameManager } from '../GameManager';
+import { GameEvents } from '../engine/GameEvents';
 
 export class BossShip extends GameSprite {
   public commands: ICommand[] = [{ x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];
@@ -121,8 +121,9 @@ export class BossShip extends GameSprite {
   }
 
   public injure = () => {
+    let oldHealth = this.health;
     this.health--;
-    JMBL.events.publish(GameEvents.NOTIFY_BOSS_DAMAGED, this.health);
+    GameEvents.NOTIFY_BOSS_DAMAGED.publish({oldHealth, newHealth: this.health});
     if (this.health === 0) {
       this.toDestroy = true;
       // killBoss

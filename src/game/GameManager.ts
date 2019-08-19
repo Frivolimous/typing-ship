@@ -13,7 +13,6 @@ import { EventInterpreter } from './engine/EventInterpreter';
 import { ActionControl } from './engine/ActionControl';
 import { ISpawnEvent } from './data/LevelData';
 import { WordInput } from './engine/WordInput';
-import { GameEvents } from './data/Misc';
 import { TextObject } from './text/TextObject';
 import { JMTween } from '../JMGE/JMTween';
 import { ScreenCover } from '../JMGE/effects/ScreenCover';
@@ -21,6 +20,9 @@ import { LossUI } from '../menus/LossUI';
 import { WinUI } from '../menus/WinUI';
 import { TutorialManager } from './engine/TutorialManager';
 import { AchievementManager } from './engine/AchievementManager';
+import { GameEvents, IPauseEvent, IDeleteEvent } from './engine/GameEvents';
+import { JMEvents } from '../JMGE/events/JMEvents';
+import { JMInteractionEvents } from '../JMGE/events/JMESelfRegister';
 
 export class GameManager extends BaseUI {
   public running = true;
@@ -62,21 +64,21 @@ export class GameManager extends BaseUI {
     this.addChild(this.starfield, this.container);
     this.container.addObject(this.player, DisplayLayer.DEFAULT);
 
-    JMBL.events.ticker.add(this.onTick);
-    JMBL.events.add(JMBL.EventType.KEY_DOWN, this.keyDown);
-    JMBL.events.add(GameEvents.NOTIFY_LETTER_DELETED, i => this.addScore(-i));
+    GameEvents.ticker.add(this.onTick);
+    JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
+    GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
 
-    JMBL.events.add(GameEvents.REQUEST_HEAL_PLAYER, this.player.addHealth);
-    JMBL.events.add(GameEvents.REQUEST_PAUSE_GAME, this.togglePause);
+    GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
+    GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
   }
 
   public dispose = () => {
-    JMBL.events.ticker.remove(this.onTick);
-    JMBL.events.remove(JMBL.EventType.KEY_DOWN, this.keyDown);
-    JMBL.events.remove(GameEvents.NOTIFY_LETTER_DELETED, i => this.addScore(-i));
+    GameEvents.ticker.remove(this.onTick);
+    JMInteractionEvents.KEY_DOWN.removeListener(this.keyDown);
+    GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.onLetterDelete);
 
-    JMBL.events.remove(GameEvents.REQUEST_HEAL_PLAYER, this.player.addHealth);
-    JMBL.events.remove(GameEvents.REQUEST_PAUSE_GAME, this.togglePause);
+    GameEvents.REQUEST_HEAL_PLAYER.removeListener(this.player.addHealth);
+    GameEvents.REQUEST_PAUSE_GAME.removeListener(this.togglePause);
 
     this.player.dispose();
     this.container.dispose();
@@ -87,14 +89,14 @@ export class GameManager extends BaseUI {
   public keyDown = (e: JMBL.IKeyboardEvent) => {
     if (!this.running || !this.interactive) {
       if (e.key === ' ') {
-        JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, false);
+        GameEvents.REQUEST_PAUSE_GAME.publish({paused: false});
         // this.togglePause();
       }
       return;
     }
     switch (e.key) {
       case 'Escape': this.navBack(); break;
-      case ' ': JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, true); break;
+      case ' ': GameEvents.REQUEST_PAUSE_GAME.publish({paused: true}); break;
       // case '=': this.gameSpeed += 1; break;
       // case '-': this.gameSpeed -= 1; break;
       case 'Backspace': this.wordInput.deleteLetters(1); break;
@@ -159,7 +161,7 @@ export class GameManager extends BaseUI {
     // 	}
     // }
 
-    JMBL.events.publish(GameEvents.NOTIFY_SET_PROGRESS, { current: this.levelEvents.distance, total: this.levelEvents.finalDistance });
+    GameEvents.NOTIFY_SET_PROGRESS.publish({ current: this.levelEvents.distance, total: this.levelEvents.finalDistance });
 
     if (!this.interactive) return;
     if (this.player.health <= 0 && !CONFIG.GAME.godmode) {
@@ -175,20 +177,26 @@ export class GameManager extends BaseUI {
     }
   }
 
-  public togglePause = (b: boolean) => {
+  public togglePause = (e: IPauseEvent) => {
     if (!this.interactive) return;
-    this.running = !b;
+    this.running = !e.paused;
     TextObject.allTextObjects.forEach(object => object.visible = this.running);
   }
 
+  public onLetterDelete = (e: IDeleteEvent) => {
+    this.addScore(-e.numDeleted);
+  }
+
   public setScore = (score: number) => {
+    let oldScore = this.score;
     this.score = score;
-    JMBL.events.publish(GameEvents.NOTIFY_SET_SCORE, this.score);
+    GameEvents.NOTIFY_SET_SCORE.publish({oldScore, newScore: this.score});
   }
 
   public addScore = (add: number) => {
+    let oldScore = this.score;
     this.score += add;
-    JMBL.events.publish(GameEvents.NOTIFY_SET_SCORE, this.score);
+    GameEvents.NOTIFY_SET_SCORE.publish({oldScore, newScore: this.score});
   }
 
   public addEnemy = (spawnEvent: ISpawnEvent): EnemyShip => {

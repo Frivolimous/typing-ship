@@ -2,10 +2,11 @@ import { GameSprite } from './GameSprite';
 import { ISpawnEvent } from '../data/LevelData';
 import { Charge } from '../../JMGE/effects/Charge';
 import { IEnemyConfig, EnemyData } from '../data/EnemyData';
-import { ActionType, GameEvents } from '../data/Misc';
+import { ActionType } from '../data/Misc';
 import { Turret } from './Turret';
 import * as JMBL from '../../JMGE/JMBL';
 import { CONFIG } from '../../Config';
+import { GameEvents } from '../engine/GameEvents';
 
 interface IEnemyCallbacks {
   onFire?: (enemy: EnemyShip, fires: ActionType) => void;
@@ -139,7 +140,7 @@ export class EnemyShip extends GameSprite {
       if (this.callbacks.onFinishCommands) {
         this.callbacks.onFinishCommands(this);
       }
-      JMBL.events.publish(GameEvents.NOTIFY_COMMANDS_COMPLETE, this);
+      GameEvents.NOTIFY_COMMANDS_COMPLETE.publish({object: this});
       return;
     }
     command = this.config.commands[0];

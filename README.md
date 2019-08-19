@@ -39,7 +39,8 @@ TO-DO:
 - RESPONSIVE
 
 #Systems
-- Achievements
+- Achievements - BASICS
 - Tutorials - BASICS
+- Level Scores
 - New Graphics
 - Sound FX

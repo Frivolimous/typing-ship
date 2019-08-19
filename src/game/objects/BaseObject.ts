@@ -1,7 +1,7 @@
 import { TextObject } from '../text/TextObject';
 import { DisplayLayer } from '../engine/ObjectManager';
-import { GameEvents } from '../data/Misc';
 import * as JMBL from '../../JMGE/JMBL';
+import { GameEvents } from '../engine/GameEvents';
 
 export class BaseObject extends PIXI.Container {
   public layer: DisplayLayer = DisplayLayer.DEFAULT;
@@ -50,7 +50,7 @@ export class BaseObject extends PIXI.Container {
   }
 
   public wordComplete = () => {
-    JMBL.events.publish(GameEvents.NOTIFY_OBJECT_WORD_COMPLETED, this);
+    GameEvents.NOTIFY_OBJECT_WORD_COMPLETED.publish({object: this});
     if (this.onWordComplete) {
       this.onWordComplete(this);
     }
