@@ -3,7 +3,7 @@ import * as JMBL from '../JMBL';
 import { ItemObject } from './ItemObject';
 import { ItemSlot } from './ItemSlot';
 import { JMEvents } from '../events/JMEvents';
-import { JMInteractionEvents } from '../events/JMESelfRegister';
+import { JMInteractionEvents } from '../events/JMERegister';
 
 export interface IInventoryUI extends JMBUI.GraphicOptions {
   dragLayer: PIXI.Container;

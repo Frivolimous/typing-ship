@@ -4,7 +4,7 @@ import { GameSprite } from '../objects/GameSprite';
 import { DisplayLayer } from './ObjectManager';
 import { Missile } from '../objects/Missile';
 import { EnemyShip } from '../objects/EnemyShip';
-import { ActionType } from '../data/Misc';
+import { ActionType } from '../data/Types';
 
 export class ActionControl {
   public missileCount: number = 0;

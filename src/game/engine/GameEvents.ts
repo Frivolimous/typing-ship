@@ -1,4 +1,4 @@
-import { JMERegister } from '../../JMGE/events/JMESelfRegister';
+import { JMERegister } from '../../JMGE/events/JMERegister';
 import { BaseObject } from '../objects/BaseObject';
 import { JMEvents } from '../../JMGE/events/JMEvents';
 

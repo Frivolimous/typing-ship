@@ -1,5 +1,5 @@
 import { ImageRepo } from '../../TextureData';
-import { ActionType } from './Misc';
+import { ActionType } from './Types';
 
 export interface IEnemyConfig {
   textureUrl: string;

@@ -119,6 +119,7 @@ export class WordInput {
   }
 
   private checkHealth = (e: IHealthEvent) => {
+    console.log('wicheck');
     if (e.newHealth < PlayerShip.MAX_HEALTH) {
       if (!this.healWord.hasWord()) {
         this.healWord.newWord(8);

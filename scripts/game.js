@@ -11,7 +11,54 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define("JMGE/events/JMEvents", ["require", "exports"], function (require, exports) {
+define("JMGE/events/JMERegister", ["require", "exports", "JMGE/events/JMEvents"], function (require, exports, JMEvents_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var JMERegister = (function () {
+        function JMERegister(onlyLastListener, onlyLastEvent) {
+            this.onlyLastListener = onlyLastListener;
+            this.onlyLastEvent = onlyLastEvent;
+            this.listeners = [];
+            this.once = [];
+            this.events = [];
+            this.active = false;
+        }
+        JMERegister.prototype.addListener = function (output) {
+            if (this.onlyLastListener) {
+                this.listeners = [output];
+            }
+            else {
+                this.listeners.push(output);
+            }
+        };
+        JMERegister.prototype.removeListener = function (output) {
+            var i = this.listeners.indexOf(output);
+            if (i >= 0) {
+                this.listeners.splice(i, 1);
+            }
+        };
+        JMERegister.prototype.addOnce = function (output) {
+            this.once.push(output);
+        };
+        JMERegister.prototype.publish = function (event) {
+            JMEvents_1.JMEvents.selfPublish(this, event, this.onlyLastEvent);
+        };
+        return JMERegister;
+    }());
+    exports.JMERegister = JMERegister;
+    exports.JMInteractionEvents = {
+        MOUSE_MOVE: new JMERegister(),
+        MOUSE_DOWN: new JMERegister(),
+        MOUSE_UP: new JMERegister(),
+        MOUSE_CLICK: new JMERegister(),
+        MOUSE_WHEEL: new JMERegister(),
+        KEY_DOWN: new JMERegister(),
+        KEY_UP: new JMERegister(),
+        UI_OVER: new JMERegister(),
+        UI_OFF: new JMERegister(),
+    };
+});
+define("JMGE/events/JMEvents", ["require", "exports", "lodash"], function (require, exports, _) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var JMEvents = (function () {
@@ -83,7 +130,8 @@ define("JMGE/events/JMEvents", ["require", "exports"], function (require, export
                 register.active = false;
                 var _loop_1 = function () {
                     var event_1 = register.events.shift();
-                    register.listeners.forEach(function (output) { return output(event_1); });
+                    var listeners = _.clone(register.listeners);
+                    listeners.forEach(function (output) { return output(event_1); });
                     while (register.once.length > 0) {
                         register.once.shift()(event_1);
                     }
@@ -111,54 +159,7 @@ define("JMGE/events/JMEvents", ["require", "exports"], function (require, export
     exports.JMEvents = JMEvents;
     requestAnimationFrame(JMEvents.onTick);
 });
-define("JMGE/events/JMESelfRegister", ["require", "exports", "JMGE/events/JMEvents"], function (require, exports, JMEvents_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var JMERegister = (function () {
-        function JMERegister(onlyLastListener, onlyLastEvent) {
-            this.onlyLastListener = onlyLastListener;
-            this.onlyLastEvent = onlyLastEvent;
-            this.listeners = [];
-            this.once = [];
-            this.events = [];
-            this.active = false;
-        }
-        JMERegister.prototype.addListener = function (output) {
-            if (this.onlyLastListener) {
-                this.listeners = [output];
-            }
-            else {
-                this.listeners.push(output);
-            }
-        };
-        JMERegister.prototype.removeListener = function (output) {
-            var i = this.listeners.indexOf(output);
-            if (i >= 0) {
-                this.listeners.splice(i, 1);
-            }
-        };
-        JMERegister.prototype.addOnce = function (output) {
-            this.once.push(output);
-        };
-        JMERegister.prototype.publish = function (event) {
-            JMEvents_1.JMEvents.selfPublish(this, event, this.onlyLastEvent);
-        };
-        return JMERegister;
-    }());
-    exports.JMERegister = JMERegister;
-    exports.JMInteractionEvents = {
-        MOUSE_MOVE: new JMERegister(),
-        MOUSE_DOWN: new JMERegister(),
-        MOUSE_UP: new JMERegister(),
-        MOUSE_CLICK: new JMERegister(),
-        MOUSE_WHEEL: new JMERegister(),
-        KEY_DOWN: new JMERegister(),
-        KEY_UP: new JMERegister(),
-        UI_OVER: new JMERegister(),
-        UI_OFF: new JMERegister(),
-    };
-});
-define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], function (require, exports, JMESelfRegister_1) {
+define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function (require, exports, JMERegister_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initialized = false;
@@ -221,7 +222,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
             var _this = this;
             this.MOUSE_HOLD = 200;
             this.onWheel = function (e) {
-                JMESelfRegister_1.JMInteractionEvents.MOUSE_WHEEL.publish({ mouse: _this.mouse, deltaY: e.deltaY });
+                JMERegister_1.JMInteractionEvents.MOUSE_WHEEL.publish({ mouse: _this.mouse, deltaY: e.deltaY });
             };
             this.onKeyDown = function (e) {
                 switch (e.key) {
@@ -231,7 +232,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
                         _this.mouse.ctrlKey = true;
                         break;
                 }
-                JMESelfRegister_1.JMInteractionEvents.KEY_DOWN.publish({ key: e.key });
+                JMERegister_1.JMInteractionEvents.KEY_DOWN.publish({ key: e.key });
             };
             this.onKeyUp = function (e) {
                 switch (e.key) {
@@ -239,7 +240,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
                         _this.mouse.ctrlKey = false;
                         break;
                 }
-                JMESelfRegister_1.JMInteractionEvents.KEY_UP.publish({ key: e.key });
+                JMERegister_1.JMInteractionEvents.KEY_UP.publish({ key: e.key });
             };
         }
         class_2.prototype.init = function (app) {
@@ -306,12 +307,12 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
                         setTimeout(function () {
                             _this.timerRunning = false;
                             if (_this.down) {
-                                JMESelfRegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
+                                JMERegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
                             }
                         }, MouseObject.HOLD);
                     }
                     else {
-                        JMESelfRegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
+                        JMERegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
                     }
                 }
             };
@@ -326,10 +327,10 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
                 }
                 else {
                     if (_this.clickMode && _this.timerRunning) {
-                        JMESelfRegister_1.JMInteractionEvents.MOUSE_CLICK.publish(_this);
+                        JMERegister_1.JMInteractionEvents.MOUSE_CLICK.publish(_this);
                     }
                     else {
-                        JMESelfRegister_1.JMInteractionEvents.MOUSE_UP.publish(_this);
+                        JMERegister_1.JMInteractionEvents.MOUSE_UP.publish(_this);
                     }
                 }
             };
@@ -354,7 +355,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMESelfRegister"], funct
                         _this.drag.move(_this);
                     }
                 }
-                JMESelfRegister_1.JMInteractionEvents.MOUSE_MOVE.publish(_this);
+                JMERegister_1.JMInteractionEvents.MOUSE_MOVE.publish(_this);
             };
             _this.down = config.down || false;
             _this.drag = config.drag || null;
@@ -1745,23 +1746,23 @@ define("game/text/TextObject", ["require", "exports", "game/data/WordList", "gam
     }(PIXI.Container));
     exports.TextObject = TextObject;
 });
-define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMESelfRegister", "JMGE/events/JMEvents"], function (require, exports, JMESelfRegister_2, JMEvents_3) {
+define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMERegister", "JMGE/events/JMEvents"], function (require, exports, JMERegister_2, JMEvents_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GameEvents = {
         ticker: JMEvents_3.JMEvents.ticker,
-        REQUEST_HEAL_PLAYER: new JMESelfRegister_2.JMERegister(),
-        REQUEST_PAUSE_GAME: new JMESelfRegister_2.JMERegister(),
-        REQUEST_OVERFLOW_WORD: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_UPDATE_INPUT_WORD: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_LETTER_DELETED: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_WORD_COMPLETED: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_OBJECT_WORD_COMPLETED: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_SET_SCORE: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_SET_PROGRESS: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_SET_HEALTH: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_BOSS_DAMAGED: new JMESelfRegister_2.JMERegister(),
-        NOTIFY_COMMANDS_COMPLETE: new JMESelfRegister_2.JMERegister(),
+        REQUEST_HEAL_PLAYER: new JMERegister_2.JMERegister(),
+        REQUEST_PAUSE_GAME: new JMERegister_2.JMERegister(),
+        REQUEST_OVERFLOW_WORD: new JMERegister_2.JMERegister(),
+        NOTIFY_UPDATE_INPUT_WORD: new JMERegister_2.JMERegister(),
+        NOTIFY_LETTER_DELETED: new JMERegister_2.JMERegister(),
+        NOTIFY_WORD_COMPLETED: new JMERegister_2.JMERegister(),
+        NOTIFY_OBJECT_WORD_COMPLETED: new JMERegister_2.JMERegister(),
+        NOTIFY_SET_SCORE: new JMERegister_2.JMERegister(),
+        NOTIFY_SET_PROGRESS: new JMERegister_2.JMERegister(),
+        NOTIFY_SET_HEALTH: new JMERegister_2.JMERegister(),
+        NOTIFY_BOSS_DAMAGED: new JMERegister_2.JMERegister(),
+        NOTIFY_COMMANDS_COMPLETE: new JMERegister_2.JMERegister(),
     };
 });
 define("game/objects/BaseObject", ["require", "exports", "game/text/TextObject", "game/engine/ObjectManager", "game/engine/GameEvents"], function (require, exports, TextObject_1, ObjectManager_1, GameEvents_1) {
@@ -2223,7 +2224,7 @@ define("game/objects/Shield", ["require", "exports", "JMGE/JMTween"], function (
     }(PIXI.Graphics));
     exports.Shield = Shield;
 });
-define("game/data/Misc", ["require", "exports"], function (require, exports) {
+define("game/data/Types", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ActionType;
@@ -2236,7 +2237,7 @@ define("game/data/Misc", ["require", "exports"], function (require, exports) {
         ActionType[ActionType["INSTANT"] = 5] = "INSTANT";
     })(ActionType = exports.ActionType || (exports.ActionType = {}));
 });
-define("game/objects/Turret", ["require", "exports", "game/objects/GameSprite", "TextureData", "game/data/Misc"], function (require, exports, GameSprite_1, TextureData_1, Misc_1) {
+define("game/objects/Turret", ["require", "exports", "game/objects/GameSprite", "TextureData", "game/data/Types"], function (require, exports, GameSprite_1, TextureData_1, Types_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Turret = (function (_super) {
@@ -2245,7 +2246,7 @@ define("game/objects/Turret", ["require", "exports", "game/objects/GameSprite", 
             var _this = _super.call(this) || this;
             _this.wordSize = 3;
             _this.addWord(3, 0);
-            _this.killBy = Misc_1.ActionType.LASER;
+            _this.killBy = Types_1.ActionType.LASER;
             _this.makeDisplay(TextureData_1.ImageRepo.turret, 0.1);
             return _this;
         }
@@ -3623,7 +3624,7 @@ define("JMGE/effects/Charge", ["require", "exports", "JMGE/others/Colors"], func
     }(PIXI.Graphics));
     exports.Charge = Charge;
 });
-define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/Misc"], function (require, exports, TextureData_2, Misc_2) {
+define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/Types"], function (require, exports, TextureData_2, Types_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.EnemyData = {
@@ -3635,8 +3636,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 4,
             value: 5,
             moveSpeed: 1,
-            fires: Misc_2.ActionType.MISSILE,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.MISSILE,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(0, 0),
         },
         sl: {
@@ -3647,8 +3648,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 5,
             value: 6,
             moveSpeed: 0.9,
-            fires: Misc_2.ActionType.LASER,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.LASER,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(0, -18),
         },
         ss: {
@@ -3659,8 +3660,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 3,
             value: 5,
             moveSpeed: 0.8,
-            fires: Misc_2.ActionType.SUICIDE,
-            killBy: Misc_2.ActionType.LASER,
+            fires: Types_2.ActionType.SUICIDE,
+            killBy: Types_2.ActionType.LASER,
             firePoint: new PIXI.Point(0, 0),
         },
         mm: {
@@ -3671,8 +3672,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 6,
             value: 6,
             moveSpeed: 0.8,
-            fires: Misc_2.ActionType.MISSILE,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.MISSILE,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(0, 0),
         },
         ml: {
@@ -3683,8 +3684,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 7,
             value: 7,
             moveSpeed: 0.7,
-            fires: Misc_2.ActionType.LASER,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.LASER,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(-1, -28),
         },
         ms: {
@@ -3695,8 +3696,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 3,
             value: 6,
             moveSpeed: 1,
-            fires: Misc_2.ActionType.SUICIDE,
-            killBy: Misc_2.ActionType.LASER,
+            fires: Types_2.ActionType.SUICIDE,
+            killBy: Types_2.ActionType.LASER,
             firePoint: new PIXI.Point(0, 0),
         },
         lm: {
@@ -3707,8 +3708,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 8,
             value: 8,
             moveSpeed: 0.75,
-            fires: Misc_2.ActionType.MISSILE,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.MISSILE,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(0, 0),
         },
         ll: {
@@ -3719,8 +3720,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 9,
             value: 9,
             moveSpeed: 0.65,
-            fires: Misc_2.ActionType.LASER,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.LASER,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(-3, -35),
         },
         xm: {
@@ -3731,8 +3732,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 7,
             value: 8,
             moveSpeed: 0.9,
-            fires: Misc_2.ActionType.AUTO_MISSILE,
-            killBy: Misc_2.ActionType.MISSILE,
+            fires: Types_2.ActionType.AUTO_MISSILE,
+            killBy: Types_2.ActionType.MISSILE,
             firePoint: new PIXI.Point(0, 0),
         },
         nl: {
@@ -3743,8 +3744,8 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             wordSize: 7,
             value: 0,
             moveSpeed: 1,
-            fires: Misc_2.ActionType.LASER,
-            killBy: Misc_2.ActionType.EMP,
+            fires: Types_2.ActionType.LASER,
+            killBy: Types_2.ActionType.EMP,
             firePoint: new PIXI.Point(0, -10),
             turnRate: 0,
         },
@@ -3758,7 +3759,7 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             moveSpeed: 7,
             turnRate: 0,
             turnRateAccel: 0.002,
-            killBy: Misc_2.ActionType.LASER,
+            killBy: Types_2.ActionType.LASER,
             health: 1,
         },
         enemy: {
@@ -3769,12 +3770,12 @@ define("game/data/EnemyData", ["require", "exports", "TextureData", "game/data/M
             moveSpeed: 2,
             turnRate: 0,
             turnRateAccel: 0.002,
-            killBy: Misc_2.ActionType.LASER,
+            killBy: Types_2.ActionType.LASER,
             health: 1,
         },
     };
 });
-define("game/objects/EnemyShip", ["require", "exports", "game/objects/GameSprite", "JMGE/effects/Charge", "game/data/EnemyData", "game/data/Misc", "game/objects/Turret", "game/engine/GameEvents"], function (require, exports, GameSprite_2, Charge_1, EnemyData_1, Misc_3, Turret_1, GameEvents_4) {
+define("game/objects/EnemyShip", ["require", "exports", "game/objects/GameSprite", "JMGE/effects/Charge", "game/data/EnemyData", "game/data/Types", "game/objects/Turret", "game/engine/GameEvents"], function (require, exports, GameSprite_2, Charge_1, EnemyData_1, Types_3, Turret_1, GameEvents_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var EnemyShip = (function (_super) {
@@ -3880,7 +3881,7 @@ define("game/objects/EnemyShip", ["require", "exports", "game/objects/GameSprite
                     break;
                 default: break;
             }
-            if (_this.fires === Misc_3.ActionType.LASER) {
+            if (_this.fires === Types_3.ActionType.LASER) {
                 _this.charge.time = 200;
                 _this.charge.x = _this.firePoint.x;
                 _this.charge.y = _this.firePoint.y;
@@ -4222,7 +4223,7 @@ define("game/objects/BossShip1", ["require", "exports", "game/objects/BossShip",
     }(BossShip_2.BossShip));
     exports.BossShip1 = BossShip1;
 });
-define("game/objects/ClearObject", ["require", "exports", "game/objects/GameSprite", "game/data/Misc"], function (require, exports, GameSprite_5, Misc_4) {
+define("game/objects/ClearObject", ["require", "exports", "game/objects/GameSprite", "game/data/Types"], function (require, exports, GameSprite_5, Types_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ClearObject = (function (_super) {
@@ -4231,7 +4232,7 @@ define("game/objects/ClearObject", ["require", "exports", "game/objects/GameSpri
             var _this = _super.call(this) || this;
             _this.addWord(wordSize);
             _this.onWordComplete = onWordComplete;
-            _this.killBy = Misc_4.ActionType.INSTANT;
+            _this.killBy = Types_4.ActionType.INSTANT;
             return _this;
         }
         return ClearObject;
@@ -4515,7 +4516,7 @@ define("game/objects/Missile", ["require", "exports", "game/objects/GameSprite",
     }(GameSprite_7.GameSprite));
     exports.Missile = Missile;
 });
-define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectManager", "game/objects/Missile", "game/data/Misc"], function (require, exports, ObjectManager_3, Missile_1, Misc_5) {
+define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectManager", "game/objects/Missile", "game/data/Types"], function (require, exports, ObjectManager_3, Missile_1, Types_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ActionControl = (function () {
@@ -4530,13 +4531,13 @@ define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectMa
                 }
                 else {
                     switch (enemy.killBy) {
-                        case Misc_5.ActionType.MISSILE:
+                        case Types_5.ActionType.MISSILE:
                             _this.shootPlayerMissile(player, enemy);
                             break;
-                        case Misc_5.ActionType.LASER:
+                        case Types_5.ActionType.LASER:
                             _this.shootPlayerLaser(player, enemy);
                             break;
-                        case Misc_5.ActionType.INSTANT:
+                        case Types_5.ActionType.INSTANT:
                         default:
                             enemy.dispose();
                             break;
@@ -4545,16 +4546,16 @@ define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectMa
             };
             this.enemyFires = function (player, enemy) {
                 switch (enemy.fires) {
-                    case Misc_5.ActionType.MISSILE:
+                    case Types_5.ActionType.MISSILE:
                         _this.shootEnemyMissile(enemy, player);
                         break;
-                    case Misc_5.ActionType.AUTO_MISSILE:
+                    case Types_5.ActionType.AUTO_MISSILE:
                         _this.shootEnemyMissile(enemy, player, true);
                         break;
-                    case Misc_5.ActionType.LASER:
+                    case Types_5.ActionType.LASER:
                         _this.shootEnemyLaser(enemy, player);
                         break;
-                    case Misc_5.ActionType.SUICIDE:
+                    case Types_5.ActionType.SUICIDE:
                         _this.shootSuicide(enemy, player);
                         break;
                 }
@@ -4668,6 +4669,7 @@ define("game/engine/WordInput", ["require", "exports", "game/text/TextObject", "
                 }
             };
             this.checkHealth = function (e) {
+                console.log('wicheck');
                 if (e.newHealth < PlayerShip_2.PlayerShip.MAX_HEALTH) {
                     if (!_this.healWord.hasWord()) {
                         _this.healWord.newWord(8);
@@ -4998,6 +5000,28 @@ define("game/data/PlayerData", ["require", "exports"], function (require, export
         return ExtrinsicModel;
     }());
     exports.ExtrinsicModel = ExtrinsicModel;
+    function calcHealthPercent(health, maxHealth, neverHurt) {
+        return neverHurt ? 2 : health / maxHealth;
+    }
+    exports.calcHealthPercent = calcHealthPercent;
+    function calcKillPercent(numKilled, numEnemies) {
+        return numKilled / numEnemies;
+    }
+    exports.calcKillPercent = calcKillPercent;
+    function calcScoreSteps(baseScore, healthPercent, killPercent, difficulty) {
+        var m = [];
+        var score = baseScore;
+        m.push(['LEVEL SCORE:', score]);
+        var diffMult = 1 + difficulty * 0.15;
+        score *= diffMult;
+        m.push(['DIFFICULTY BONUS x' + diffMult, score]);
+        score *= healthPercent;
+        m.push(['HEALTH BONUS x' + healthPercent, score]);
+        score *= killPercent;
+        m.push(['KILL BONUS x' + killPercent, score]);
+        return m;
+    }
+    exports.calcScoreSteps = calcScoreSteps;
 });
 define("game/ui/AchievementPopup", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_6) {
     "use strict";
@@ -5146,7 +5170,7 @@ define("game/engine/AchievementManager", ["require", "exports", "game/engine/Gam
     }());
     exports.AchievementManager = AchievementManager;
 });
-define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "JMGE/effects/ScreenCover", "menus/LossUI", "menus/WinUI", "game/engine/TutorialManager", "game/engine/AchievementManager", "game/engine/GameEvents", "JMGE/events/JMESelfRegister"], function (require, exports, ObjectManager_4, BaseUI_3, Starfield_1, Config_9, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, ScreenCover_3, LossUI_1, WinUI_1, TutorialManager_1, AchievementManager_1, GameEvents_10, JMESelfRegister_3) {
+define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/UI/BaseUI", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "JMGE/effects/ScreenCover", "menus/LossUI", "menus/WinUI", "game/engine/TutorialManager", "game/engine/AchievementManager", "game/engine/GameEvents", "JMGE/events/JMERegister"], function (require, exports, ObjectManager_4, BaseUI_3, Starfield_1, Config_9, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, ScreenCover_3, LossUI_1, WinUI_1, TutorialManager_1, AchievementManager_1, GameEvents_10, JMERegister_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameManager = (function (_super) {
@@ -5168,7 +5192,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.levelEnded = false;
             _this.dispose = function () {
                 GameEvents_10.GameEvents.ticker.remove(_this.onTick);
-                JMESelfRegister_3.JMInteractionEvents.KEY_DOWN.removeListener(_this.keyDown);
+                JMERegister_3.JMInteractionEvents.KEY_DOWN.removeListener(_this.keyDown);
                 GameEvents_10.GameEvents.NOTIFY_LETTER_DELETED.removeListener(_this.onLetterDelete);
                 GameEvents_10.GameEvents.REQUEST_HEAL_PLAYER.removeListener(_this.player.addHealth);
                 GameEvents_10.GameEvents.REQUEST_PAUSE_GAME.removeListener(_this.togglePause);
@@ -5294,7 +5318,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             _this.addChild(_this.starfield, _this.container);
             _this.container.addObject(_this.player, ObjectManager_4.DisplayLayer.DEFAULT);
             GameEvents_10.GameEvents.ticker.add(_this.onTick);
-            JMESelfRegister_3.JMInteractionEvents.KEY_DOWN.addListener(_this.keyDown);
+            JMERegister_3.JMInteractionEvents.KEY_DOWN.addListener(_this.keyDown);
             GameEvents_10.GameEvents.NOTIFY_LETTER_DELETED.addListener(_this.onLetterDelete);
             GameEvents_10.GameEvents.REQUEST_HEAL_PLAYER.addListener(_this.player.addHealth);
             GameEvents_10.GameEvents.REQUEST_PAUSE_GAME.addListener(_this.togglePause);
@@ -5535,7 +5559,7 @@ define("JMGE/UI/ItemSlot", ["require", "exports", "JMGE/JMBUI"], function (requi
     }(JMBUI.InteractiveElement));
     exports.ItemSlot = ItemSlot;
 });
-define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/ItemSlot", "JMGE/events/JMESelfRegister"], function (require, exports, JMBUI, ItemSlot_1, JMESelfRegister_4) {
+define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/ItemSlot", "JMGE/events/JMERegister"], function (require, exports, JMBUI, ItemSlot_1, JMERegister_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function baseEquipFunction(data, index) {
@@ -5623,7 +5647,7 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Item
                 _this.slots[i].y = options.startY + Math.floor(i / options.numAcross) * _this.slotHeight;
                 _this.addChild(_this.slots[i]);
             }
-            JMESelfRegister_4.JMInteractionEvents.MOUSE_DOWN.addListener(_this.mouseDown);
+            JMERegister_4.JMInteractionEvents.MOUSE_DOWN.addListener(_this.mouseDown);
             return _this;
         }
         InventoryWindow.prototype.linkWindows = function (window) {

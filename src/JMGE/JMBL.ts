@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { JMEvents } from './events/JMEvents';
-import { JMInteractionEvents } from './events/JMESelfRegister';
+import { JMInteractionEvents } from './events/JMERegister';
 
 export let initialized: boolean = false;
 export let interactionMode: string = 'desktop';

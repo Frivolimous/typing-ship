@@ -1,3 +1,6 @@
+import { JMERegister } from './JMERegister';
+import * as _ from 'lodash';
+
 export class JMEvents {
   public static ticker = {
     add: (output: () => void) => JMEvents.tickEvents.push(output),
@@ -72,7 +75,9 @@ export class JMEvents {
 
       while (register.events.length > 0) {
         let event = register.events.shift();
-        register.listeners.forEach(output => output(event));
+
+        let listeners = _.clone(register.listeners);
+        listeners.forEach(output => output(event));
 
         while (register.once.length > 0) {
           register.once.shift()(event);

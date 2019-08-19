@@ -22,7 +22,7 @@ import { TutorialManager } from './engine/TutorialManager';
 import { AchievementManager } from './engine/AchievementManager';
 import { GameEvents, IPauseEvent, IDeleteEvent } from './engine/GameEvents';
 import { JMEvents } from '../JMGE/events/JMEvents';
-import { JMInteractionEvents } from '../JMGE/events/JMESelfRegister';
+import { JMInteractionEvents } from '../JMGE/events/JMERegister';
 
 export class GameManager extends BaseUI {
   public running = true;

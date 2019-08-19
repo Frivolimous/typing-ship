@@ -1,7 +1,7 @@
 import { IJMERegister, JMEvents } from './JMEvents';
 import { MouseObject } from '../JMBL';
 
-export class JMERegister<T> implements IJMERegister<T> {
+export class JMERegister<T = any> implements IJMERegister<T> {
   public listeners: ((event: T) => void)[] = [];
   public once: ((event: T) => void)[] = [];
 
