@@ -1,5 +1,4 @@
-import { JMTween } from '../../JMGE/JMTween';
-import { ExtrinsicModel } from '../data/PlayerData';
+import { JMTween } from '../JMGE/JMTween';
 
 export class AchievementPopup extends PIXI.Container {
   constructor(text: string, tier: number = 0) {

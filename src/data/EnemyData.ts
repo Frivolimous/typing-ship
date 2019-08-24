@@ -1,4 +1,4 @@
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../TextureData';
 import { ActionType } from './Types';
 
 export interface IEnemyConfig {

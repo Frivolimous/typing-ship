@@ -1,6 +1,5 @@
-import * as JMBL from '../JMGE/JMBL';
 import * as JMBUI from '../JMGE/JMBUI';
-import { StringData } from '../game/data/StringData';
+import { StringData } from '../data/StringData';
 
 export class DifficultyPopup extends PIXI.Container {
   constructor(highscore: number, private callback: (i: number) => void) {

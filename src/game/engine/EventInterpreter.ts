@@ -1,4 +1,4 @@
-import { ILevelEvent, ISpawnEvent, getLevel, EventType, getBossLoop } from '../data/LevelData';
+import { ILevelEvent, ISpawnEvent, getLevel, EventType, getBossLoop } from '../../data/LevelData';
 import { BossShip } from '../objects/BossShip';
 
 export class EventInterpreter {
@@ -19,7 +19,6 @@ export class EventInterpreter {
     this.level = level;
     this.wpm = wpm;
     this.data = getLevel(level, wpm);
-    // console.log(JSON.stringify(this.data));
     this.finalDistance = this.data[this.data.length - 1].distance;
     this.distance = 0;
   }
@@ -35,13 +34,11 @@ export class EventInterpreter {
       let nextEvent = this.data.shift();
 
       switch (nextEvent.type) {
-        case EventType.JUMP: this.distance += nextEvent.jumpIndex; break;
         case EventType.LOOP:
           let tArray: ILevelEvent[] = getLevel(this.level, this.wpm).splice(nextEvent.jumpIndex);
           this.data = this.data.concat(tArray);
           break;
         case EventType.SPAWN:
-          // Facade.gameM.totalShips+=1;
           this.addShipCallback(nextEvent.spawnEvent);
           break;
         case EventType.BOSS: this.boss = this.addBossCallback(nextEvent.bossType); break;
@@ -66,5 +63,16 @@ export class EventInterpreter {
       return false;
     }
     return (this.data.length === 0);
+  }
+
+  public getTotalEnemies(): number {
+    let total = 0;
+    for (let data of this.data) {
+      if (data.type === EventType.SPAWN) {
+        total++;
+      }
+    }
+
+    return total;
   }
 }

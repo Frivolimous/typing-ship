@@ -1,7 +1,6 @@
 export enum EventType {
   LOOP,
   WAIT,
-  JUMP,
   SPAWN,
   BOSS,
 }
@@ -838,10 +837,6 @@ class MethodPack {
 
     this.array.push(m);
     return m;
-  }
-
-  public jump(jumpIndex: number = 0) {
-    this.array.push({ distance: this.distance, type: EventType.JUMP, jumpIndex });
   }
 
   public insert(insertAt: number) {

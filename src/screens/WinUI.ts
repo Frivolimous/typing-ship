@@ -1,12 +1,11 @@
 import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
-import { LevelSelectUI } from './LevelSelectUI';
 import { CONFIG } from '../Config';
-import { MuterOverlay } from './MuterOverlay';
+import { MuterOverlay } from '../ui/MuterOverlay';
 import { ScreenCover } from '../JMGE/effects/ScreenCover';
 
-const LABEL = 'CreditsUI';
-export class CreditsUI extends BaseUI {
+const LABEL = 'WinUI';
+export class WinUI extends BaseUI {
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
 
@@ -18,9 +17,9 @@ export class CreditsUI extends BaseUI {
     muter.y = this.getHeight() - muter.getHeight();
     this.addChild(muter);
 
-    // let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT))
-    //   .fadeOut(2000);
-    // this.addChild(screen);
+    let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), 0xffffff)
+      .fadeOut(500);
+    this.addChild(screen);
   }
 
   public navMenu = () => {

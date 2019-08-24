@@ -1,6 +1,6 @@
 import * as JMBUI from '../JMGE/JMBUI';
 import { TextureData } from '../TextureData';
-import { BadgeState } from '../game/data/PlayerData';
+import { BadgeState } from '../data/PlayerData';
 
 export class BadgeLine extends JMBUI.BasicElement {
   public symbol: PIXI.Sprite;

@@ -1,7 +1,7 @@
 import { GameSprite } from './GameSprite';
 import { ImageRepo } from '../../TextureData';
 import { Laser } from '../../JMGE/effects/Laser';
-import { ActionType } from '../data/Types';
+import { ActionType } from '../../data/Types';
 
 export class Turret extends GameSprite {
 

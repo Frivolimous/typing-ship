@@ -1,10 +1,10 @@
 import { BossShip } from './BossShip';
 import { EnemyShip } from './EnemyShip';
-import { GameManager } from '../GameManager';
 import { ImageRepo } from '../../TextureData';
 import { DisplayLayer } from '../engine/ObjectManager';
-import { boss0Suicides } from '../data/LevelData';
+import { boss0Suicides } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
+import { GameManager } from '../GameManager';
 
 export class BossShip0 extends BossShip {
   public objects: EnemyShip[] = [];

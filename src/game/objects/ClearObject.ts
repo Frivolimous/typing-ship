@@ -1,5 +1,5 @@
 import { GameSprite } from './GameSprite';
-import { ActionType } from '../data/Types';
+import { ActionType } from '../../data/Types';
 
 export class ClearObject extends GameSprite {
 

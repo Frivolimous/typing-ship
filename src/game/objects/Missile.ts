@@ -1,6 +1,6 @@
 import { GameSprite } from './GameSprite';
 import { PlayerShip } from './PlayerShip';
-import { MissileData, IMissileConfig } from '../data/EnemyData';
+import { MissileData, IMissileConfig } from '../../data/EnemyData';
 
 export interface IMissile {
   onComplete?: (target: GameSprite) => void;

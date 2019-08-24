@@ -1,10 +1,8 @@
 import * as JMBUI from '../JMGE/JMBUI';
-import * as JMBL from '../JMGE/JMBL';
-import { MenuUI } from './MenuUI';
 import { CONFIG } from '../Config';
 import { BaseUI } from '../JMGE/UI/BaseUI';
-import { GameManager } from '../game/GameManager';
-import { DifficultyPopup } from './DifficultyPopup';
+import { GameUI } from './GameUI';
+import { DifficultyPopup } from '../ui/DifficultyPopup';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -51,7 +49,7 @@ export class LevelSelectUI extends BaseUI {
 
   public startGame = () => {
     console.log(this.currentDifficulty);
-    this.navForward(new GameManager(this.currentLevel, this.currentDifficulty));
+    this.navForward(new GameUI(this.currentLevel, this.currentDifficulty));
     if (this.difficultyPopup) {
       this.difficultyPopup.destroy();
       this.difficultyPopup = null;

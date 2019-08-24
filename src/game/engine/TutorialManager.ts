@@ -1,5 +1,5 @@
 import * as JMBL from '../../JMGE/JMBL';
-import { TutorialPopup } from '../ui/TutorialPopup';
+import { TutorialPopup } from '../../ui/TutorialPopup';
 import { GameEvents, IHealthEvent, IPauseEvent } from './GameEvents';
 
 export class TutorialManager {

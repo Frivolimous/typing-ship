@@ -1,9 +1,9 @@
 import { BossShip } from './BossShip';
 import { CONFIG } from '../../Config';
 import { ClearObject } from './ClearObject';
-import { GameManager } from '../GameManager';
 import { GameSprite } from './GameSprite';
 import { ImageRepo } from '../../TextureData';
+import { GameManager } from '../GameManager';
 
 export class BossShip2 extends BossShip {
   public objects: GameSprite[] = [];

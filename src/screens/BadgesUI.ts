@@ -5,8 +5,8 @@ import { IInventoryUI, InventoryWindow } from '../JMGE/UI/InventoryUI';
 import { SaveData } from '../utils/SaveData';
 import { MenuUI } from './MenuUI';
 import { TextureData } from '../TextureData';
-import { BadgeState } from '../game/data/PlayerData';
-import { BadgeLine } from './BadgeLine';
+import { BadgeState } from '../data/PlayerData';
+import { BadgeLine } from '../ui/BadgeLine';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 
 export class BadgesUI extends BaseUI {

@@ -1,6 +1,6 @@
 import { GameEvents, IPauseEvent } from './GameEvents';
-import { AchievementPopup } from '../ui/AchievementPopup';
-import { ExtrinsicModel, Badges } from '../data/PlayerData';
+import { AchievementPopup } from '../../ui/AchievementPopup';
+import { ExtrinsicModel, Badges } from '../../data/PlayerData';
 import { SaveData } from '../../utils/SaveData';
 
 export class AchievementManager {

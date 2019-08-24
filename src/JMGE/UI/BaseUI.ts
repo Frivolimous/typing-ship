@@ -8,7 +8,7 @@ export class BaseUI extends JMBUI.BasicElement {
     super(UIConfig);
   }
 
-  protected navBack = () => {
+  public navBack = () => {
     if (!this.previousUI) {
       return;
     }

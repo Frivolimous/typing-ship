@@ -1,11 +1,10 @@
 import { CONFIG } from '../Config';
-import * as JMBL from '../JMGE/JMBL';
 import { FlyingText } from '../JMGE/effects/FlyingText';
 import { Gauge } from '../JMGE/JMBUI';
-import { TextObject } from './text/TextObject';
-import { GameEvents, IProgressEvent, IWordEvent, IScoreEvent, IHealthEvent } from './engine/GameEvents';
+import { TextObject } from '../game/text/TextObject';
+import { GameEvents, IProgressEvent, IWordEvent, IScoreEvent, IHealthEvent } from '../game/engine/GameEvents';
 
-export class GameUI extends PIXI.Container {
+export class GameUIElements extends PIXI.Container {
   public healthBar: Gauge;
 
   private wordDisplay: PIXI.Text;

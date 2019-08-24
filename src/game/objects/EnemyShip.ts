@@ -1,8 +1,8 @@
 import { GameSprite } from './GameSprite';
-import { ISpawnEvent } from '../data/LevelData';
+import { ISpawnEvent } from '../../data/LevelData';
 import { Charge } from '../../JMGE/effects/Charge';
-import { IEnemyConfig, EnemyData } from '../data/EnemyData';
-import { ActionType } from '../data/Types';
+import { IEnemyConfig, EnemyData } from '../../data/EnemyData';
+import { ActionType } from '../../data/Types';
 import { Turret } from './Turret';
 import * as JMBL from '../../JMGE/JMBL';
 import { CONFIG } from '../../Config';

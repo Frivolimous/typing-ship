@@ -1,4 +1,4 @@
-import { ExtrinsicModel } from '../game/data/PlayerData';
+import { ExtrinsicModel } from '../data/PlayerData';
 
 export class SaveData {
 

@@ -1,8 +1,8 @@
 import { BossShip } from './BossShip';
-import { GameManager } from '../GameManager';
 import { ImageRepo } from '../../TextureData';
-import { ISpawnEvent } from '../data/LevelData';
+import { ISpawnEvent } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
+import { GameManager } from '../GameManager';
 
 export class BossShip1 extends BossShip {
   public firePoints = [{ x: 2.3, y: 3 }, { x: 4, y: 4 }, { x: 5, y: 3.5 }, { x: 6, y: 3.5 }, { x: 7, y: 4 }, { x: 9.7, y: 3 }];

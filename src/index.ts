@@ -1,6 +1,6 @@
 import * as JMBL from './JMGE/JMBL';
 import { TextureData } from './TextureData';
-import { MenuUI } from './menus/MenuUI';
+import { MenuUI } from './screens/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
 // import { ScoreTracker } from './utils/ScoreTracker';

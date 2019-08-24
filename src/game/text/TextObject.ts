@@ -1,5 +1,5 @@
-import * as WordList from '../data/WordList';
-import { Fonts } from '../data/Fonts';
+import * as WordList from '../../data/WordList';
+import { Fonts } from '../../data/Fonts';
 import { BaseObject } from '../objects/BaseObject';
 
 export class TextObject extends PIXI.Container {

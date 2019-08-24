@@ -1,10 +1,8 @@
-import * as JMBL from '../../JMGE/JMBL';
 import * as _ from 'lodash';
 import { BaseObject } from '../objects/BaseObject';
 import { FlyingText } from '../../JMGE/effects/FlyingText';
 import { Firework } from '../../JMGE/effects/Firework';
 import { Laser } from '../../JMGE/effects/Laser';
-import { GameUI } from '../GameUI';
 import { CONFIG } from '../../Config';
 import { GameSprite } from '../objects/GameSprite';
 import { TextObject } from '../text/TextObject';
@@ -23,8 +21,6 @@ export class ObjectManager extends PIXI.Container {
 
   public layers: PIXI.Container[] = [];
 
-  public gameUI: GameUI = new GameUI();
-
   private objectsByLayer: BaseObject[][] = [];
 
   constructor() {
@@ -33,7 +29,6 @@ export class ObjectManager extends PIXI.Container {
     this.newLayer();
     this.newLayer();
     this.newLayer();
-    this.addChild(this.gameUI);
     this.newLayer();
   }
 
@@ -46,7 +41,6 @@ export class ObjectManager extends PIXI.Container {
       this.objects[0].dispose();
       this.objects.shift().destroy();
     }
-    this.gameUI.dispose();
     this.destroy();
   }
 

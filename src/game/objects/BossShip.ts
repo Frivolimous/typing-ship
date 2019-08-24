@@ -1,10 +1,9 @@
 import { GameSprite } from './GameSprite';
-import { ICommand } from '../data/LevelData';
+import { ICommand } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
 import { Scanner } from './Scanner';
-import * as JMBL from '../../JMGE/JMBL';
-import { GameManager } from '../GameManager';
 import { GameEvents } from '../engine/GameEvents';
+import { GameManager } from '../GameManager';
 
 export class BossShip extends GameSprite {
   public commands: ICommand[] = [{ x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];

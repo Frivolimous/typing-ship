@@ -1,7 +1,7 @@
 import { BaseObject } from './BaseObject';
 import { Shield } from './Shield';
 import { Turret } from './Turret';
-import { ICommand } from '../data/LevelData';
+import { ICommand } from '../../data/LevelData';
 
 export enum Animation {
   IDLE,

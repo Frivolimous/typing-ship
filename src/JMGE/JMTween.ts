@@ -140,12 +140,12 @@ export class JMTween<T = any> {
     this.running = true;
 
     this.properties.forEach(property => {
-      if (property.to) {
-        property.start = this.object[property.key];
+      if (property.to || property.to === 0) {
+        property.start = this.object[property.key] || 0;
         property.end = property.to;
-      } else if (property.from) {
+      } else if (property.from || property.from === 0) {
         property.start = property.from;
-        property.end = this.object[property.key];
+        property.end = this.object[property.key] || 0;
       }
 
       if (property.isColor) {

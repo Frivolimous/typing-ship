@@ -5,7 +5,7 @@ import { CONFIG } from '../Config';
 import { BadgesUI } from './BadgesUI';
 import { CreditsUI } from './CreditsUI';
 import { HighScoreUI } from './HighScoreUI';
-import { MuterOverlay } from './MuterOverlay';
+import { MuterOverlay } from '../ui/MuterOverlay';
 import { JMTween, JMEasing } from '../JMGE/JMTween';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
