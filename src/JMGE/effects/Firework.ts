@@ -1,5 +1,5 @@
-import * as JMBL from "../JMBL";
-import { JMEvents } from "../events/JMEvents";
+import * as JMBL from '../JMBL';
+import { JMTicker } from '../events/JMTicker';
 
 interface IFirework {
   x?: number;
@@ -21,11 +21,11 @@ export class Firework {
 
   static initialize() {
     if (!this.initialized) {
-      let firework: PIXI.Graphics = new PIXI.Graphics;
+      let firework = new PIXI.Graphics();
       firework.beginFill(0xffffff);
       firework.drawCircle(0, 0, 5);
-      Firework.TEXTURE = JMBL.textures.addTextureFromGraphic(firework);
-      JMEvents.ticker.add(this.onTick.bind(this));
+      Firework.TEXTURE = JMBL.sharedTextureCache.addTextureFromGraphic('firework', firework);
+      JMTicker.add(this.onTick.bind(this));
       this.initialized = true;
     }
   }

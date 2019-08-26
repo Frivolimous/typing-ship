@@ -1,7 +1,5 @@
 import { ObjectManager, DisplayLayer } from '../game/engine/ObjectManager';
-import { BaseUI } from '../JMGE/UI/BaseUI';
 import { Starfield } from '../JMGE/effects/Starfield';
-import * as JMBL from '../JMGE/JMBL';
 import { CONFIG } from '../Config';
 import { EnemyShip } from '../game/objects/EnemyShip';
 import { BossShip } from '../game/objects/BossShip';
@@ -14,15 +12,9 @@ import { ActionControl } from '../game/engine/ActionControl';
 import { ISpawnEvent } from '../data/LevelData';
 import { WordInput } from '../game/engine/WordInput';
 import { TextObject } from '../game/text/TextObject';
-import { JMTween } from '../JMGE/JMTween';
 import { ScreenCover } from '../JMGE/effects/ScreenCover';
-import { LossUI } from '../screens/LossUI';
-import { WinUI } from '../screens/WinUI';
-import { TutorialManager } from '../game/engine/TutorialManager';
-import { AchievementManager } from '../game/engine/AchievementManager';
 import { GameEvents, IPauseEvent, IDeleteEvent } from '../game/engine/GameEvents';
-import { JMEvents } from '../JMGE/events/JMEvents';
-import { JMInteractionEvents } from '../JMGE/events/JMERegister';
+import { JMInteractionEvents, IKeyboardEvent } from '../JMGE/events/JMInteractionEvents';
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
 
@@ -32,8 +24,7 @@ export class GameManager {
 
   public display = new  PIXI.Container();
   public container: ObjectManager = new ObjectManager();
-  public tutorials: TutorialManager = new TutorialManager(this.display);
-  public achievements: AchievementManager = new AchievementManager(this.display);
+
   public actionC: ActionControl = new ActionControl(this);
   public starfield: Starfield;
   public player: PlayerShip = new PlayerShip();
@@ -46,11 +37,8 @@ export class GameManager {
   constructor(level: number = 0, difficulty: number = 1, private ui: GameUI) {
     let gameSpeed = difficulty * 0.5;
 
-    // this.container.gameUI.addHealWord(this.wordInput.healWord);
-
     this.starfield = new Starfield(CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
 
-    // this.actionC.missileRate=Math.max(1,Math.min(WPM/150,0.3));
     this.actionC.missileRate = 0.4;
 
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
@@ -99,19 +87,16 @@ export class GameManager {
     this.display.destroy();
   }
 
-  public keyDown = (e: JMBL.IKeyboardEvent) => {
+  public keyDown = (e: IKeyboardEvent) => {
     if (!this.running || !this.interactive) {
       if (e.key === ' ') {
         GameEvents.REQUEST_PAUSE_GAME.publish({paused: false});
-        // this.togglePause();
       }
       return;
     }
     switch (e.key) {
       case 'Escape': this.ui.navBack(); break;
       case ' ': GameEvents.REQUEST_PAUSE_GAME.publish({paused: true}); break;
-      // case '=': this.levelInstance.gameSpeed += 1; break;
-      // case '-': this.levelInstance.gameSpeed -= 1; break;
       case 'Backspace': this.wordInput.deleteLetters(1); break;
       default: this.wordInput.addLetter(e.key); break;
     }

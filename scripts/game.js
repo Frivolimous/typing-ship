@@ -11,19 +11,40 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define("JMGE/events/JMERegister", ["require", "exports", "JMGE/events/JMEvents"], function (require, exports, JMEvents_1) {
+define("JMGE/events/JMEventListener", ["require", "exports", "lodash"], function (require, exports, _) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var JMERegister = (function () {
-        function JMERegister(onlyLastListener, onlyLastEvent) {
+    var JMEventListener = (function () {
+        function JMEventListener(onlyLastListener, onlyLastEvent) {
+            var _this = this;
             this.onlyLastListener = onlyLastListener;
             this.onlyLastEvent = onlyLastEvent;
             this.listeners = [];
             this.once = [];
             this.events = [];
             this.active = false;
+            this.clear = function () {
+                _this.listeners = [];
+                _this.once = [];
+                _this.events = [];
+                _this.active = false;
+            };
+            this.process = function () {
+                _this.active = false;
+                var _loop_1 = function () {
+                    var event_1 = _this.events.shift();
+                    var listeners = _.clone(_this.listeners);
+                    listeners.forEach(function (output) { return output(event_1); });
+                    while (_this.once.length > 0) {
+                        _this.once.shift()(event_1);
+                    }
+                };
+                while (_this.events.length > 0) {
+                    _loop_1();
+                }
+            };
         }
-        JMERegister.prototype.addListener = function (output) {
+        JMEventListener.prototype.addListener = function (output) {
             if (this.onlyLastListener) {
                 this.listeners = [output];
             }
@@ -31,135 +52,76 @@ define("JMGE/events/JMERegister", ["require", "exports", "JMGE/events/JMEvents"]
                 this.listeners.push(output);
             }
         };
-        JMERegister.prototype.removeListener = function (output) {
+        JMEventListener.prototype.removeListener = function (output) {
             var i = this.listeners.indexOf(output);
             if (i >= 0) {
                 this.listeners.splice(i, 1);
             }
         };
-        JMERegister.prototype.addOnce = function (output) {
+        JMEventListener.prototype.addOnce = function (output) {
             this.once.push(output);
         };
-        JMERegister.prototype.publish = function (event) {
-            JMEvents_1.JMEvents.selfPublish(this, event, this.onlyLastEvent);
+        JMEventListener.prototype.publish = function (event) {
+            this.events.push(event);
+            if (!this.active) {
+                requestAnimationFrame(this.process);
+                this.active = true;
+            }
         };
-        return JMERegister;
+        return JMEventListener;
     }());
-    exports.JMERegister = JMERegister;
-    exports.JMInteractionEvents = {
-        MOUSE_MOVE: new JMERegister(),
-        MOUSE_DOWN: new JMERegister(),
-        MOUSE_UP: new JMERegister(),
-        MOUSE_CLICK: new JMERegister(),
-        MOUSE_WHEEL: new JMERegister(),
-        KEY_DOWN: new JMERegister(),
-        KEY_UP: new JMERegister(),
-        UI_OVER: new JMERegister(),
-        UI_OFF: new JMERegister(),
-    };
+    exports.JMEventListener = JMEventListener;
 });
-define("JMGE/events/JMEvents", ["require", "exports", "lodash"], function (require, exports, _) {
+define("JMGE/events/JMInteractionEvents", ["require", "exports", "JMGE/events/JMEventListener"], function (require, exports, JMEventListener_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var JMEvents = (function () {
-        function JMEvents() {
-        }
-        JMEvents.ticker = {
-            add: function (output) { return JMEvents.tickEvents.push(output); },
-            addOnce: function (output) {
-                var m = function () {
-                    JMEvents.ticker.remove(m);
-                    output();
-                };
-                JMEvents.tickEvents.push(m);
-            },
-            remove: function (output) {
-                var i = JMEvents.tickEvents.indexOf(output);
-                if (i >= 0) {
-                    JMEvents.tickEvents.splice(i, 1);
-                }
-            },
-        };
-        JMEvents.clearAllEvents = function () {
-            JMEvents.registry = {};
-            JMEvents.activeRegistry = [];
-            JMEvents.tickEvents = [];
-        };
-        JMEvents.add = function (type, output) {
-            if (!JMEvents.registry[type])
-                JMEvents.createRegister(type);
-            JMEvents.registry[type].listeners.push(output);
-        };
-        JMEvents.addOnce = function (type, output) {
-            if (!JMEvents.registry[type])
-                JMEvents.createRegister(type);
-            JMEvents.registry[type].once.push(output);
-        };
-        JMEvents.remove = function (type, output) {
-            if (JMEvents.registry[type]) {
-                var i = JMEvents.registry[type].listeners.indexOf(output);
-                if (i >= 0) {
-                    JMEvents.registry[type].listeners.splice(i, 1);
-                }
-            }
-        };
-        JMEvents.publish = function (type, event) {
-            if (!JMEvents.registry[type])
-                JMEvents.createRegister(type);
-            JMEvents.registry[type].events.push(event);
-            if (!JMEvents.registry[type].active) {
-                JMEvents.registry[type].active = true;
-                JMEvents.activeRegistry.push(JMEvents.registry[type]);
-            }
-        };
-        JMEvents.selfPublish = function (register, event, replaceCurrent) {
-            if (replaceCurrent) {
-                register.events = [event];
-            }
-            else {
-                register.events.push(event);
-            }
-            if (!register.active) {
-                register.active = true;
-                JMEvents.activeRegistry.push(register);
-            }
-        };
-        JMEvents.onTick = function () {
-            while (JMEvents.activeRegistry.length > 0) {
-                var register = JMEvents.activeRegistry.shift();
-                register.active = false;
-                var _loop_1 = function () {
-                    var event_1 = register.events.shift();
-                    var listeners = _.clone(register.listeners);
-                    listeners.forEach(function (output) { return output(event_1); });
-                    while (register.once.length > 0) {
-                        register.once.shift()(event_1);
-                    }
-                };
-                while (register.events.length > 0) {
-                    _loop_1();
-                }
-            }
-            JMEvents.tickEvents.forEach(function (output) { return output(); });
-            requestAnimationFrame(JMEvents.onTick);
-        };
-        JMEvents.registry = {};
-        JMEvents.activeRegistry = [];
-        JMEvents.tickEvents = [];
-        JMEvents.createRegister = function (type) {
-            JMEvents.registry[type] = {
-                listeners: [],
-                once: [],
-                events: [],
-                active: false,
-            };
-        };
-        return JMEvents;
-    }());
-    exports.JMEvents = JMEvents;
-    requestAnimationFrame(JMEvents.onTick);
+    exports.JMInteractionEvents = {
+        MOUSE_MOVE: new JMEventListener_1.JMEventListener(),
+        MOUSE_DOWN: new JMEventListener_1.JMEventListener(),
+        MOUSE_UP: new JMEventListener_1.JMEventListener(),
+        MOUSE_CLICK: new JMEventListener_1.JMEventListener(),
+        MOUSE_WHEEL: new JMEventListener_1.JMEventListener(),
+        KEY_DOWN: new JMEventListener_1.JMEventListener(),
+        KEY_UP: new JMEventListener_1.JMEventListener(),
+        UI_OVER: new JMEventListener_1.JMEventListener(),
+        UI_OFF: new JMEventListener_1.JMEventListener(),
+    };
 });
-define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function (require, exports, JMERegister_1) {
+define("JMGE/others/JMTextureCache", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var JMTextureCache = (function () {
+        function JMTextureCache(renderer) {
+            var _this = this;
+            this.renderer = renderer;
+            this.cache = {};
+            this.addTextureFromGraphic = function (id, graphic) {
+                var m = _this.renderer.generateTexture(graphic);
+                if (_this.cache[id]) {
+                    console.warn('overwriting texture', id);
+                }
+                _this.cache[id] = m;
+                return m;
+            };
+            this.getTextureFromImage = function (url) {
+                var m = PIXI.Texture.from(url);
+                _this.cache[url] = m;
+                return m;
+            };
+            this.getTexture = function (id) {
+                if (_this.cache[id]) {
+                    return _this.cache[id];
+                }
+                else {
+                    return PIXI.Texture.WHITE;
+                }
+            };
+        }
+        return JMTextureCache;
+    }());
+    exports.JMTextureCache = JMTextureCache;
+});
+define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMInteractionEvents", "JMGE/others/JMTextureCache"], function (require, exports, JMInteractionEvents_1, JMTextureCache_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.initialized = false;
@@ -169,32 +131,11 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
     }
     exports.setInteractionMode = setInteractionMode;
     function init(app) {
-        exports.textures.renderer = app.renderer;
+        exports.sharedTextureCache = new JMTextureCache_1.JMTextureCache(app.renderer);
         exports.inputManager.init(app);
         exports.initialized = true;
     }
     exports.init = init;
-    exports.textures = new (function () {
-        function class_1() {
-            this.cache = {};
-        }
-        class_1.prototype.addTextureFromGraphic = function (graphic, id) {
-            var m = this.renderer.generateTexture(graphic);
-            if (id) {
-                this.cache[id] = m;
-            }
-            return m;
-        };
-        class_1.prototype.getTexture = function (id) {
-            if (this.cache[id]) {
-                return this.cache[id];
-            }
-            else {
-                return PIXI.Texture.WHITE;
-            }
-        };
-        return class_1;
-    }());
     var Rect = (function (_super) {
         __extends(Rect, _super);
         function Rect() {
@@ -218,11 +159,11 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
     }(PIXI.Rectangle));
     exports.Rect = Rect;
     exports.inputManager = new (function () {
-        function class_2() {
+        function class_1() {
             var _this = this;
             this.MOUSE_HOLD = 200;
             this.onWheel = function (e) {
-                JMERegister_1.JMInteractionEvents.MOUSE_WHEEL.publish({ mouse: _this.mouse, deltaY: e.deltaY });
+                JMInteractionEvents_1.JMInteractionEvents.MOUSE_WHEEL.publish({ mouse: _this.mouse, deltaY: e.deltaY });
             };
             this.onKeyDown = function (e) {
                 switch (e.key) {
@@ -232,7 +173,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
                         _this.mouse.ctrlKey = true;
                         break;
                 }
-                JMERegister_1.JMInteractionEvents.KEY_DOWN.publish({ key: e.key });
+                JMInteractionEvents_1.JMInteractionEvents.KEY_DOWN.publish({ key: e.key });
             };
             this.onKeyUp = function (e) {
                 switch (e.key) {
@@ -240,10 +181,10 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
                         _this.mouse.ctrlKey = false;
                         break;
                 }
-                JMERegister_1.JMInteractionEvents.KEY_UP.publish({ key: e.key });
+                JMInteractionEvents_1.JMInteractionEvents.KEY_UP.publish({ key: e.key });
             };
         }
-        class_2.prototype.init = function (app) {
+        class_1.prototype.init = function (app) {
             this.app = app;
             this.mouse = new MouseObject();
             this.mouse.addCanvas(app.stage);
@@ -251,7 +192,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
             window.addEventListener("keyup", this.onKeyUp);
             window.addEventListener("mousewheel", this.onWheel);
         };
-        return class_2;
+        return class_1;
     }());
     var MouseObject = (function (_super) {
         __extends(MouseObject, _super);
@@ -307,12 +248,12 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
                         setTimeout(function () {
                             _this.timerRunning = false;
                             if (_this.down) {
-                                JMERegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
+                                JMInteractionEvents_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
                             }
                         }, MouseObject.HOLD);
                     }
                     else {
-                        JMERegister_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
+                        JMInteractionEvents_1.JMInteractionEvents.MOUSE_DOWN.publish(_this);
                     }
                 }
             };
@@ -327,10 +268,10 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
                 }
                 else {
                     if (_this.clickMode && _this.timerRunning) {
-                        JMERegister_1.JMInteractionEvents.MOUSE_CLICK.publish(_this);
+                        JMInteractionEvents_1.JMInteractionEvents.MOUSE_CLICK.publish(_this);
                     }
                     else {
-                        JMERegister_1.JMInteractionEvents.MOUSE_UP.publish(_this);
+                        JMInteractionEvents_1.JMInteractionEvents.MOUSE_UP.publish(_this);
                     }
                 }
             };
@@ -355,7 +296,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
                         _this.drag.move(_this);
                     }
                 }
-                JMERegister_1.JMInteractionEvents.MOUSE_MOVE.publish(_this);
+                JMInteractionEvents_1.JMInteractionEvents.MOUSE_MOVE.publish(_this);
             };
             _this.down = config.down || false;
             _this.drag = config.drag || null;
@@ -406,7 +347,7 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMERegister"], function 
     }());
     exports.DragObject = DragObject;
 });
-define("TextureData", ["require", "exports"], function (require, exports) {
+define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache"], function (require, exports, JMTextureCache_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ImageRepo = {
@@ -434,66 +375,9 @@ define("TextureData", ["require", "exports"], function (require, exports) {
     var TextureData = (function () {
         function TextureData() {
         }
-        TextureData.init = function (_renderer) {
+        TextureData.init = function (renderer) {
+            TextureData.cache = new JMTextureCache_2.JMTextureCache(renderer);
             var _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawCircle(-25, -25, 25);
-            this.circle = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawCircle(-5, -5, 5);
-            this.smallCircle = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xcccccc);
-            _graphic.drawRoundedRect(0, 0, 30, 30, 5);
-            this.itemRect = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0, 0.3);
-            _graphic.drawEllipse(0, 0, 5, 2);
-            this.genericShadow = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff, 0.5);
-            _graphic.lineStyle(2, 0xffffff, 0.7);
-            _graphic.drawCircle(0, 0, 25);
-            this.clearCircle = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawRect(0, 0, 28, 28);
-            _graphic.beginFill(0x333333);
-            _graphic.drawCircle(14, 14, 14);
-            _graphic.beginFill(0xffffff);
-            _graphic.drawCircle(14, 14, 7);
-            this.mediumCircle = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawRect(0, 0, 28, 28);
-            _graphic.endFill();
-            _graphic.lineStyle(5, 0x333333);
-            _graphic.moveTo(2, 2);
-            _graphic.lineTo(26, 26);
-            _graphic.moveTo(26, 2);
-            _graphic.lineTo(2, 26);
-            this.wall = _renderer.generateTexture(_graphic);
-            _graphic = new PIXI.Graphics();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawRect(0, 0, 28, 28);
-            _graphic.endFill();
-            _graphic.lineStyle(5, 0x333333);
-            _graphic.moveTo(13, 2);
-            _graphic.lineTo(26, 13);
-            _graphic.lineTo(13, 26);
-            _graphic.lineTo(2, 13);
-            _graphic.lineTo(13, 2);
-            this.nova = _renderer.generateTexture(_graphic);
-            _graphic.clear();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawRect(0, 0, 30, 30);
-            this.square = _renderer.generateTexture(_graphic);
-            _graphic.clear();
-            _graphic.beginFill(0xffffff);
-            _graphic.drawCircle(0, 0, 2);
-            this.bullet = _renderer.generateTexture(_graphic);
-            _graphic.clear();
             _graphic.beginFill(0xffffff);
             _graphic.moveTo(-5, 0);
             _graphic.lineTo(-10, 20);
@@ -501,9 +385,8 @@ define("TextureData", ["require", "exports"], function (require, exports) {
             _graphic.lineTo(5, 0);
             _graphic.lineTo(-5, 0);
             _graphic.drawCircle(0, 0, 10);
-            this.medal = _renderer.generateTexture(_graphic);
+            TextureData.medal = TextureData.cache.addTextureFromGraphic('medal', _graphic);
         };
-        TextureData.cache = {};
         return TextureData;
     }());
     exports.TextureData = TextureData;
@@ -887,7 +770,47 @@ define("JMGE/JMTween", ["require", "exports"], function (require, exports) {
         },
     };
 });
-define("JMGE/JMBUI", ["require", "exports", "JMGE/JMBL", "lodash", "JMGE/JMTween", "JMGE/events/JMEvents"], function (require, exports, JMBL, _, JMTween_1, JMEvents_2) {
+define("JMGE/events/JMTicker", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.JMTicker = {
+        tickEvents: [],
+        active: false,
+        add: function (output) {
+            exports.JMTicker.tickEvents.push(output);
+            if (!exports.JMTicker.active) {
+                exports.JMTicker.active = true;
+                requestAnimationFrame(exports.JMTicker.onTick);
+            }
+        },
+        addOnce: function (output) {
+            var m = function () {
+                exports.JMTicker.remove(m);
+                output();
+            };
+            exports.JMTicker.tickEvents.push(m);
+        },
+        remove: function (output) {
+            var i = exports.JMTicker.tickEvents.indexOf(output);
+            if (i >= 0) {
+                exports.JMTicker.tickEvents.splice(i, 1);
+            }
+        },
+        clear: function () {
+            exports.JMTicker.tickEvents = [];
+        },
+        onTick: function () {
+            if (exports.JMTicker.tickEvents.length === 0) {
+                exports.JMTicker.active = false;
+            }
+            else {
+                exports.JMTicker.tickEvents.forEach(function (output) { return output(); });
+                requestAnimationFrame(exports.JMTicker.onTick);
+            }
+        },
+    };
+});
+define("JMGE/JMBUI", ["require", "exports", "JMGE/JMBL", "lodash", "JMGE/JMTween", "JMGE/events/JMTicker"], function (require, exports, JMBL, _, JMTween_1, JMTicker_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var DisplayState;
@@ -1357,7 +1280,7 @@ define("JMGE/JMBUI", ["require", "exports", "JMGE/JMBL", "lodash", "JMGE/JMTween
                     }
                 }
             });
-            JMEvents_2.JMEvents.ticker.add(_this.update);
+            JMTicker_1.JMTicker.add(_this.update);
             return _this;
         }
         MaskedWindow.prototype.updateScrollHeight = function () {
@@ -1746,23 +1669,38 @@ define("game/text/TextObject", ["require", "exports", "data/WordList", "data/Fon
     }(PIXI.Container));
     exports.TextObject = TextObject;
 });
-define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMERegister", "JMGE/events/JMEvents"], function (require, exports, JMERegister_2, JMEvents_3) {
+define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMEventListener", "JMGE/events/JMTicker"], function (require, exports, JMEventListener_2, JMTicker_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GameEvents = {
-        ticker: JMEvents_3.JMEvents.ticker,
-        REQUEST_HEAL_PLAYER: new JMERegister_2.JMERegister(),
-        REQUEST_PAUSE_GAME: new JMERegister_2.JMERegister(),
-        REQUEST_OVERFLOW_WORD: new JMERegister_2.JMERegister(),
-        NOTIFY_UPDATE_INPUT_WORD: new JMERegister_2.JMERegister(),
-        NOTIFY_LETTER_DELETED: new JMERegister_2.JMERegister(),
-        NOTIFY_WORD_COMPLETED: new JMERegister_2.JMERegister(),
-        NOTIFY_OBJECT_WORD_COMPLETED: new JMERegister_2.JMERegister(),
-        NOTIFY_SET_SCORE: new JMERegister_2.JMERegister(),
-        NOTIFY_SET_PROGRESS: new JMERegister_2.JMERegister(),
-        NOTIFY_SET_HEALTH: new JMERegister_2.JMERegister(),
-        NOTIFY_BOSS_DAMAGED: new JMERegister_2.JMERegister(),
-        NOTIFY_COMMANDS_COMPLETE: new JMERegister_2.JMERegister(),
+        ticker: JMTicker_2.JMTicker,
+        REQUEST_HEAL_PLAYER: new JMEventListener_2.JMEventListener(),
+        REQUEST_PAUSE_GAME: new JMEventListener_2.JMEventListener(),
+        REQUEST_OVERFLOW_WORD: new JMEventListener_2.JMEventListener(),
+        NOTIFY_UPDATE_INPUT_WORD: new JMEventListener_2.JMEventListener(),
+        NOTIFY_LETTER_DELETED: new JMEventListener_2.JMEventListener(),
+        NOTIFY_WORD_COMPLETED: new JMEventListener_2.JMEventListener(),
+        NOTIFY_OBJECT_WORD_COMPLETED: new JMEventListener_2.JMEventListener(),
+        NOTIFY_SET_SCORE: new JMEventListener_2.JMEventListener(),
+        NOTIFY_SET_PROGRESS: new JMEventListener_2.JMEventListener(),
+        NOTIFY_SET_HEALTH: new JMEventListener_2.JMEventListener(),
+        NOTIFY_BOSS_DAMAGED: new JMEventListener_2.JMEventListener(),
+        NOTIFY_COMMANDS_COMPLETE: new JMEventListener_2.JMEventListener(),
+        clearAll: function () {
+            JMTicker_2.JMTicker.clear(),
+                exports.GameEvents.REQUEST_HEAL_PLAYER.clear();
+            exports.GameEvents.REQUEST_PAUSE_GAME.clear();
+            exports.GameEvents.REQUEST_OVERFLOW_WORD.clear();
+            exports.GameEvents.NOTIFY_UPDATE_INPUT_WORD.clear();
+            exports.GameEvents.NOTIFY_LETTER_DELETED.clear();
+            exports.GameEvents.NOTIFY_WORD_COMPLETED.clear();
+            exports.GameEvents.NOTIFY_OBJECT_WORD_COMPLETED.clear();
+            exports.GameEvents.NOTIFY_SET_SCORE.clear();
+            exports.GameEvents.NOTIFY_SET_PROGRESS.clear();
+            exports.GameEvents.NOTIFY_SET_HEALTH.clear();
+            exports.GameEvents.NOTIFY_BOSS_DAMAGED.clear();
+            exports.GameEvents.NOTIFY_COMMANDS_COMPLETE.clear();
+        },
     };
 });
 define("game/objects/BaseObject", ["require", "exports", "game/text/TextObject", "game/engine/ObjectManager", "game/engine/GameEvents"], function (require, exports, TextObject_1, ObjectManager_1, GameEvents_1) {
@@ -1841,7 +1779,7 @@ define("JMGE/effects/FlyingText", ["require", "exports", "lodash", "JMGE/JMTween
     }(PIXI.Text));
     exports.FlyingText = FlyingText;
 });
-define("JMGE/effects/Firework", ["require", "exports", "JMGE/JMBL", "JMGE/events/JMEvents"], function (require, exports, JMBL, JMEvents_4) {
+define("JMGE/effects/Firework", ["require", "exports", "JMGE/JMBL", "JMGE/events/JMTicker"], function (require, exports, JMBL, JMTicker_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Firework = (function () {
@@ -1856,11 +1794,11 @@ define("JMGE/effects/Firework", ["require", "exports", "JMGE/JMBL", "JMGE/events
         }
         Firework.initialize = function () {
             if (!this.initialized) {
-                var firework = new PIXI.Graphics;
+                var firework = new PIXI.Graphics();
                 firework.beginFill(0xffffff);
                 firework.drawCircle(0, 0, 5);
-                Firework.TEXTURE = JMBL.textures.addTextureFromGraphic(firework);
-                JMEvents_4.JMEvents.ticker.add(this.onTick.bind(this));
+                Firework.TEXTURE = JMBL.sharedTextureCache.addTextureFromGraphic('firework', firework);
+                JMTicker_3.JMTicker.add(this.onTick.bind(this));
                 this.initialized = true;
             }
         };
@@ -4758,6 +4696,180 @@ define("JMGE/effects/ScreenCover", ["require", "exports", "JMGE/JMTween"], funct
     }(PIXI.Graphics));
     exports.ScreenCover = ScreenCover;
 });
+define("data/LevelInstance", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
+define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "JMGE/effects/ScreenCover", "game/engine/GameEvents", "JMGE/events/JMInteractionEvents"], function (require, exports, ObjectManager_4, Starfield_1, Config_6, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, ScreenCover_1, GameEvents_7, JMInteractionEvents_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameManager = (function () {
+        function GameManager(level, difficulty, ui) {
+            var _this = this;
+            if (level === void 0) { level = 0; }
+            if (difficulty === void 0) { difficulty = 1; }
+            this.ui = ui;
+            this.running = true;
+            this.interactive = true;
+            this.display = new PIXI.Container();
+            this.container = new ObjectManager_4.ObjectManager();
+            this.actionC = new ActionControl_1.ActionControl(this);
+            this.player = new PlayerShip_3.PlayerShip();
+            this.wordInput = new WordInput_1.WordInput();
+            this.dispose = function () {
+                GameEvents_7.GameEvents.ticker.remove(_this.onTick);
+                JMInteractionEvents_2.JMInteractionEvents.KEY_DOWN.removeListener(_this.keyDown);
+                GameEvents_7.GameEvents.NOTIFY_LETTER_DELETED.removeListener(_this.onLetterDelete);
+                GameEvents_7.GameEvents.REQUEST_HEAL_PLAYER.removeListener(_this.player.addHealth);
+                GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.removeListener(_this.togglePause);
+                _this.player.dispose();
+                _this.container.dispose();
+                _this.wordInput.dispose();
+                _this.display.destroy();
+            };
+            this.keyDown = function (e) {
+                if (!_this.running || !_this.interactive) {
+                    if (e.key === ' ') {
+                        GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: false });
+                    }
+                    return;
+                }
+                switch (e.key) {
+                    case 'Escape':
+                        _this.ui.navBack();
+                        break;
+                    case ' ':
+                        GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
+                        break;
+                    case 'Backspace':
+                        _this.wordInput.deleteLetters(1);
+                        break;
+                    default:
+                        _this.wordInput.addLetter(e.key);
+                        break;
+                }
+            };
+            this.onTick = function () {
+                if (!_this.running)
+                    return;
+                _this.starfield.update(_this.levelInstance.gameSpeed);
+                _this.container.updateAll(_this.levelInstance.gameSpeed);
+                if (_this.levelEvents.isComplete()) {
+                    _this.endLevel();
+                }
+                else {
+                    _this.levelEvents.addDistance(_this.levelInstance.gameSpeed);
+                }
+                GameEvents_7.GameEvents.NOTIFY_SET_PROGRESS.publish({ current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
+                if (!_this.interactive)
+                    return;
+                if (_this.player.health <= 0 && !Config_6.CONFIG.GAME.godmode) {
+                    _this.killPlayer();
+                }
+            };
+            this.killPlayer = function () {
+                if (_this.interactive) {
+                    console.log('dead');
+                    _this.interactive = false;
+                    _this.container.makeExplosionAt(_this.player.x, _this.player.y, 50);
+                    _this.player.visible = false;
+                    var screen_1 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(function () {
+                        _this.running = false;
+                        _this.ui.navLoss();
+                    }).fadeIn(2000, 3000, 1000);
+                    _this.display.addChild(screen_1);
+                }
+            };
+            this.endLevel = function () {
+                if (!_this.levelInstance.levelEnded) {
+                    if (_this.container.numObjects() <= 1) {
+                        _this.levelInstance.levelEnded = true;
+                        var screen_2 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(function () {
+                            _this.running = false;
+                            _this.ui.navWin();
+                        }).fadeIn(1000, 1000, 1000);
+                        _this.display.addChild(screen_2);
+                    }
+                }
+            };
+            this.togglePause = function (e) {
+                if (!_this.interactive)
+                    return;
+                _this.running = !e.paused;
+                TextObject_4.TextObject.allTextObjects.forEach(function (object) { return object.visible = _this.running; });
+            };
+            this.onLetterDelete = function (e) {
+                _this.addScore(-e.numDeleted);
+            };
+            this.setScore = function (score) {
+                var oldScore = _this.levelInstance.score;
+                _this.levelInstance.score = score;
+                GameEvents_7.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
+            };
+            this.addScore = function (add) {
+                var oldScore = _this.levelInstance.score;
+                _this.levelInstance.score += add;
+                GameEvents_7.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
+            };
+            this.addEnemy = function (spawnEvent) {
+                spawnEvent.x *= (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                spawnEvent.y *= (Config_6.CONFIG.INIT.SCREEN_HEIGHT + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                spawnEvent.commands.forEach(function (command) {
+                    command.x *= (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                    command.y *= (Config_6.CONFIG.INIT.SCREEN_HEIGHT + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                    command.timer *= 6;
+                });
+                var newShip = new EnemyShip_1.EnemyShip(spawnEvent, { onFire: function (enemy) { return _this.actionC.enemyFires(_this.player, enemy); }, onWordComplete: function (enemy) { return _this.actionC.playerFires(_this.player, enemy); } });
+                _this.container.addObject(newShip, ObjectManager_4.DisplayLayer.ENEMIES);
+                return newShip;
+            };
+            this.addBoss = function (bossType) {
+                var boss;
+                switch (bossType) {
+                    case 0:
+                        boss = new BossShip0_1.BossShip0(bossType, _this);
+                        break;
+                    case 1:
+                        boss = new BossShip1_1.BossShip1(bossType, _this);
+                        break;
+                    case 2:
+                        boss = new BossShip2_1.BossShip2(bossType, _this);
+                        break;
+                }
+                _this.container.addObject(boss, ObjectManager_4.DisplayLayer.DEFAULT);
+                return boss;
+            };
+            var gameSpeed = difficulty * 0.5;
+            this.starfield = new Starfield_1.Starfield(Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT);
+            this.actionC.missileRate = 0.4;
+            this.levelEvents = new EventInterpreter_1.EventInterpreter(this.addEnemy, this.addBoss);
+            this.levelEvents.loadLevel(level, 60 * gameSpeed);
+            this.levelInstance = {
+                score: 0,
+                gameSpeed: gameSpeed,
+                levelEnded: false,
+                enemiesKilled: 0,
+                lettersTyped: 0,
+                lettersDeleted: 0,
+                healthLost: false,
+                totalEnemies: this.levelEvents.getTotalEnemies(),
+            };
+            this.player.x = (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 2;
+            this.player.y = Config_6.CONFIG.INIT.SCREEN_HEIGHT - 150;
+            this.player.setHealth(5);
+            this.setScore(0);
+            this.display.addChild(this.starfield, this.container);
+            this.container.addObject(this.player, ObjectManager_4.DisplayLayer.DEFAULT);
+            GameEvents_7.GameEvents.ticker.add(this.onTick);
+            JMInteractionEvents_2.JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
+            GameEvents_7.GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
+            GameEvents_7.GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
+            GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
+        }
+        return GameManager;
+    }());
+    exports.GameManager = GameManager;
+});
 define("ui/MuterOverlay", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -4780,33 +4892,7 @@ define("ui/MuterOverlay", ["require", "exports"], function (require, exports) {
     }(PIXI.Graphics));
     exports.MuterOverlay = MuterOverlay;
 });
-define("screens/LossUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_1, Config_6, MuterOverlay_1, ScreenCover_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var LABEL = 'LossUI';
-    var LossUI = (function (_super) {
-        __extends(LossUI, _super);
-        function LossUI() {
-            var _this = _super.call(this, { width: Config_6.CONFIG.INIT.SCREEN_WIDTH, height: Config_6.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
-            _this.navMenu = function () {
-                _this.navBack();
-            };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_6.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_6.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
-            _this.addChild(_button);
-            var muter = new MuterOverlay_1.MuterOverlay();
-            muter.x = _this.getWidth() - muter.getWidth();
-            muter.y = _this.getHeight() - muter.getHeight();
-            _this.addChild(muter);
-            var screen = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT))
-                .fadeOut(1000);
-            _this.addChild(screen);
-            return _this;
-        }
-        return LossUI;
-    }(BaseUI_1.BaseUI));
-    exports.LossUI = LossUI;
-});
-define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_2, Config_7, MuterOverlay_2, ScreenCover_2) {
+define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_1, Config_7, MuterOverlay_1, ScreenCover_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LABEL = 'WinUI';
@@ -4819,7 +4905,7 @@ define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "
             };
             var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_7.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_7.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
             _this.addChild(_button);
-            var muter = new MuterOverlay_2.MuterOverlay();
+            var muter = new MuterOverlay_1.MuterOverlay();
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
@@ -4829,8 +4915,34 @@ define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "
             return _this;
         }
         return WinUI;
-    }(BaseUI_2.BaseUI));
+    }(BaseUI_1.BaseUI));
     exports.WinUI = WinUI;
+});
+define("screens/LossUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_2, Config_8, MuterOverlay_2, ScreenCover_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'LossUI';
+    var LossUI = (function (_super) {
+        __extends(LossUI, _super);
+        function LossUI() {
+            var _this = _super.call(this, { width: Config_8.CONFIG.INIT.SCREEN_WIDTH, height: Config_8.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_8.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_8.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_2.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            var screen = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT))
+                .fadeOut(1000);
+            _this.addChild(screen);
+            return _this;
+        }
+        return LossUI;
+    }(BaseUI_2.BaseUI));
+    exports.LossUI = LossUI;
 });
 define("ui/TutorialPopup", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -4850,7 +4962,7 @@ define("ui/TutorialPopup", ["require", "exports"], function (require, exports) {
     }(PIXI.Container));
     exports.TutorialPopup = TutorialPopup;
 });
-define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup", "game/engine/GameEvents"], function (require, exports, TutorialPopup_1, GameEvents_7) {
+define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup", "game/engine/GameEvents"], function (require, exports, TutorialPopup_1, GameEvents_8) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var TutorialManager = (function () {
@@ -4860,10 +4972,10 @@ define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup",
             this.tutorialDamage = function (e) {
                 if (!_this.testFlag && e.newHealth < 5) {
                     _this.currentPopup = new TutorialPopup_1.TutorialPopup('your health changed');
-                    GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
+                    GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
                     _this.canvas.addChild(_this.currentPopup);
                     _this.testFlag = false;
-                    GameEvents_7.GameEvents.NOTIFY_SET_HEALTH.removeListener(_this.tutorialDamage);
+                    GameEvents_8.GameEvents.NOTIFY_SET_HEALTH.removeListener(_this.tutorialDamage);
                 }
             };
             this.onPause = function (e) {
@@ -4874,8 +4986,8 @@ define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup",
                     }
                 }
             };
-            GameEvents_7.GameEvents.NOTIFY_SET_HEALTH.addListener(this.tutorialDamage);
-            GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
+            GameEvents_8.GameEvents.NOTIFY_SET_HEALTH.addListener(this.tutorialDamage);
+            GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
         }
         return TutorialManager;
     }());
@@ -5071,7 +5183,7 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
     }());
     exports.SaveData = SaveData;
 });
-define("game/engine/AchievementManager", ["require", "exports", "game/engine/GameEvents", "ui/AchievementPopup", "data/PlayerData", "utils/SaveData"], function (require, exports, GameEvents_8, AchievementPopup_1, PlayerData_2, SaveData_1) {
+define("game/engine/AchievementManager", ["require", "exports", "game/engine/GameEvents", "ui/AchievementPopup", "data/PlayerData", "utils/SaveData"], function (require, exports, GameEvents_9, AchievementPopup_1, PlayerData_2, SaveData_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var AchievementManager = (function () {
@@ -5083,7 +5195,7 @@ define("game/engine/AchievementManager", ["require", "exports", "game/engine/Gam
                 _this.canvas.addChild(_this.currentPopup);
                 _this.extrinsic.data.badges[0] = true;
                 SaveData_1.SaveData.saveExtrinsic();
-                GameEvents_8.GameEvents.NOTIFY_WORD_COMPLETED.removeListener(_this.wordCompleted);
+                GameEvents_9.GameEvents.NOTIFY_WORD_COMPLETED.removeListener(_this.wordCompleted);
             };
             this.onPause = function (e) {
                 if (!e.paused) {
@@ -5096,198 +5208,33 @@ define("game/engine/AchievementManager", ["require", "exports", "game/engine/Gam
             this.extrinsic = SaveData_1.SaveData.getExtrinsic();
             console.log(this.extrinsic);
             if (!this.extrinsic.data.badges[PlayerData_2.Badges.CONQUEROR_GOLD]) {
-                GameEvents_8.GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
+                GameEvents_9.GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
             }
-            GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
+            GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
         }
         return AchievementManager;
     }());
     exports.AchievementManager = AchievementManager;
 });
-define("data/LevelInstance", ["require", "exports"], function (require, exports) {
+define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "JMGE/JMBUI", "Config", "game/engine/GameEvents", "JMGE/effects/FlyingText", "game/engine/TutorialManager", "game/engine/AchievementManager"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, JMBUI_1, Config_9, GameEvents_10, FlyingText_2, TutorialManager_1, AchievementManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-});
-define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "JMGE/effects/ScreenCover", "game/engine/TutorialManager", "game/engine/AchievementManager", "game/engine/GameEvents", "JMGE/events/JMERegister"], function (require, exports, ObjectManager_4, Starfield_1, Config_8, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, ScreenCover_3, TutorialManager_1, AchievementManager_1, GameEvents_9, JMERegister_3) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameManager = (function () {
-        function GameManager(level, difficulty, ui) {
-            var _this = this;
-            if (level === void 0) { level = 0; }
-            if (difficulty === void 0) { difficulty = 1; }
-            this.ui = ui;
-            this.running = true;
-            this.interactive = true;
-            this.display = new PIXI.Container();
-            this.container = new ObjectManager_4.ObjectManager();
-            this.tutorials = new TutorialManager_1.TutorialManager(this.display);
-            this.achievements = new AchievementManager_1.AchievementManager(this.display);
-            this.actionC = new ActionControl_1.ActionControl(this);
-            this.player = new PlayerShip_3.PlayerShip();
-            this.wordInput = new WordInput_1.WordInput();
-            this.dispose = function () {
-                GameEvents_9.GameEvents.ticker.remove(_this.onTick);
-                JMERegister_3.JMInteractionEvents.KEY_DOWN.removeListener(_this.keyDown);
-                GameEvents_9.GameEvents.NOTIFY_LETTER_DELETED.removeListener(_this.onLetterDelete);
-                GameEvents_9.GameEvents.REQUEST_HEAL_PLAYER.removeListener(_this.player.addHealth);
-                GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.removeListener(_this.togglePause);
-                _this.player.dispose();
-                _this.container.dispose();
-                _this.wordInput.dispose();
-                _this.display.destroy();
-            };
-            this.keyDown = function (e) {
-                if (!_this.running || !_this.interactive) {
-                    if (e.key === ' ') {
-                        GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: false });
-                    }
-                    return;
-                }
-                switch (e.key) {
-                    case 'Escape':
-                        _this.ui.navBack();
-                        break;
-                    case ' ':
-                        GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
-                        break;
-                    case 'Backspace':
-                        _this.wordInput.deleteLetters(1);
-                        break;
-                    default:
-                        _this.wordInput.addLetter(e.key);
-                        break;
-                }
-            };
-            this.onTick = function () {
-                if (!_this.running)
-                    return;
-                _this.starfield.update(_this.levelInstance.gameSpeed);
-                _this.container.updateAll(_this.levelInstance.gameSpeed);
-                if (_this.levelEvents.isComplete()) {
-                    _this.endLevel();
-                }
-                else {
-                    _this.levelEvents.addDistance(_this.levelInstance.gameSpeed);
-                }
-                GameEvents_9.GameEvents.NOTIFY_SET_PROGRESS.publish({ current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
-                if (!_this.interactive)
-                    return;
-                if (_this.player.health <= 0 && !Config_8.CONFIG.GAME.godmode) {
-                    _this.killPlayer();
-                }
-            };
-            this.killPlayer = function () {
-                if (_this.interactive) {
-                    console.log('dead');
-                    _this.interactive = false;
-                    _this.container.makeExplosionAt(_this.player.x, _this.player.y, 50);
-                    _this.player.visible = false;
-                    var screen_1 = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(function () {
-                        _this.running = false;
-                        _this.ui.navLoss();
-                    }).fadeIn(2000, 3000, 1000);
-                    _this.display.addChild(screen_1);
-                }
-            };
-            this.endLevel = function () {
-                if (!_this.levelInstance.levelEnded) {
-                    if (_this.container.numObjects() <= 1) {
-                        _this.levelInstance.levelEnded = true;
-                        var screen_2 = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(function () {
-                            _this.running = false;
-                            _this.ui.navWin();
-                        }).fadeIn(1000, 1000, 1000);
-                        _this.display.addChild(screen_2);
-                    }
-                }
-            };
-            this.togglePause = function (e) {
-                if (!_this.interactive)
-                    return;
-                _this.running = !e.paused;
-                TextObject_4.TextObject.allTextObjects.forEach(function (object) { return object.visible = _this.running; });
-            };
-            this.onLetterDelete = function (e) {
-                _this.addScore(-e.numDeleted);
-            };
-            this.setScore = function (score) {
-                var oldScore = _this.levelInstance.score;
-                _this.levelInstance.score = score;
-                GameEvents_9.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
-            };
-            this.addScore = function (add) {
-                var oldScore = _this.levelInstance.score;
-                _this.levelInstance.score += add;
-                GameEvents_9.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
-            };
-            this.addEnemy = function (spawnEvent) {
-                spawnEvent.x *= (Config_8.CONFIG.INIT.SCREEN_WIDTH + Config_8.CONFIG.INIT.STAGE_BUFFER) / 12;
-                spawnEvent.y *= (Config_8.CONFIG.INIT.SCREEN_HEIGHT + Config_8.CONFIG.INIT.STAGE_BUFFER) / 12;
-                spawnEvent.commands.forEach(function (command) {
-                    command.x *= (Config_8.CONFIG.INIT.SCREEN_WIDTH + Config_8.CONFIG.INIT.STAGE_BUFFER) / 12;
-                    command.y *= (Config_8.CONFIG.INIT.SCREEN_HEIGHT + Config_8.CONFIG.INIT.STAGE_BUFFER) / 12;
-                    command.timer *= 6;
-                });
-                var newShip = new EnemyShip_1.EnemyShip(spawnEvent, { onFire: function (enemy) { return _this.actionC.enemyFires(_this.player, enemy); }, onWordComplete: function (enemy) { return _this.actionC.playerFires(_this.player, enemy); } });
-                _this.container.addObject(newShip, ObjectManager_4.DisplayLayer.ENEMIES);
-                return newShip;
-            };
-            this.addBoss = function (bossType) {
-                var boss;
-                switch (bossType) {
-                    case 0:
-                        boss = new BossShip0_1.BossShip0(bossType, _this);
-                        break;
-                    case 1:
-                        boss = new BossShip1_1.BossShip1(bossType, _this);
-                        break;
-                    case 2:
-                        boss = new BossShip2_1.BossShip2(bossType, _this);
-                        break;
-                }
-                _this.container.addObject(boss, ObjectManager_4.DisplayLayer.DEFAULT);
-                return boss;
-            };
-            var gameSpeed = difficulty * 0.5;
-            this.starfield = new Starfield_1.Starfield(Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT);
-            this.actionC.missileRate = 0.4;
-            this.levelEvents = new EventInterpreter_1.EventInterpreter(this.addEnemy, this.addBoss);
-            this.levelEvents.loadLevel(level, 60 * gameSpeed);
-            this.levelInstance = {
-                score: 0,
-                gameSpeed: gameSpeed,
-                levelEnded: false,
-                enemiesKilled: 0,
-                lettersTyped: 0,
-                lettersDeleted: 0,
-                healthLost: false,
-                totalEnemies: this.levelEvents.getTotalEnemies(),
-            };
-            this.player.x = (Config_8.CONFIG.INIT.SCREEN_WIDTH + Config_8.CONFIG.INIT.STAGE_BUFFER) / 2;
-            this.player.y = Config_8.CONFIG.INIT.SCREEN_HEIGHT - 150;
-            this.player.setHealth(5);
-            this.setScore(0);
-            this.display.addChild(this.starfield, this.container);
-            this.container.addObject(this.player, ObjectManager_4.DisplayLayer.DEFAULT);
-            GameEvents_9.GameEvents.ticker.add(this.onTick);
-            JMERegister_3.JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
-            GameEvents_9.GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
-            GameEvents_9.GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
-            GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
-        }
-        return GameManager;
-    }());
-    exports.GameManager = GameManager;
-});
-define("ui/GameUIElements", ["require", "exports", "Config", "JMGE/effects/FlyingText", "JMGE/JMBUI", "game/engine/GameEvents"], function (require, exports, Config_9, FlyingText_2, JMBUI_1, GameEvents_10) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameUIElements = (function (_super) {
-        __extends(GameUIElements, _super);
-        function GameUIElements() {
+    var GameUI = (function (_super) {
+        __extends(GameUI, _super);
+        function GameUI(level, difficulty) {
             var _this = _super.call(this) || this;
-            _this.update = function () {
+            _this.tutorials = new TutorialManager_1.TutorialManager(_this);
+            _this.achievements = new AchievementManager_1.AchievementManager(_this);
+            _this.navWin = function () {
+                _this.navForward(new WinUI_1.WinUI(), _this.previousUI);
+            };
+            _this.navLoss = function () {
+                _this.navForward(new LossUI_1.LossUI(), _this.previousUI);
+            };
+            _this.dispose = function () {
+                _this.manager.dispose();
+                GameEvents_10.GameEvents.clearAll();
+                _this.destroy();
             };
             _this.updateProgress = function (e) {
                 var progress = Math.min(100, Math.round(e.current / e.total * 100));
@@ -5310,13 +5257,16 @@ define("ui/GameUIElements", ["require", "exports", "Config", "JMGE/effects/Flyin
                 healWord.x = _this.healthBar.x + _this.healthBar.getWidth();
                 healWord.y = _this.healthBar.y + _this.healthBar.getHeight();
             };
+            _this.manager = new GameManager_1.GameManager(level, difficulty, _this);
+            requestAnimationFrame(function () { return _this.addHealWord(_this.manager.wordInput.healWord); });
+            _this.addChild(_this.manager.display);
             _this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
-            _this.addChild(_this.wordDisplay);
             _this.wordDisplay.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
+            _this.addChild(_this.wordDisplay);
             _this.progress = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
-            _this.addChild(_this.progress);
             _this.progress.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
             _this.progress.x = Config_9.CONFIG.INIT.SCREEN_WIDTH - 100;
+            _this.addChild(_this.progress);
             _this.score = new PIXI.Text('0', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
             _this.score.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 100;
             _this.addChild(_this.score);
@@ -5324,43 +5274,11 @@ define("ui/GameUIElements", ["require", "exports", "Config", "JMGE/effects/Flyin
             _this.healthBar.x = (Config_9.CONFIG.INIT.SCREEN_WIDTH - _this.healthBar.getWidth()) / 2;
             _this.healthBar.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
             _this.addChild(_this.healthBar);
-            GameEvents_10.GameEvents.ticker.add(_this.update);
             GameEvents_10.GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(_this.updateText);
             GameEvents_10.GameEvents.NOTIFY_LETTER_DELETED.addListener(_this.showMinusText);
             GameEvents_10.GameEvents.NOTIFY_SET_SCORE.addListener(_this.setScore);
             GameEvents_10.GameEvents.NOTIFY_SET_PROGRESS.addListener(_this.updateProgress);
             GameEvents_10.GameEvents.NOTIFY_SET_HEALTH.addListener(_this.setPlayerHealth);
-            return _this;
-        }
-        GameUIElements.prototype.dispose = function () {
-            GameEvents_10.GameEvents.ticker.remove(this.update);
-            GameEvents_10.GameEvents.NOTIFY_UPDATE_INPUT_WORD.removeListener(this.updateText);
-            GameEvents_10.GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.showMinusText);
-            GameEvents_10.GameEvents.NOTIFY_SET_SCORE.removeListener(this.setScore);
-            GameEvents_10.GameEvents.NOTIFY_SET_PROGRESS.removeListener(this.updateProgress);
-            GameEvents_10.GameEvents.NOTIFY_SET_HEALTH.removeListener(this.setPlayerHealth);
-            this.destroy();
-        };
-        return GameUIElements;
-    }(PIXI.Container));
-    exports.GameUIElements = GameUIElements;
-});
-define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "ui/GameUIElements"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, GameUIElements_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GameUI = (function (_super) {
-        __extends(GameUI, _super);
-        function GameUI(level, difficulty) {
-            var _this = _super.call(this) || this;
-            _this.navWin = function () {
-                _this.navForward(new WinUI_1.WinUI(), _this.previousUI);
-            };
-            _this.navLoss = function () {
-                _this.navForward(new LossUI_1.LossUI(), _this.previousUI);
-            };
-            _this.manager = new GameManager_1.GameManager(level, difficulty, _this);
-            _this.ui = new GameUIElements_1.GameUIElements();
-            _this.addChild(_this.manager.display, _this.ui);
             return _this;
         }
         return GameUI;
@@ -5511,8 +5429,6 @@ define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "
             };
             var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: Config_10.CONFIG.INIT.SCREEN_WIDTH - 120, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Start', output: _this.startGame });
-            _this.addChild(_button);
             for (var i = 0; i < 12; i++) {
                 _this.makeLevelButton(i, 5 + Math.floor(i / 6) * 60, 20 + (i % 6) * 40);
             }
@@ -5598,7 +5514,7 @@ define("JMGE/UI/ItemSlot", ["require", "exports", "JMGE/JMBUI"], function (requi
     }(JMBUI.InteractiveElement));
     exports.ItemSlot = ItemSlot;
 });
-define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/ItemSlot", "JMGE/events/JMERegister"], function (require, exports, JMBUI, ItemSlot_1, JMERegister_4) {
+define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/ItemSlot", "JMGE/events/JMInteractionEvents"], function (require, exports, JMBUI, ItemSlot_1, JMInteractionEvents_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function baseEquipFunction(data, index) {
@@ -5686,7 +5602,7 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Item
                 _this.slots[i].y = options.startY + Math.floor(i / options.numAcross) * _this.slotHeight;
                 _this.addChild(_this.slots[i]);
             }
-            JMERegister_4.JMInteractionEvents.MOUSE_DOWN.addListener(_this.mouseDown);
+            JMInteractionEvents_3.JMInteractionEvents.MOUSE_DOWN.addListener(_this.mouseDown);
             return _this;
         }
         InventoryWindow.prototype.linkWindows = function (window) {
@@ -5791,7 +5707,7 @@ define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data
             if (label === void 0) { label = 'Hello World!'; }
             if (state === void 0) { state = PlayerData_3.BadgeState.NONE; }
             var _this = _super.call(this, { width: 100, height: 50, label: label }) || this;
-            _this.symbol = new PIXI.Sprite(TextureData_7.TextureData.medal);
+            _this.symbol = new PIXI.Sprite(TextureData_7.TextureData.cache.getTexture('medal'));
             _this.label.x = 30;
             _this.addChild(_this.symbol);
             _this.setState(state);

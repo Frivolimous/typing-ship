@@ -1,39 +1,19 @@
 import * as _ from 'lodash';
 
-import { JMEvents } from './events/JMEvents';
-import { JMInteractionEvents } from './events/JMERegister';
-
+import { JMInteractionEvents } from './events/JMInteractionEvents';
+import { JMTextureCache } from './others/JMTextureCache';
 export let initialized: boolean = false;
 export let interactionMode: string = 'desktop';
+export let sharedTextureCache: JMTextureCache;
 
 export function setInteractionMode(s: string) {
   this.interactionMode = s;
 }
+
 export function init(app: PIXI.Application) {
-  textures.renderer = app.renderer;
+  sharedTextureCache = new JMTextureCache(app.renderer);
   inputManager.init(app);
   initialized = true;
-}
-
-export const textures = new class {
-  private cache: { [key: string]: PIXI.Texture } = {};
-  renderer: any;
-
-  addTextureFromGraphic(graphic: PIXI.Graphics, id?: string): PIXI.Texture {
-    let m: PIXI.Texture = this.renderer.generateTexture(graphic);
-    if (id) {
-      this.cache[id] = m;
-    }
-    return m;
-  }
-
-  getTexture(id: string): PIXI.Texture {
-    if (this.cache[id]) {
-      return this.cache[id];
-    } else {
-      return PIXI.Texture.WHITE;
-    }
-  }
 }
 
 export class Rect extends PIXI.Rectangle {
@@ -299,8 +279,4 @@ export interface IMouseObject {
   down?: boolean,
   drag?: DragObject,
   id?: number,
-}
-
-export interface IKeyboardEvent {
-  key: string;
 }

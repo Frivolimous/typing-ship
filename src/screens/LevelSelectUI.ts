@@ -7,6 +7,7 @@ import { DifficultyPopup } from '../ui/DifficultyPopup';
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
   public currentDifficulty: number = 1;
+  
   public NUMSHOWN: number = 3;
   public C_SHOWN: number = 0;
   public nextB: JMBUI.Button;
@@ -17,8 +18,6 @@ export class LevelSelectUI extends BaseUI {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
 
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
-    this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 120, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Start', output: this.startGame });
     this.addChild(_button);
     for (let i = 0; i < 12; i++) {
       this.makeLevelButton(i, 5 + Math.floor(i / 6) * 60, 20 + (i % 6) * 40);

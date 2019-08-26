@@ -1,7 +1,7 @@
 import * as JMBL from './JMBL';
 import * as _ from 'lodash';
 import { JMTween } from './JMTween';
-import { JMEvents } from './events/JMEvents';
+import { JMTicker } from './events/JMTicker';
 
 export enum DisplayState {
   NORMAL,
@@ -361,7 +361,7 @@ export class MaskedWindow extends BasicElement {
       }
     });
 
-    JMEvents.ticker.add(this.update);
+    JMTicker.add(this.update);
     //JMBL.events.add(JMBL.EventType.MOUSE_WHEEL,this.onWheel);
   }
   addScrollbar = (_scrollbar: Scrollbar) => {

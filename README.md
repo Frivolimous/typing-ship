@@ -42,5 +42,18 @@ TO-DO:
 - Achievements - BASICS
 - Tutorials - BASICS
 - Level Scores
-- New Graphics
 - Sound FX
+
+- Mobile Keyboard?
+
+#Save System
+- Save Stuff
+- Load Stuff
+- Achievements
+- Level Scores
+- Tutorial Progress
+
+
+
+#Outsourcing
+- New Graphics
