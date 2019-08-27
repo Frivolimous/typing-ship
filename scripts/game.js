@@ -386,6 +386,26 @@ define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache"], func
             _graphic.lineTo(-5, 0);
             _graphic.drawCircle(0, 0, 10);
             TextureData.medal = TextureData.cache.addTextureFromGraphic('medal', _graphic);
+            _graphic.clear();
+            _graphic.beginFill(0xffffff);
+            _graphic.moveTo(40, 0);
+            _graphic.lineTo(60, 0);
+            _graphic.lineTo(60, 40);
+            _graphic.lineTo(100, 40);
+            _graphic.lineTo(100, 60);
+            _graphic.lineTo(60, 60);
+            _graphic.lineTo(60, 100);
+            _graphic.lineTo(40, 100);
+            _graphic.lineTo(40, 60);
+            _graphic.lineTo(0, 60);
+            _graphic.lineTo(0, 40);
+            _graphic.lineTo(40, 40);
+            _graphic.lineTo(40, 0);
+            TextureData.health = TextureData.cache.addTextureFromGraphic('health', _graphic);
+            _graphic.clear();
+            _graphic.beginFill(0xffffff);
+            _graphic.drawCircle(50, 50, 50);
+            TextureData.kills = TextureData.cache.addTextureFromGraphic('kills', _graphic);
         };
         return TextureData;
     }());
@@ -1439,6 +1459,7 @@ define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI"], function (require
         __extends(BaseUI, _super);
         function BaseUI(UIConfig) {
             var _this = _super.call(this, UIConfig) || this;
+            _this.navIn = function () { };
             _this.navBack = function () {
                 if (!_this.previousUI) {
                     return;
@@ -1446,11 +1467,13 @@ define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI"], function (require
                 if (_this.saveCallback) {
                     _this.saveCallback(function () {
                         _this.parent.addChild(_this.previousUI);
+                        _this.previousUI.navIn();
                         _this.dispose();
                     });
                 }
                 else {
                     _this.parent.addChild(_this.previousUI);
+                    _this.previousUI.navIn();
                     _this.dispose();
                 }
             };
@@ -1460,11 +1483,13 @@ define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI"], function (require
                     nextUI.saveCallback = _this.saveCallback;
                     _this.saveCallback(function () {
                         _this.parent.addChild(nextUI);
+                        nextUI.navIn();
                         _this.parent.removeChild(_this);
                     });
                 }
                 else {
                     _this.parent.addChild(nextUI);
+                    nextUI.navIn();
                     _this.parent.removeChild(_this);
                 }
             };
@@ -5053,7 +5078,14 @@ define("data/PlayerData", ["require", "exports"], function (require, exports) {
             if (!data) {
                 this.data = {
                     badges: [],
-                    levels: [],
+                    levels: [
+                        { score: 100, highestDifficulty: 0, killBadge: 0, healthBadge: 3 },
+                        { score: 100, highestDifficulty: 1, killBadge: 1, healthBadge: 2 },
+                        { score: 100, highestDifficulty: 2, killBadge: 2, healthBadge: 1 },
+                        { score: 100, highestDifficulty: 3, killBadge: 3, healthBadge: 0 },
+                        { score: 100, highestDifficulty: 4 },
+                        { score: 0 },
+                    ],
                     scores: {
                         kills: 0,
                         deaths: 0,
@@ -5099,7 +5131,7 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
         }
         SaveData.init = function () {
             this.loadVersion(function (version) {
-                if (version < SaveData.VERSION) {
+                if (true) {
                     SaveData.confirmReset();
                     SaveData.saveVersion(SaveData.VERSION);
                     SaveData.saveExtrinsic();
@@ -5175,7 +5207,7 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
                 console.log('NO STORAGE!');
             }
         };
-        SaveData.VERSION = 6;
+        SaveData.VERSION = 7;
         SaveData.confirmReset = function () {
             SaveData.extrinsic = new PlayerData_1.ExtrinsicModel();
         };
@@ -5358,7 +5390,31 @@ define("data/StringData", ["require", "exports"], function (require, exports) {
     }
     exports.levelComplete = levelComplete;
 });
-define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringData"], function (require, exports, JMBUI, StringData_1) {
+define("data/Colors", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Colors = {
+        GOLD: 0xffcc33,
+        GOLD_OVER: 0xffee55,
+        DASH_GOLD: 0xe1e55b,
+        BLUE: 0x1b4e92,
+        BLUE_OVER: 0x55ff99,
+        MENU_BLUE: 0x000022,
+        BORDER_BLUE: 0xccccff,
+        RED: 0xff5555,
+        GREEN: 0x55ff55,
+        BRONZE: 0x774422,
+        SILVER: 0xccccdd,
+        DIFFICULTY: [
+            0x00ffff,
+            0x00ff00,
+            0xffff00,
+            0xff9900,
+            0xff0000,
+        ],
+    };
+});
+define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringData", "data/Colors"], function (require, exports, JMBUI, StringData_1, Colors_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var DifficultyPopup = (function (_super) {
@@ -5366,6 +5422,7 @@ define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringDa
         function DifficultyPopup(highscore, callback) {
             var _this = _super.call(this) || this;
             _this.callback = callback;
+            _this.interactive = true;
             var background = new PIXI.Graphics();
             background.beginFill(0);
             background.lineStyle(2, 0xf1f1f1);
@@ -5375,23 +5432,91 @@ define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringDa
             hsText.x = 80 - hsText.width - 5;
             hsText.y = 5;
             _this.addChild(hsText);
-            _this.makeButton(StringData_1.StringData.EASY, 1, 35, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.NORMAL, 2, 70, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.HARD, 3, 105, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.EXTREME, 4, 140, 0xf1f1f1);
-            _this.makeButton(StringData_1.StringData.INSANE, 5, 175, 0xf1f1f1);
+            _this.makeButton(StringData_1.StringData.EASY, 1, 35, Colors_2.Colors.DIFFICULTY[0]);
+            _this.makeButton(StringData_1.StringData.NORMAL, 2, 70, Colors_2.Colors.DIFFICULTY[1]);
+            _this.makeButton(StringData_1.StringData.HARD, 3, 105, Colors_2.Colors.DIFFICULTY[2]);
+            _this.makeButton(StringData_1.StringData.EXTREME, 4, 140, Colors_2.Colors.DIFFICULTY[3]);
+            _this.makeButton(StringData_1.StringData.INSANE, 5, 175, Colors_2.Colors.DIFFICULTY[4]);
             return _this;
         }
-        DifficultyPopup.prototype.makeButton = function (text, index, y, color) {
+        DifficultyPopup.prototype.makeButton = function (text, index, y, bgColor) {
             var _this = this;
-            var _button = new JMBUI.Button({ width: 70, height: 30, x: 5, y: y, label: text, output: function () { return _this.callback(index); } });
+            var _button = new JMBUI.Button({ width: 70, height: 30, x: 5, y: y, label: text, output: function () { return _this.callback(index); }, bgColor: bgColor });
             this.addChild(_button);
         };
         return DifficultyPopup;
     }(PIXI.Container));
     exports.DifficultyPopup = DifficultyPopup;
 });
-define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "screens/GameUI", "ui/DifficultyPopup"], function (require, exports, JMBUI, Config_10, BaseUI_4, GameUI_1, DifficultyPopup_1) {
+define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "TextureData"], function (require, exports, JMBUI, Colors_3, TextureData_7) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LevelButton = (function (_super) {
+        __extends(LevelButton, _super);
+        function LevelButton(i, output) {
+            var _this = _super.call(this) || this;
+            _this.button = new JMBUI.Button({ width: 50, height: 30, x: 0, y: 0, label: 'Level ' + i, output: output });
+            _this.addChild(_this.button);
+            _this.killBadge = new PIXI.Sprite(TextureData_7.TextureData.kills);
+            _this.healthBadge = new PIXI.Sprite(TextureData_7.TextureData.health);
+            _this.killBadge.position.set(55, 5);
+            _this.healthBadge.position.set(85, 5);
+            _this.killBadge.scale.set(0.2);
+            _this.healthBadge.scale.set(0.2);
+            _this.addChild(_this.killBadge, _this.healthBadge);
+            return _this;
+        }
+        LevelButton.prototype.updateFromData = function (data) {
+            this.data = data;
+            if (data) {
+                if (data.highestDifficulty || data.highestDifficulty === 0) {
+                    var color = Colors_3.Colors.DIFFICULTY[data.highestDifficulty];
+                    this.button.graphics.tint = color;
+                }
+                else {
+                    var color = 0x999999;
+                    this.button.graphics.tint = color;
+                }
+                switch (data.killBadge) {
+                    case 3:
+                        this.killBadge.tint = Colors_3.Colors.GOLD;
+                        break;
+                    case 2:
+                        this.killBadge.tint = Colors_3.Colors.SILVER;
+                        break;
+                    case 1:
+                        this.killBadge.tint = Colors_3.Colors.BRONZE;
+                        break;
+                    default:
+                        this.killBadge.tint = 0;
+                        break;
+                }
+                switch (data.healthBadge) {
+                    case 3:
+                        this.healthBadge.tint = Colors_3.Colors.GOLD;
+                        break;
+                    case 2:
+                        this.healthBadge.tint = Colors_3.Colors.SILVER;
+                        break;
+                    case 1:
+                        this.healthBadge.tint = Colors_3.Colors.BRONZE;
+                        break;
+                    default:
+                        this.healthBadge.tint = 0;
+                        break;
+                }
+            }
+            else {
+                this.button.disabled = true;
+                this.killBadge.tint = 0;
+                this.healthBadge.tint = 0;
+            }
+        };
+        return LevelButton;
+    }(PIXI.Container));
+    exports.LevelButton = LevelButton;
+});
+define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "screens/GameUI", "ui/DifficultyPopup", "utils/SaveData", "ui/LevelButton"], function (require, exports, JMBUI, Config_10, BaseUI_4, GameUI_1, DifficultyPopup_1, SaveData_2, LevelButton_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LevelSelectUI = (function (_super) {
@@ -5402,12 +5527,18 @@ define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "
             _this.currentDifficulty = 1;
             _this.NUMSHOWN = 3;
             _this.C_SHOWN = 0;
+            _this.levelButtons = [];
+            _this.resetLevelStuff = function () {
+                var extrinsics = SaveData_2.SaveData.getExtrinsic();
+                _this.levelButtons.forEach(function (button, i) { return button.updateFromData(extrinsics.data.levels[i]); });
+            };
             _this.changeLevelAndStartGame = function (level, button) {
+                console.log(level);
                 _this.currentLevel = level;
                 if (_this.difficultyPopup) {
                     _this.difficultyPopup.destroy();
                 }
-                _this.difficultyPopup = new DifficultyPopup_1.DifficultyPopup(100, _this.changeDifficultyAndStartGame);
+                _this.difficultyPopup = new DifficultyPopup_1.DifficultyPopup(button.data.score, _this.changeDifficultyAndStartGame);
                 _this.difficultyPopup.x = button.x + 50;
                 _this.difficultyPopup.y = button.y + 30;
                 _this.addChild(_this.difficultyPopup);
@@ -5427,18 +5558,31 @@ define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "
             _this.leave = function () {
                 _this.navBack();
             };
+            _this.navIn = function () {
+                _this.resetLevelStuff();
+            };
             var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
+            var _loop_2 = function (i) {
+                var button = new LevelButton_1.LevelButton(i, function () { return _this.changeLevelAndStartGame(i, button); });
+                button.position.set(5 + Math.floor(i / 6) * 130, 20 + (i % 6) * 40);
+                this_1.levelButtons.push(button);
+                this_1.addChild(button);
+            };
+            var this_1 = this;
             for (var i = 0; i < 12; i++) {
-                _this.makeLevelButton(i, 5 + Math.floor(i / 6) * 60, 20 + (i % 6) * 40);
+                _loop_2(i);
             }
+            _this.interactive = true;
+            _this.addListener('mousedown', function (e) {
+                if (e.target === _this) {
+                    if (_this.difficultyPopup) {
+                        _this.difficultyPopup.destroy();
+                    }
+                }
+            });
             return _this;
         }
-        LevelSelectUI.prototype.makeLevelButton = function (i, x, y) {
-            var _this = this;
-            var _button = new JMBUI.Button({ width: 50, height: 30, x: x, y: y, label: 'Level ' + i, output: function () { return _this.changeLevelAndStartGame(i, _button); } });
-            this.addChild(_button);
-        };
         return LevelSelectUI;
     }(BaseUI_4.BaseUI));
     exports.LevelSelectUI = LevelSelectUI;
@@ -5698,7 +5842,7 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Item
     }(JMBUI.BasicElement));
     exports.InventoryWindow = InventoryWindow;
 });
-define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data/PlayerData"], function (require, exports, JMBUI, TextureData_7, PlayerData_3) {
+define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data/PlayerData"], function (require, exports, JMBUI, TextureData_8, PlayerData_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgeLine = (function (_super) {
@@ -5707,7 +5851,7 @@ define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data
             if (label === void 0) { label = 'Hello World!'; }
             if (state === void 0) { state = PlayerData_3.BadgeState.NONE; }
             var _this = _super.call(this, { width: 100, height: 50, label: label }) || this;
-            _this.symbol = new PIXI.Sprite(TextureData_7.TextureData.cache.getTexture('medal'));
+            _this.symbol = new PIXI.Sprite(TextureData_8.TextureData.cache.getTexture('medal'));
             _this.label.x = 30;
             _this.addChild(_this.symbol);
             _this.setState(state);
@@ -5893,7 +6037,7 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
     }(BaseUI_8.BaseUI));
     exports.MenuUI = MenuUI;
 });
-define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_8, MenuUI_1, Config_15, SaveData_2) {
+define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_9, MenuUI_1, Config_15, SaveData_3) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -5903,13 +6047,13 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 this._Resolution = Config_15.CONFIG.INIT.RESOLUTION;
                 this.init = function () {
                     initializeDatas();
-                    SaveData_2.SaveData.init();
+                    SaveData_3.SaveData.init();
                     _this.currentModule = new MenuUI_1.MenuUI();
                     _this.currentModule.navOut = _this.updateCurrentModule;
                     _this.app.stage.addChild(_this.currentModule);
                 };
                 this.updateCurrentModule = function (o) {
-                    SaveData_2.SaveData.saveExtrinsic(function () {
+                    SaveData_3.SaveData.saveExtrinsic(function () {
                         if (_this.currentModule.dispose) {
                             _this.currentModule.dispose();
                         }
@@ -5922,7 +6066,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                     });
                 };
                 this.saveCallback = function (finish) {
-                    SaveData_2.SaveData.saveExtrinsic(finish);
+                    SaveData_3.SaveData.saveExtrinsic(finish);
                 };
                 if (Facade.exists)
                     throw new Error('Cannot instatiate more than one Facade Singleton.');
@@ -5953,7 +6097,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
                 this.app.stage.addChild(_background);
                 JMBL.init(this.app);
-                TextureData_8.TextureData.init(this.app.renderer);
+                TextureData_9.TextureData.init(this.app.renderer);
                 window.setTimeout(this.init, 10);
             }
             return Facade;

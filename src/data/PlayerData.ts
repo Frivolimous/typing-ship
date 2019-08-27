@@ -34,7 +34,14 @@ export class ExtrinsicModel {
     if (!data) {
       this.data = {
         badges: [],
-        levels: [],
+        levels: [
+          {score: 100, highestDifficulty: 0, killBadge: 0, healthBadge: 3},
+          {score: 100, highestDifficulty: 1, killBadge: 1, healthBadge: 2},
+          {score: 100, highestDifficulty: 2, killBadge: 2, healthBadge: 1},
+          {score: 100, highestDifficulty: 3, killBadge: 3, healthBadge: 0},
+          {score: 100, highestDifficulty: 4},
+          {score: 0},
+        ],
         scores: {
           kills: 0,
           deaths: 0,
@@ -56,10 +63,10 @@ export interface IExtrinsicData {
 }
 
 export interface ILevelScores {
-  healthPercent: number;
-  killPercent: number;
-  score: number;
-  highestDifficulty: number;
+  healthBadge?: number;
+  killBadge?: number;
+  score?: number;
+  highestDifficulty?: number;
 }
 
 export function calcHealthPercent(health: number, maxHealth: number, neverHurt: boolean) {

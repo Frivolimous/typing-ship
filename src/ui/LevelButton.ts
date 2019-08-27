@@ -1,0 +1,60 @@
+import * as JMBUI from '../JMGE/JMBUI';
+import { Colors } from '../data/Colors';
+import { ILevelScores } from '../data/PlayerData';
+import { TextureData } from '../TextureData';
+
+export class LevelButton extends PIXI.Container {
+  public data: ILevelScores;
+
+  private button: JMBUI.Button;
+  private killBadge: PIXI.Sprite;
+  private healthBadge: PIXI.Sprite;
+
+  constructor(i: number, output: () => void) {
+    super();
+
+    this.button = new JMBUI.Button({width: 50, height: 30, x: 0, y: 0, label: 'Level ' + i, output});
+    this.addChild(this.button);
+
+    this.killBadge = new PIXI.Sprite(TextureData.kills);
+    this.healthBadge = new PIXI.Sprite(TextureData.health);
+
+    this.killBadge.position.set(55, 5);
+    this.healthBadge.position.set(85, 5);
+    this.killBadge.scale.set(0.2);
+    this.healthBadge.scale.set(0.2);
+    this.addChild(this.killBadge, this.healthBadge);
+  }
+
+  public updateFromData(data: ILevelScores) {
+    this.data = data;
+
+    if (data) {
+      if (data.highestDifficulty || data.highestDifficulty === 0) {
+        let color = Colors.DIFFICULTY[data.highestDifficulty];
+        this.button.graphics.tint = color;
+      } else {
+        let color = 0x999999;
+        this.button.graphics.tint = color;
+      }
+
+      switch (data.killBadge) {
+        case 3: this.killBadge.tint = Colors.GOLD; break;
+        case 2: this.killBadge.tint = Colors.SILVER; break;
+        case 1: this.killBadge.tint = Colors.BRONZE; break;
+        default: this.killBadge.tint = 0; break;
+      }
+      switch (data.healthBadge) {
+        case 3: this.healthBadge.tint = Colors.GOLD; break;
+        case 2: this.healthBadge.tint = Colors.SILVER; break;
+        case 1: this.healthBadge.tint = Colors.BRONZE; break;
+        default: this.healthBadge.tint = 0; break;
+      }
+
+    } else {
+      this.button.disabled = true;
+      this.killBadge.tint = 0;
+      this.healthBadge.tint = 0;
+    }
+  }
+}

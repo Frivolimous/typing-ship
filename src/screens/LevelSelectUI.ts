@@ -3,38 +3,56 @@ import { CONFIG } from '../Config';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { GameUI } from './GameUI';
 import { DifficultyPopup } from '../ui/DifficultyPopup';
+import { SaveData } from '../utils/SaveData';
+import { LevelButton } from '../ui/LevelButton';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
   public currentDifficulty: number = 1;
-  
+
   public NUMSHOWN: number = 3;
   public C_SHOWN: number = 0;
   public nextB: JMBUI.Button;
   public prevB: JMBUI.Button;
   public difficultyPopup: DifficultyPopup;
 
+  public levelButtons: LevelButton[] = [];
+
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
 
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
     this.addChild(_button);
+
     for (let i = 0; i < 12; i++) {
-      this.makeLevelButton(i, 5 + Math.floor(i / 6) * 60, 20 + (i % 6) * 40);
+      let button = new LevelButton(i, () => this.changeLevelAndStartGame(i, button));
+      button.position.set(5 + Math.floor(i / 6) * 130, 20 + (i % 6) * 40);
+      this.levelButtons.push(button);
+      this.addChild(button);
     }
+    this.interactive = true;
+    this.addListener('mousedown', e => {
+      if (e.target === this) {
+        if (this.difficultyPopup) {
+          this.difficultyPopup.destroy();
+        }
+      }
+    });
   }
 
-  public makeLevelButton(i: number, x: number, y: number) {
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 50, height: 30, x, y, label: 'Level ' + i, output: () => this.changeLevelAndStartGame(i, _button) });
-    this.addChild(_button);
+  public resetLevelStuff = () => {
+    let extrinsics = SaveData.getExtrinsic();
+
+    this.levelButtons.forEach((button, i) => button.updateFromData(extrinsics.data.levels[i]));
   }
 
-  public changeLevelAndStartGame = (level: number, button: PIXI.Container) => {
+  public changeLevelAndStartGame = (level: number, button: LevelButton) => {
+    console.log(level);
     this.currentLevel = level;
     if (this.difficultyPopup) {
       this.difficultyPopup.destroy();
     }
-    this.difficultyPopup = new DifficultyPopup(100, this.changeDifficultyAndStartGame);
+    this.difficultyPopup = new DifficultyPopup(button.data.score, this.changeDifficultyAndStartGame);
     this.difficultyPopup.x = button.x + 50;
     this.difficultyPopup.y = button.y + 30;
     this.addChild(this.difficultyPopup);
@@ -57,5 +75,9 @@ export class LevelSelectUI extends BaseUI {
 
   public leave = () => {
     this.navBack();
+  }
+
+  public navIn = () => {
+    this.resetLevelStuff();
   }
 }

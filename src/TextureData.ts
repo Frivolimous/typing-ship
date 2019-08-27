@@ -27,6 +27,8 @@ export class TextureData {
   public static cache: JMTextureCache;
 
   public static medal: PIXI.Texture;
+  public static health: PIXI.Texture;
+  public static kills: PIXI.Texture;
 
   public static init = (renderer: any) => {
     TextureData.cache = new JMTextureCache(renderer);
@@ -40,5 +42,27 @@ export class TextureData {
     _graphic.lineTo(-5, 0);
     _graphic.drawCircle(0, 0, 10);
     TextureData.medal = TextureData.cache.addTextureFromGraphic('medal', _graphic);
+
+    _graphic.clear();
+    _graphic.beginFill(0xffffff);
+    _graphic.moveTo(40, 0);
+    _graphic.lineTo(60, 0);
+    _graphic.lineTo(60, 40);
+    _graphic.lineTo(100, 40);
+    _graphic.lineTo(100, 60);
+    _graphic.lineTo(60, 60);
+    _graphic.lineTo(60, 100);
+    _graphic.lineTo(40, 100);
+    _graphic.lineTo(40, 60);
+    _graphic.lineTo(0, 60);
+    _graphic.lineTo(0, 40);
+    _graphic.lineTo(40, 40);
+    _graphic.lineTo(40, 0);
+    TextureData.health = TextureData.cache.addTextureFromGraphic('health', _graphic);
+
+    _graphic.clear();
+    _graphic.beginFill(0xffffff);
+    _graphic.drawCircle(50, 50, 50);
+    TextureData.kills = TextureData.cache.addTextureFromGraphic('kills', _graphic);
   }
 }

@@ -8,6 +8,8 @@ export class BaseUI extends JMBUI.BasicElement {
     super(UIConfig);
   }
 
+  public navIn = () => { };
+
   public navBack = () => {
     if (!this.previousUI) {
       return;
@@ -15,10 +17,12 @@ export class BaseUI extends JMBUI.BasicElement {
     if (this.saveCallback) {
       this.saveCallback(() => {
         this.parent.addChild(this.previousUI);
+        this.previousUI.navIn();
         this.dispose();
       });
     } else {
       this.parent.addChild(this.previousUI);
+      this.previousUI.navIn();
       this.dispose();
     }
   }
@@ -30,10 +34,12 @@ export class BaseUI extends JMBUI.BasicElement {
       nextUI.saveCallback = this.saveCallback;
       this.saveCallback(() => {
         this.parent.addChild(nextUI);
+        nextUI.navIn();
         this.parent.removeChild(this);
       });
     } else {
       this.parent.addChild(nextUI);
+      nextUI.navIn();
       this.parent.removeChild(this);
     }
   }

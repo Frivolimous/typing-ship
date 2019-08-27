@@ -11,4 +11,12 @@ export const Colors = {
 
   BRONZE: 0x774422,
   SILVER: 0xccccdd,
+
+  DIFFICULTY: [
+    0x00ffff,
+    0x00ff00,
+    0xffff00,
+    0xff9900,
+    0xff0000,
+  ],
 };
