@@ -3,12 +3,32 @@ import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
-import { ScreenCover } from '../JMGE/effects/ScreenCover';
+import { ILevelInstance } from '../data/LevelInstance';
+import { SaveData } from '../utils/SaveData';
 
 const LABEL = 'LossUI';
 export class LossUI extends BaseUI {
-  constructor() {
+  constructor(instance: ILevelInstance) {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+
+    let extrinsic = SaveData.getExtrinsic();
+    let currentLevel = extrinsic.data.levels[instance.level];
+
+    let highScore = currentLevel.score;
+    let newScore = instance.score;
+
+    let s = 'You Lost :(\n\nYour score: ' + newScore + '\n';
+    if (newScore > highScore) {
+      s += 'Congratulations!  This is a new high score!';
+      currentLevel.score = newScore;
+      SaveData.saveExtrinsic();
+    } else {
+      s += 'Highscore: ' + highScore;
+    }
+
+    let text = new PIXI.Text(s);
+    this.addChild(text);
+    text.position.set(50, 50);
 
     let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
     this.addChild(_button);
@@ -17,10 +37,6 @@ export class LossUI extends BaseUI {
     muter.x = this.getWidth() - muter.getWidth();
     muter.y = this.getHeight() - muter.getHeight();
     this.addChild(muter);
-
-    let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT))
-      .fadeOut(1000);
-    this.addChild(screen);
   }
 
   public navMenu = () => {

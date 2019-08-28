@@ -52,9 +52,11 @@ export class ActionControl {
 
   public shootPlayerLaser(origin: PlayerShip, target: GameSprite) {
     origin.laserCharge.startCharge(() => {
-      this.manager.container.makeLaser(origin, target, 0x00ffff);
-      this.enemyDestroyed(target);
-      // soundC.sound(SoundControl.LASER);
+      if (target && target.position) {
+        this.manager.container.makeLaser(origin, target, 0x00ffff);
+        this.enemyDestroyed(target);
+        // soundC.sound(SoundControl.LASER);
+      }
     });
   }
 
@@ -132,6 +134,6 @@ export class ActionControl {
     let size = enemy.wordSize === 3 ? 20 : 40;
     this.manager.container.makeExplosionAt(enemy.x, enemy.y, size);
     this.manager.container.makeScoreDisplay(enemy.x, enemy.y, enemy.value);
-    this.manager.addScore(enemy.value);
+    this.manager.enemyDestroyed(enemy);
   }
 }

@@ -347,7 +347,32 @@ define("JMGE/JMBL", ["require", "exports", "JMGE/events/JMInteractionEvents", "J
     }());
     exports.DragObject = DragObject;
 });
-define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache"], function (require, exports, JMTextureCache_2) {
+define("data/Colors", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Colors = {
+        GOLD: 0xffcc33,
+        GOLD_OVER: 0xffee55,
+        DASH_GOLD: 0xe1e55b,
+        BLUE: 0x1b4e92,
+        BLUE_OVER: 0x55ff99,
+        MENU_BLUE: 0x000022,
+        BORDER_BLUE: 0xccccff,
+        RED: 0xff5555,
+        GREEN: 0x55ff55,
+        BRONZE: 0x774422,
+        SILVER: 0xccccdd,
+        DIFFICULTY: [
+            0xffffff,
+            0x00ffff,
+            0x00ff00,
+            0xffff00,
+            0xff9900,
+            0xff0000,
+        ],
+    };
+});
+define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache", "data/Colors"], function (require, exports, JMTextureCache_2, Colors_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ImageRepo = {
@@ -375,6 +400,42 @@ define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache"], func
     var TextureData = (function () {
         function TextureData() {
         }
+        TextureData.getHealthSprite = function (tier) {
+            var sprite = new PIXI.Sprite(TextureData.health);
+            switch (tier) {
+                case 3:
+                    sprite.tint = Colors_1.Colors.GOLD;
+                    break;
+                case 2:
+                    sprite.tint = Colors_1.Colors.SILVER;
+                    break;
+                case 1:
+                    sprite.tint = Colors_1.Colors.BRONZE;
+                    break;
+                default:
+                    sprite.tint = 0;
+                    break;
+            }
+            return sprite;
+        };
+        TextureData.getKillSprite = function (tier) {
+            var sprite = new PIXI.Sprite(TextureData.kills);
+            switch (tier) {
+                case 3:
+                    sprite.tint = Colors_1.Colors.GOLD;
+                    break;
+                case 2:
+                    sprite.tint = Colors_1.Colors.SILVER;
+                    break;
+                case 1:
+                    sprite.tint = Colors_1.Colors.BRONZE;
+                    break;
+                default:
+                    sprite.tint = 0;
+                    break;
+            }
+            return sprite;
+        };
         TextureData.init = function (renderer) {
             TextureData.cache = new JMTextureCache_2.JMTextureCache(renderer);
             var _graphic = new PIXI.Graphics();
@@ -406,6 +467,38 @@ define("TextureData", ["require", "exports", "JMGE/others/JMTextureCache"], func
             _graphic.beginFill(0xffffff);
             _graphic.drawCircle(50, 50, 50);
             TextureData.kills = TextureData.cache.addTextureFromGraphic('kills', _graphic);
+            _graphic.clear();
+            _graphic.beginFill(0xffffff, 0.2);
+            _graphic.drawCircle(50, 50, 50);
+            _graphic.beginFill(0xffff00);
+            _graphic.drawRect(20, 0, 20, 100);
+            _graphic.drawRect(60, 0, 20, 100);
+            TextureData.pause = TextureData.cache.addTextureFromGraphic('pause', _graphic);
+            _graphic.clear();
+            _graphic.beginFill(0xffffff, 0.2);
+            _graphic.drawCircle(50, 50, 50);
+            _graphic.beginFill(0xffff00);
+            _graphic.moveTo(20, 10);
+            _graphic.lineTo(80, 50);
+            _graphic.lineTo(20, 90);
+            _graphic.lineTo(20, 10);
+            TextureData.play = TextureData.cache.addTextureFromGraphic('play', _graphic);
+            _graphic.clear();
+            _graphic.beginFill(0xffffff, 0.2);
+            _graphic.drawCircle(50, 50, 50);
+            _graphic.beginFill(0xffff00);
+            _graphic.drawCircle(10, 80, 10);
+            _graphic.drawCircle(60, 80, 10);
+            _graphic.drawRect(13, 0, 6, 80);
+            _graphic.drawRect(63, 0, 6, 80);
+            _graphic.drawRect(13, 0, 56, 20);
+            TextureData.sound = TextureData.cache.addTextureFromGraphic('sound', _graphic);
+            _graphic.endFill();
+            _graphic.lineStyle(3, 0xff0000);
+            _graphic.drawCircle(50, 50, 50);
+            _graphic.moveTo(0, 100);
+            _graphic.lineTo(100, 0);
+            TextureData.noSound = TextureData.cache.addTextureFromGraphic('noSound', _graphic);
         };
         return TextureData;
     }());
@@ -1452,64 +1545,72 @@ define("JMGE/JMBUI", ["require", "exports", "JMGE/JMBL", "lodash", "JMGE/JMTween
     }(BasicElement));
     exports.Scrollbar = Scrollbar;
 });
-define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI"], function (require, exports, JMBUI) {
+define("JMGE/effects/ScreenCover", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var BaseUI = (function (_super) {
-        __extends(BaseUI, _super);
-        function BaseUI(UIConfig) {
-            var _this = _super.call(this, UIConfig) || this;
-            _this.navIn = function () { };
-            _this.navBack = function () {
-                if (!_this.previousUI) {
-                    return;
-                }
-                if (_this.saveCallback) {
-                    _this.saveCallback(function () {
-                        _this.parent.addChild(_this.previousUI);
-                        _this.previousUI.navIn();
-                        _this.dispose();
-                    });
-                }
-                else {
-                    _this.parent.addChild(_this.previousUI);
-                    _this.previousUI.navIn();
-                    _this.dispose();
-                }
+    var ScreenCover = (function (_super) {
+        __extends(ScreenCover, _super);
+        function ScreenCover(rect, color) {
+            if (color === void 0) { color = 0; }
+            var _this = _super.call(this) || this;
+            _this.onFadeComplete = function (callback) {
+                _this._onFadeComplete = callback;
+                return _this;
             };
-            _this.navForward = function (nextUI, previousUI) {
-                nextUI.previousUI = previousUI || _this;
-                if (_this.saveCallback) {
-                    nextUI.saveCallback = _this.saveCallback;
-                    _this.saveCallback(function () {
-                        _this.parent.addChild(nextUI);
-                        nextUI.navIn();
-                        _this.parent.removeChild(_this);
-                    });
-                }
-                else {
-                    _this.parent.addChild(nextUI);
-                    nextUI.navIn();
-                    _this.parent.removeChild(_this);
-                }
+            _this.fadeIn = function (duration, waitPre, waitPost) {
+                if (waitPre === void 0) { waitPre = 0; }
+                if (waitPost === void 0) { waitPost = 0; }
+                new JMTween_2.JMTween(_this).wait(waitPre).from({ alpha: 0 }).over(duration).onComplete(function () {
+                    if (waitPost) {
+                        new JMTween_2.JMTween({}).wait(waitPost).onWaitComplete(function () {
+                            _this.destroy();
+                            if (_this._onFadeComplete)
+                                _this._onFadeComplete();
+                        }).start();
+                    }
+                    else {
+                        _this.destroy();
+                        if (_this._onFadeComplete)
+                            _this._onFadeComplete();
+                    }
+                }).start();
+                return _this;
             };
-            _this.dispose = function () {
-                _this.destroy();
+            _this.fadeOut = function (duration, waitPre, waitPost) {
+                if (waitPre === void 0) { waitPre = 0; }
+                if (waitPost === void 0) { waitPost = 0; }
+                new JMTween_2.JMTween(_this).wait(waitPre).to({ alpha: 0 }).over(duration).onComplete(function () {
+                    if (waitPost) {
+                        new JMTween_2.JMTween({}).wait(waitPost).onWaitComplete(function () {
+                            _this.destroy();
+                            if (_this._onFadeComplete)
+                                _this._onFadeComplete();
+                        }).start();
+                    }
+                    else {
+                        _this.destroy();
+                        if (_this._onFadeComplete)
+                            _this._onFadeComplete();
+                    }
+                }).start();
+                return _this;
             };
+            _this.beginFill(color);
+            _this.drawRect(rect.x, rect.y, rect.width, rect.height);
             return _this;
         }
-        return BaseUI;
-    }(JMBUI.BasicElement));
-    exports.BaseUI = BaseUI;
+        return ScreenCover;
+    }(PIXI.Graphics));
+    exports.ScreenCover = ScreenCover;
 });
 define("Config", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CONFIG = {
         INIT: {
-            SCREEN_WIDTH: 600,
-            SCREEN_HEIGHT: 600,
-            STAGE_BUFFER: 60,
+            SCREEN_WIDTH: 800,
+            SCREEN_HEIGHT: 800,
+            STAGE_BUFFER: 80,
             RESOLUTION: 1,
             BACKGROUND_COLOR: 0,
             MOUSE_HOLD: 200,
@@ -1538,6 +1639,69 @@ define("Config", ["require", "exports"], function (require, exports) {
         toTPS: function (n) {
             return Math.floor(n * exports.CONFIG.INIT.FPS / exports.CONFIG.TILEMAP.TILE_SIZE * 10) / 10;
         },
+    };
+});
+define("JMGE/UI/BaseUI", ["require", "exports", "JMGE/JMBUI", "lodash", "JMGE/effects/ScreenCover", "Config"], function (require, exports, JMBUI, _, ScreenCover_1, Config_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var BaseUI = (function (_super) {
+        __extends(BaseUI, _super);
+        function BaseUI(UIConfig) {
+            var _this = _super.call(this, UIConfig) || this;
+            _this.navIn = function () { };
+            _this.navBack = function (fadeTiming) {
+                if (!_this.previousUI) {
+                    return;
+                }
+                if (_this.saveCallback) {
+                    _this.saveCallback(function () {
+                        _this.finishNav(_this.previousUI, fadeTiming, true);
+                    });
+                }
+                else {
+                    _this.finishNav(_this.previousUI, fadeTiming, true);
+                }
+            };
+            _this.navForward = function (nextUI, previousUI, fadeTiming) {
+                nextUI.previousUI = previousUI || _this;
+                if (_this.saveCallback) {
+                    nextUI.saveCallback = _this.saveCallback;
+                    _this.saveCallback(function () {
+                        _this.finishNav(nextUI, fadeTiming);
+                    });
+                }
+                else {
+                    _this.finishNav(nextUI, fadeTiming);
+                }
+            };
+            _this.dispose = function () {
+                _this.destroy();
+            };
+            _this.finishNav = function (nextUI, fadeTiming, andDispose) {
+                fadeTiming = _.defaults(fadeTiming || {}, dFadeTiming);
+                var screen = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_1.CONFIG.INIT.SCREEN_WIDTH, Config_1.CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).onFadeComplete(function () {
+                    _this.parent.addChild(nextUI);
+                    _this.parent.removeChild(_this);
+                    nextUI.navIn();
+                    var screen2 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_1.CONFIG.INIT.SCREEN_WIDTH, Config_1.CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).fadeOut(fadeTiming.fadeOut);
+                    nextUI.addChild(screen2);
+                    if (andDispose) {
+                        _this.dispose();
+                    }
+                }).fadeIn(fadeTiming.fadeIn, fadeTiming.delay, fadeTiming.delayBlank);
+                _this.addChild(screen);
+            };
+            return _this;
+        }
+        return BaseUI;
+    }(JMBUI.BasicElement));
+    exports.BaseUI = BaseUI;
+    var dFadeTiming = {
+        color: 0,
+        delay: 0,
+        fadeIn: 300,
+        delayBlank: 100,
+        fadeOut: 300,
     };
 });
 define("data/WordList10k", ["require", "exports"], function (require, exports) {
@@ -1701,9 +1865,11 @@ define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMEventList
         ticker: JMTicker_2.JMTicker,
         REQUEST_HEAL_PLAYER: new JMEventListener_2.JMEventListener(),
         REQUEST_PAUSE_GAME: new JMEventListener_2.JMEventListener(),
+        REQUEST_MUTE_GAME: new JMEventListener_2.JMEventListener(),
         REQUEST_OVERFLOW_WORD: new JMEventListener_2.JMEventListener(),
         NOTIFY_UPDATE_INPUT_WORD: new JMEventListener_2.JMEventListener(),
         NOTIFY_LETTER_DELETED: new JMEventListener_2.JMEventListener(),
+        NOTIFY_LETTER_ADDED: new JMEventListener_2.JMEventListener(),
         NOTIFY_WORD_COMPLETED: new JMEventListener_2.JMEventListener(),
         NOTIFY_OBJECT_WORD_COMPLETED: new JMEventListener_2.JMEventListener(),
         NOTIFY_SET_SCORE: new JMEventListener_2.JMEventListener(),
@@ -1711,12 +1877,15 @@ define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMEventList
         NOTIFY_SET_HEALTH: new JMEventListener_2.JMEventListener(),
         NOTIFY_BOSS_DAMAGED: new JMEventListener_2.JMEventListener(),
         NOTIFY_COMMANDS_COMPLETE: new JMEventListener_2.JMEventListener(),
+        NOTIFY_ENEMY_DESTROYED: new JMEventListener_2.JMEventListener(),
         clearAll: function () {
             JMTicker_2.JMTicker.clear(),
                 exports.GameEvents.REQUEST_HEAL_PLAYER.clear();
             exports.GameEvents.REQUEST_PAUSE_GAME.clear();
+            exports.GameEvents.REQUEST_MUTE_GAME.clear();
             exports.GameEvents.REQUEST_OVERFLOW_WORD.clear();
             exports.GameEvents.NOTIFY_UPDATE_INPUT_WORD.clear();
+            exports.GameEvents.NOTIFY_LETTER_ADDED.clear();
             exports.GameEvents.NOTIFY_LETTER_DELETED.clear();
             exports.GameEvents.NOTIFY_WORD_COMPLETED.clear();
             exports.GameEvents.NOTIFY_OBJECT_WORD_COMPLETED.clear();
@@ -1725,6 +1894,7 @@ define("game/engine/GameEvents", ["require", "exports", "JMGE/events/JMEventList
             exports.GameEvents.NOTIFY_SET_HEALTH.clear();
             exports.GameEvents.NOTIFY_BOSS_DAMAGED.clear();
             exports.GameEvents.NOTIFY_COMMANDS_COMPLETE.clear();
+            exports.GameEvents.NOTIFY_ENEMY_DESTROYED.clear();
         },
     };
 });
@@ -1783,7 +1953,7 @@ define("game/objects/BaseObject", ["require", "exports", "game/text/TextObject",
     }(PIXI.Container));
     exports.BaseObject = BaseObject;
 });
-define("JMGE/effects/FlyingText", ["require", "exports", "lodash", "JMGE/JMTween"], function (require, exports, _, JMTween_2) {
+define("JMGE/effects/FlyingText", ["require", "exports", "lodash", "JMGE/JMTween"], function (require, exports, _, JMTween_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var FlyingText = (function (_super) {
@@ -1794,8 +1964,8 @@ define("JMGE/effects/FlyingText", ["require", "exports", "lodash", "JMGE/JMTween
             _this.position.set(x, y);
             if (parent)
                 parent.addChild(_this);
-            new JMTween_2.JMTween(_this).wait(20).to({ alpha: 0 }).over(1000).start();
-            new JMTween_2.JMTween(_this).to({ y: _this.y - 20 }).over(1200).onComplete(function () {
+            new JMTween_3.JMTween(_this).wait(20).to({ alpha: 0 }).over(1000).start();
+            new JMTween_3.JMTween(_this).to({ y: _this.y - 20 }).over(1200).onComplete(function () {
                 _this.destroy();
             }).start();
             return _this;
@@ -2070,7 +2240,7 @@ define("JMGE/others/Colors", ["require", "exports"], function (require, exports)
     }
     exports.parseColor = parseColor;
 });
-define("JMGE/effects/Laser", ["require", "exports", "JMGE/others/Colors", "JMGE/JMTween"], function (require, exports, Colors, JMTween_3) {
+define("JMGE/effects/Laser", ["require", "exports", "JMGE/others/Colors", "JMGE/JMTween"], function (require, exports, Colors, JMTween_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Laser = (function (_super) {
@@ -2087,14 +2257,14 @@ define("JMGE/effects/Laser", ["require", "exports", "JMGE/others/Colors", "JMGE/
             _this.lineStyle(thickness, color);
             _this.lineTo(origin.x, origin.y);
             _this.alpha = 2;
-            new JMTween_3.JMTween(_this).to({ alpha: 0 }).over(500).onComplete(function () { return _this.destroy(); }).start();
+            new JMTween_4.JMTween(_this).to({ alpha: 0 }).over(500).onComplete(function () { return _this.destroy(); }).start();
             return _this;
         }
         return Laser;
     }(PIXI.Graphics));
     exports.Laser = Laser;
 });
-define("game/objects/Shield", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_4) {
+define("game/objects/Shield", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Shield = (function (_super) {
@@ -2109,14 +2279,14 @@ define("game/objects/Shield", ["require", "exports", "JMGE/JMTween"], function (
         Shield.prototype.fadeIn = function (alpha) {
             if (alpha === void 0) { alpha = 1; }
             this.alpha = 0;
-            new JMTween_4.JMTween(this).to({ alpha: alpha }).over(200).start();
+            new JMTween_5.JMTween(this).to({ alpha: alpha }).over(200).start();
         };
         Shield.prototype.fadeTo = function (alpha) {
-            new JMTween_4.JMTween(this).to({ alpha: alpha }).over(200).start();
+            new JMTween_5.JMTween(this).to({ alpha: alpha }).over(200).start();
         };
         Shield.prototype.fadeOut = function () {
             var _this = this;
-            new JMTween_4.JMTween(this).to({ alpha: 0 }).over(200).onComplete(function () { return _this.parent.removeChild(_this); }).start();
+            new JMTween_5.JMTween(this).to({ alpha: 0 }).over(200).onComplete(function () { return _this.parent.removeChild(_this); }).start();
         };
         return Shield;
     }(PIXI.Graphics));
@@ -2877,13 +3047,6 @@ define("data/LevelData", ["require", "exports"], function (require, exports) {
         MethodPack.prototype.setDist = function (distance) {
             this.distance += distance;
         };
-        MethodPack.prototype.loopBack = function (jumpIndex) {
-            if (jumpIndex === void 0) { jumpIndex = 0; }
-            if (jumpIndex < 0) {
-                jumpIndex = this.array.length + jumpIndex;
-            }
-            this.array.push({ type: EventType.LOOP, distance: this.distance, jumpIndex: jumpIndex });
-        };
         MethodPack.prototype.wait = function (distance) {
             if (distance === void 0) { distance = 0; }
             this.setDist(distance * this.mult);
@@ -3171,7 +3334,7 @@ define("game/objects/GameSprite", ["require", "exports", "game/objects/BaseObjec
     }(BaseObject_1.BaseObject));
     exports.GameSprite = GameSprite;
 });
-define("game/engine/ObjectManager", ["require", "exports", "lodash", "JMGE/effects/FlyingText", "JMGE/effects/Firework", "JMGE/effects/Laser", "Config", "game/text/TextObject", "game/engine/GameEvents"], function (require, exports, _, FlyingText_1, Firework_1, Laser_1, Config_1, TextObject_2, GameEvents_2) {
+define("game/engine/ObjectManager", ["require", "exports", "lodash", "JMGE/effects/FlyingText", "JMGE/effects/Firework", "JMGE/effects/Laser", "Config", "game/text/TextObject", "game/engine/GameEvents"], function (require, exports, _, FlyingText_1, Firework_1, Laser_1, Config_2, TextObject_2, GameEvents_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var DisplayLayer;
@@ -3239,7 +3402,7 @@ define("game/engine/ObjectManager", ["require", "exports", "lodash", "JMGE/effec
         };
         ObjectManager.prototype.newLayer = function () {
             var layer = new PIXI.Container();
-            layer.x = layer.y = -Config_1.CONFIG.INIT.STAGE_BUFFER / 2;
+            layer.x = layer.y = -Config_2.CONFIG.INIT.STAGE_BUFFER / 2;
             this.layers.push(layer);
             this.addChild(layer);
             this.objectsByLayer.push([]);
@@ -3456,7 +3619,7 @@ define("JMGE/effects/Starfield", ["require", "exports"], function (require, expo
         return Star;
     }(PIXI.Graphics));
 });
-define("JMGE/effects/Charge", ["require", "exports", "JMGE/others/Colors"], function (require, exports, Colors_1) {
+define("JMGE/effects/Charge", ["require", "exports", "JMGE/others/Colors"], function (require, exports, Colors_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Charge = (function (_super) {
@@ -3489,8 +3652,8 @@ define("JMGE/effects/Charge", ["require", "exports", "JMGE/others/Colors"], func
                 _this.clear();
                 _this.running = false;
             };
-            _this.gradient1 = new Colors_1.ColorGradient(0, color);
-            _this.gradient2 = new Colors_1.ColorGradient(0xffffff, color);
+            _this.gradient1 = new Colors_2.ColorGradient(0, color);
+            _this.gradient2 = new Colors_2.ColorGradient(0xffffff, color);
             return _this;
         }
         Charge.prototype.startCharge = function (callback) {
@@ -3896,7 +4059,7 @@ define("game/objects/Scanner", ["require", "exports", "game/objects/GameSprite"]
     }(GameSprite_3.GameSprite));
     exports.Scanner = Scanner;
 });
-define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite", "Config", "game/objects/Scanner", "game/engine/GameEvents"], function (require, exports, GameSprite_4, Config_2, Scanner_1, GameEvents_4) {
+define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite", "Config", "game/objects/Scanner", "game/engine/GameEvents"], function (require, exports, GameSprite_4, Config_3, Scanner_1, GameEvents_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BossShip = (function (_super) {
@@ -3905,7 +4068,7 @@ define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite"
             var _this = _super.call(this) || this;
             _this.bossType = bossType;
             _this.manager = manager;
-            _this.commands = [{ x: (Config_2.CONFIG.INIT.SCREEN_WIDTH + Config_2.CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (Config_2.CONFIG.INIT.SCREEN_WIDTH + Config_2.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];
+            _this.commands = [{ x: (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2, y: 200, move: true }, { x: (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 6, move: false, fire: true }];
             _this.overOffset = new PIXI.Point(0, 0);
             _this.delay = -1;
             _this.moveWith = [];
@@ -3960,7 +4123,7 @@ define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite"
             };
             _this.health = 3;
             _this.wordSize = -1;
-            _this.x = (Config_2.CONFIG.INIT.SCREEN_WIDTH + Config_2.CONFIG.INIT.STAGE_BUFFER) / 2;
+            _this.x = (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2;
             _this.y = -50;
             return _this;
         }
@@ -4006,7 +4169,7 @@ define("game/objects/BossShip", ["require", "exports", "game/objects/GameSprite"
     }(GameSprite_4.GameSprite));
     exports.BossShip = BossShip;
 });
-define("game/objects/BossShip0", ["require", "exports", "game/objects/BossShip", "TextureData", "game/engine/ObjectManager", "data/LevelData", "Config"], function (require, exports, BossShip_1, TextureData_3, ObjectManager_2, LevelData_1, Config_3) {
+define("game/objects/BossShip0", ["require", "exports", "game/objects/BossShip", "TextureData", "game/engine/ObjectManager", "data/LevelData", "Config"], function (require, exports, BossShip_1, TextureData_3, ObjectManager_2, LevelData_1, Config_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BossShip0 = (function (_super) {
@@ -4070,13 +4233,13 @@ define("game/objects/BossShip0", ["require", "exports", "game/objects/BossShip",
         };
         BossShip0.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: (Config_3.CONFIG.INIT.SCREEN_WIDTH + Config_3.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 480, move: false, fire: true });
+            this.commands.push({ x: (Config_4.CONFIG.INIT.SCREEN_WIDTH + Config_4.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 480, move: false, fire: true });
         };
         return BossShip0;
     }(BossShip_1.BossShip));
     exports.BossShip0 = BossShip0;
 });
-define("game/objects/BossShip1", ["require", "exports", "game/objects/BossShip", "TextureData", "Config"], function (require, exports, BossShip_2, TextureData_4, Config_4) {
+define("game/objects/BossShip1", ["require", "exports", "game/objects/BossShip", "TextureData", "Config"], function (require, exports, BossShip_2, TextureData_4, Config_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BossShip1 = (function (_super) {
@@ -4107,7 +4270,7 @@ define("game/objects/BossShip1", ["require", "exports", "game/objects/BossShip",
         };
         BossShip1.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: (Config_4.CONFIG.INIT.SCREEN_WIDTH + Config_4.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 138 + this.health * 18, move: false, fire: true });
+            this.commands.push({ x: (Config_5.CONFIG.INIT.SCREEN_WIDTH + Config_5.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 138 + this.health * 18, move: false, fire: true });
         };
         return BossShip1;
     }(BossShip_2.BossShip));
@@ -4129,7 +4292,7 @@ define("game/objects/ClearObject", ["require", "exports", "game/objects/GameSpri
     }(GameSprite_5.GameSprite));
     exports.ClearObject = ClearObject;
 });
-define("game/objects/BossShip2", ["require", "exports", "game/objects/BossShip", "Config", "game/objects/ClearObject", "TextureData"], function (require, exports, BossShip_3, Config_5, ClearObject_1, TextureData_5) {
+define("game/objects/BossShip2", ["require", "exports", "game/objects/BossShip", "Config", "game/objects/ClearObject", "TextureData"], function (require, exports, BossShip_3, Config_6, ClearObject_1, TextureData_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BossShip2 = (function (_super) {
@@ -4220,7 +4383,7 @@ define("game/objects/BossShip2", ["require", "exports", "game/objects/BossShip",
         };
         BossShip2.prototype.newCommands = function () {
             this.bossFire();
-            this.commands.push({ x: (Config_5.CONFIG.INIT.SCREEN_WIDTH + Config_5.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 820, move: false, fire: true });
+            this.commands.push({ x: (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 2, y: 500, timer: 820, move: false, fire: true });
         };
         return BossShip2;
     }(BossShip_3.BossShip));
@@ -4462,7 +4625,7 @@ define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectMa
                 var size = enemy.wordSize === 3 ? 20 : 40;
                 _this.manager.container.makeExplosionAt(enemy.x, enemy.y, size);
                 _this.manager.container.makeScoreDisplay(enemy.x, enemy.y, enemy.value);
-                _this.manager.addScore(enemy.value);
+                _this.manager.enemyDestroyed(enemy);
             };
         }
         ActionControl.prototype.shootPlayerMissile = function (origin, target) {
@@ -4471,8 +4634,10 @@ define("game/engine/ActionControl", ["require", "exports", "game/engine/ObjectMa
         ActionControl.prototype.shootPlayerLaser = function (origin, target) {
             var _this = this;
             origin.laserCharge.startCharge(function () {
-                _this.manager.container.makeLaser(origin, target, 0x00ffff);
-                _this.enemyDestroyed(target);
+                if (target && target.position) {
+                    _this.manager.container.makeLaser(origin, target, 0x00ffff);
+                    _this.enemyDestroyed(target);
+                }
             });
         };
         ActionControl.prototype.shootEnemyMissile = function (origin, target, auto) {
@@ -4598,6 +4763,7 @@ define("game/engine/WordInput", ["require", "exports", "game/text/TextObject", "
             letter = letter.toLowerCase();
             if (this.checkLetter(letter)) {
                 this.text += letter;
+                GameEvents_6.GameEvents.NOTIFY_LETTER_ADDED.publish({ letter: letter });
                 for (var _i = 0, _a = TextObject_3.TextObject.allTextObjects; _i < _a.length; _i++) {
                     var object = _a[_i];
                     var text = object.matchAndReturnWord(this.text);
@@ -4663,69 +4829,11 @@ define("game/engine/WordInput", ["require", "exports", "game/text/TextObject", "
     }());
     exports.WordInput = WordInput;
 });
-define("JMGE/effects/ScreenCover", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_5) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var ScreenCover = (function (_super) {
-        __extends(ScreenCover, _super);
-        function ScreenCover(rect, color) {
-            if (color === void 0) { color = 0; }
-            var _this = _super.call(this) || this;
-            _this.onFadeComplete = function (callback) {
-                _this._onFadeComplete = callback;
-                return _this;
-            };
-            _this.fadeIn = function (duration, waitPre, waitPost) {
-                if (waitPre === void 0) { waitPre = 0; }
-                if (waitPost === void 0) { waitPost = 0; }
-                new JMTween_5.JMTween(_this).wait(waitPre).from({ alpha: 0 }).over(duration).onComplete(function () {
-                    if (waitPost) {
-                        new JMTween_5.JMTween({}).wait(waitPost).onWaitComplete(function () {
-                            _this.destroy();
-                            if (_this._onFadeComplete)
-                                _this._onFadeComplete();
-                        }).start();
-                    }
-                    else {
-                        _this.destroy();
-                        if (_this._onFadeComplete)
-                            _this._onFadeComplete();
-                    }
-                }).start();
-                return _this;
-            };
-            _this.fadeOut = function (duration, waitPre, waitPost) {
-                if (waitPre === void 0) { waitPre = 0; }
-                if (waitPost === void 0) { waitPost = 0; }
-                new JMTween_5.JMTween(_this).wait(waitPre).to({ alpha: 0 }).over(duration).onComplete(function () {
-                    if (waitPost) {
-                        new JMTween_5.JMTween({}).wait(waitPost).onWaitComplete(function () {
-                            _this.destroy();
-                            if (_this._onFadeComplete)
-                                _this._onFadeComplete();
-                        }).start();
-                    }
-                    else {
-                        _this.destroy();
-                        if (_this._onFadeComplete)
-                            _this._onFadeComplete();
-                    }
-                }).start();
-                return _this;
-            };
-            _this.beginFill(color);
-            _this.drawRect(rect.x, rect.y, rect.width, rect.height);
-            return _this;
-        }
-        return ScreenCover;
-    }(PIXI.Graphics));
-    exports.ScreenCover = ScreenCover;
-});
 define("data/LevelInstance", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
 });
-define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "JMGE/effects/ScreenCover", "game/engine/GameEvents", "JMGE/events/JMInteractionEvents"], function (require, exports, ObjectManager_4, Starfield_1, Config_6, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, ScreenCover_1, GameEvents_7, JMInteractionEvents_2) {
+define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "JMGE/effects/Starfield", "Config", "game/objects/EnemyShip", "game/objects/BossShip0", "game/objects/BossShip1", "game/objects/BossShip2", "game/objects/PlayerShip", "game/engine/EventInterpreter", "game/engine/ActionControl", "game/engine/WordInput", "game/text/TextObject", "game/engine/GameEvents", "JMGE/events/JMInteractionEvents"], function (require, exports, ObjectManager_4, Starfield_1, Config_7, EnemyShip_1, BossShip0_1, BossShip1_1, BossShip2_1, PlayerShip_3, EventInterpreter_1, ActionControl_1, WordInput_1, TextObject_4, GameEvents_7, JMInteractionEvents_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameManager = (function () {
@@ -4747,6 +4855,8 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 GameEvents_7.GameEvents.NOTIFY_LETTER_DELETED.removeListener(_this.onLetterDelete);
                 GameEvents_7.GameEvents.REQUEST_HEAL_PLAYER.removeListener(_this.player.addHealth);
                 GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.removeListener(_this.togglePause);
+                GameEvents_7.GameEvents.NOTIFY_LETTER_ADDED.removeListener(_this.onLetterAdded);
+                GameEvents_7.GameEvents.NOTIFY_SET_HEALTH.removeListener(_this.onHealthChange);
                 _this.player.dispose();
                 _this.container.dispose();
                 _this.wordInput.dispose();
@@ -4788,7 +4898,7 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 GameEvents_7.GameEvents.NOTIFY_SET_PROGRESS.publish({ current: _this.levelEvents.distance, total: _this.levelEvents.finalDistance });
                 if (!_this.interactive)
                     return;
-                if (_this.player.health <= 0 && !Config_6.CONFIG.GAME.godmode) {
+                if (_this.player.health <= 0 && !Config_7.CONFIG.GAME.godmode) {
                     _this.killPlayer();
                 }
             };
@@ -4798,22 +4908,14 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                     _this.interactive = false;
                     _this.container.makeExplosionAt(_this.player.x, _this.player.y, 50);
                     _this.player.visible = false;
-                    var screen_1 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(function () {
-                        _this.running = false;
-                        _this.ui.navLoss();
-                    }).fadeIn(2000, 3000, 1000);
-                    _this.display.addChild(screen_1);
+                    _this.ui.navLoss(_this.levelInstance);
                 }
             };
             this.endLevel = function () {
                 if (!_this.levelInstance.levelEnded) {
                     if (_this.container.numObjects() <= 1) {
                         _this.levelInstance.levelEnded = true;
-                        var screen_2 = new ScreenCover_1.ScreenCover(new PIXI.Rectangle(0, 0, Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(function () {
-                            _this.running = false;
-                            _this.ui.navWin();
-                        }).fadeIn(1000, 1000, 1000);
-                        _this.display.addChild(screen_2);
+                        _this.ui.navWin(_this.levelInstance);
                     }
                 }
             };
@@ -4824,12 +4926,32 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 TextObject_4.TextObject.allTextObjects.forEach(function (object) { return object.visible = _this.running; });
             };
             this.onLetterDelete = function (e) {
+                _this.levelInstance.lettersDeleted++;
                 _this.addScore(-e.numDeleted);
+            };
+            this.onHealthChange = function (e) {
+                _this.levelInstance.playerHealth = e.newHealth;
+                if (e.oldHealth > e.newHealth) {
+                    _this.levelInstance.healthLost = true;
+                }
+            };
+            this.onLetterAdded = function (e) {
+                _this.levelInstance.lettersTyped++;
             };
             this.setScore = function (score) {
                 var oldScore = _this.levelInstance.score;
                 _this.levelInstance.score = score;
                 GameEvents_7.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
+            };
+            this.enemyDestroyed = function (enemy) {
+                if (enemy instanceof EnemyShip_1.EnemyShip) {
+                    _this.levelInstance.enemiesKilled++;
+                    console.log('enemy killed', _this.levelInstance.enemiesKilled);
+                }
+                else {
+                    console.log('not enemy');
+                }
+                _this.addScore(enemy.value);
             };
             this.addScore = function (add) {
                 var oldScore = _this.levelInstance.score;
@@ -4837,11 +4959,11 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 GameEvents_7.GameEvents.NOTIFY_SET_SCORE.publish({ oldScore: oldScore, newScore: _this.levelInstance.score });
             };
             this.addEnemy = function (spawnEvent) {
-                spawnEvent.x *= (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
-                spawnEvent.y *= (Config_6.CONFIG.INIT.SCREEN_HEIGHT + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                spawnEvent.x *= (Config_7.CONFIG.INIT.SCREEN_WIDTH + Config_7.CONFIG.INIT.STAGE_BUFFER) / 12;
+                spawnEvent.y *= (Config_7.CONFIG.INIT.SCREEN_HEIGHT + Config_7.CONFIG.INIT.STAGE_BUFFER) / 12;
                 spawnEvent.commands.forEach(function (command) {
-                    command.x *= (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
-                    command.y *= (Config_6.CONFIG.INIT.SCREEN_HEIGHT + Config_6.CONFIG.INIT.STAGE_BUFFER) / 12;
+                    command.x *= (Config_7.CONFIG.INIT.SCREEN_WIDTH + Config_7.CONFIG.INIT.STAGE_BUFFER) / 12;
+                    command.y *= (Config_7.CONFIG.INIT.SCREEN_HEIGHT + Config_7.CONFIG.INIT.STAGE_BUFFER) / 12;
                     command.timer *= 6;
                 });
                 var newShip = new EnemyShip_1.EnemyShip(spawnEvent, { onFire: function (enemy) { return _this.actionC.enemyFires(_this.player, enemy); }, onWordComplete: function (enemy) { return _this.actionC.playerFires(_this.player, enemy); } });
@@ -4865,22 +4987,27 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
                 return boss;
             };
             var gameSpeed = difficulty * 0.5;
-            this.starfield = new Starfield_1.Starfield(Config_6.CONFIG.INIT.SCREEN_WIDTH, Config_6.CONFIG.INIT.SCREEN_HEIGHT);
+            this.starfield = new Starfield_1.Starfield(Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT);
             this.actionC.missileRate = 0.4;
             this.levelEvents = new EventInterpreter_1.EventInterpreter(this.addEnemy, this.addBoss);
             this.levelEvents.loadLevel(level, 60 * gameSpeed);
+            console.log(difficulty);
             this.levelInstance = {
+                level: level,
+                difficulty: difficulty,
                 score: 0,
                 gameSpeed: gameSpeed,
                 levelEnded: false,
                 enemiesKilled: 0,
+                totalEnemies: this.levelEvents.getTotalEnemies(),
                 lettersTyped: 0,
                 lettersDeleted: 0,
+                playerHealth: 5,
                 healthLost: false,
-                totalEnemies: this.levelEvents.getTotalEnemies(),
             };
-            this.player.x = (Config_6.CONFIG.INIT.SCREEN_WIDTH + Config_6.CONFIG.INIT.STAGE_BUFFER) / 2;
-            this.player.y = Config_6.CONFIG.INIT.SCREEN_HEIGHT - 150;
+            console.log('total enemies', this.levelInstance.totalEnemies);
+            this.player.x = (Config_7.CONFIG.INIT.SCREEN_WIDTH + Config_7.CONFIG.INIT.STAGE_BUFFER) / 2;
+            this.player.y = Config_7.CONFIG.INIT.SCREEN_HEIGHT - 100;
             this.player.setHealth(5);
             this.setScore(0);
             this.display.addChild(this.starfield, this.container);
@@ -4890,155 +5017,12 @@ define("game/GameManager", ["require", "exports", "game/engine/ObjectManager", "
             GameEvents_7.GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
             GameEvents_7.GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
             GameEvents_7.GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
+            GameEvents_7.GameEvents.NOTIFY_LETTER_ADDED.addListener(this.onLetterAdded);
+            GameEvents_7.GameEvents.NOTIFY_SET_HEALTH.addListener(this.onHealthChange);
         }
         return GameManager;
     }());
     exports.GameManager = GameManager;
-});
-define("ui/MuterOverlay", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var MuterOverlay = (function (_super) {
-        __extends(MuterOverlay, _super);
-        function MuterOverlay() {
-            var _this = _super.call(this) || this;
-            _this.beginFill(0x666666);
-            _this.lineStyle(2);
-            _this.drawRect(0, 0, 100, 50);
-            return _this;
-        }
-        MuterOverlay.prototype.getWidth = function () {
-            return 100;
-        };
-        MuterOverlay.prototype.getHeight = function () {
-            return 50;
-        };
-        return MuterOverlay;
-    }(PIXI.Graphics));
-    exports.MuterOverlay = MuterOverlay;
-});
-define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_1, Config_7, MuterOverlay_1, ScreenCover_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var LABEL = 'WinUI';
-    var WinUI = (function (_super) {
-        __extends(WinUI, _super);
-        function WinUI() {
-            var _this = _super.call(this, { width: Config_7.CONFIG.INIT.SCREEN_WIDTH, height: Config_7.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
-            _this.navMenu = function () {
-                _this.navBack();
-            };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_7.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_7.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
-            _this.addChild(_button);
-            var muter = new MuterOverlay_1.MuterOverlay();
-            muter.x = _this.getWidth() - muter.getWidth();
-            muter.y = _this.getHeight() - muter.getHeight();
-            _this.addChild(muter);
-            var screen = new ScreenCover_2.ScreenCover(new PIXI.Rectangle(0, 0, Config_7.CONFIG.INIT.SCREEN_WIDTH, Config_7.CONFIG.INIT.SCREEN_HEIGHT), 0xffffff)
-                .fadeOut(500);
-            _this.addChild(screen);
-            return _this;
-        }
-        return WinUI;
-    }(BaseUI_1.BaseUI));
-    exports.WinUI = WinUI;
-});
-define("screens/LossUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "JMGE/effects/ScreenCover"], function (require, exports, JMBUI, BaseUI_2, Config_8, MuterOverlay_2, ScreenCover_3) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var LABEL = 'LossUI';
-    var LossUI = (function (_super) {
-        __extends(LossUI, _super);
-        function LossUI() {
-            var _this = _super.call(this, { width: Config_8.CONFIG.INIT.SCREEN_WIDTH, height: Config_8.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
-            _this.navMenu = function () {
-                _this.navBack();
-            };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_8.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_8.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
-            _this.addChild(_button);
-            var muter = new MuterOverlay_2.MuterOverlay();
-            muter.x = _this.getWidth() - muter.getWidth();
-            muter.y = _this.getHeight() - muter.getHeight();
-            _this.addChild(muter);
-            var screen = new ScreenCover_3.ScreenCover(new PIXI.Rectangle(0, 0, Config_8.CONFIG.INIT.SCREEN_WIDTH, Config_8.CONFIG.INIT.SCREEN_HEIGHT))
-                .fadeOut(1000);
-            _this.addChild(screen);
-            return _this;
-        }
-        return LossUI;
-    }(BaseUI_2.BaseUI));
-    exports.LossUI = LossUI;
-});
-define("ui/TutorialPopup", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var TutorialPopup = (function (_super) {
-        __extends(TutorialPopup, _super);
-        function TutorialPopup(text) {
-            var _this = _super.call(this) || this;
-            var background = new PIXI.Graphics();
-            background.beginFill(0xffffff);
-            background.drawRect(0, 0, 300, 100);
-            var field = new PIXI.Text(text);
-            _this.addChild(background, field);
-            return _this;
-        }
-        return TutorialPopup;
-    }(PIXI.Container));
-    exports.TutorialPopup = TutorialPopup;
-});
-define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup", "game/engine/GameEvents"], function (require, exports, TutorialPopup_1, GameEvents_8) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var TutorialManager = (function () {
-        function TutorialManager(canvas) {
-            var _this = this;
-            this.canvas = canvas;
-            this.tutorialDamage = function (e) {
-                if (!_this.testFlag && e.newHealth < 5) {
-                    _this.currentPopup = new TutorialPopup_1.TutorialPopup('your health changed');
-                    GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
-                    _this.canvas.addChild(_this.currentPopup);
-                    _this.testFlag = false;
-                    GameEvents_8.GameEvents.NOTIFY_SET_HEALTH.removeListener(_this.tutorialDamage);
-                }
-            };
-            this.onPause = function (e) {
-                if (!e.paused) {
-                    if (_this.currentPopup) {
-                        _this.currentPopup.destroy();
-                        _this.currentPopup = null;
-                    }
-                }
-            };
-            GameEvents_8.GameEvents.NOTIFY_SET_HEALTH.addListener(this.tutorialDamage);
-            GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
-        }
-        return TutorialManager;
-    }());
-    exports.TutorialManager = TutorialManager;
-});
-define("ui/AchievementPopup", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_6) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var AchievementPopup = (function (_super) {
-        __extends(AchievementPopup, _super);
-        function AchievementPopup(text, tier) {
-            if (tier === void 0) { tier = 0; }
-            var _this = _super.call(this) || this;
-            var background = new PIXI.Graphics();
-            background.beginFill(0xffff00);
-            background.drawRect(0, 0, 300, 100);
-            var field = new PIXI.Text(text);
-            _this.addChild(background, field);
-            new JMTween_6.JMTween(_this).to({ alpha: 0 }).over(1000).wait(5000).onComplete(function () {
-                _this.destroy();
-            }).start();
-            return _this;
-        }
-        return AchievementPopup;
-    }(PIXI.Container));
-    exports.AchievementPopup = AchievementPopup;
 });
 define("data/PlayerData", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -5079,17 +5063,15 @@ define("data/PlayerData", ["require", "exports"], function (require, exports) {
                 this.data = {
                     badges: [],
                     levels: [
-                        { score: 100, highestDifficulty: 0, killBadge: 0, healthBadge: 3 },
-                        { score: 100, highestDifficulty: 1, killBadge: 1, healthBadge: 2 },
-                        { score: 100, highestDifficulty: 2, killBadge: 2, healthBadge: 1 },
-                        { score: 100, highestDifficulty: 3, killBadge: 3, healthBadge: 0 },
-                        { score: 100, highestDifficulty: 4 },
                         { score: 0 },
                     ],
                     scores: {
                         kills: 0,
                         deaths: 0,
                         playtime: 0,
+                    },
+                    options: {
+                        muted: false,
                     },
                 };
             }
@@ -5100,28 +5082,6 @@ define("data/PlayerData", ["require", "exports"], function (require, exports) {
         return ExtrinsicModel;
     }());
     exports.ExtrinsicModel = ExtrinsicModel;
-    function calcHealthPercent(health, maxHealth, neverHurt) {
-        return neverHurt ? 2 : health / maxHealth;
-    }
-    exports.calcHealthPercent = calcHealthPercent;
-    function calcKillPercent(numKilled, numEnemies) {
-        return numKilled / numEnemies;
-    }
-    exports.calcKillPercent = calcKillPercent;
-    function calcScoreSteps(baseScore, healthPercent, killPercent, difficulty) {
-        var m = [];
-        var score = baseScore;
-        m.push(['LEVEL SCORE:', score]);
-        var diffMult = 1 + difficulty * 0.15;
-        score *= diffMult;
-        m.push(['DIFFICULTY BONUS x' + diffMult, score]);
-        score *= healthPercent;
-        m.push(['HEALTH BONUS x' + healthPercent, score]);
-        score *= killPercent;
-        m.push(['KILL BONUS x' + killPercent, score]);
-        return m;
-    }
-    exports.calcScoreSteps = calcScoreSteps;
 });
 define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (require, exports, PlayerData_1) {
     "use strict";
@@ -5131,7 +5091,7 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
         }
         SaveData.init = function () {
             this.loadVersion(function (version) {
-                if (true) {
+                if (version < SaveData.VERSION) {
                     SaveData.confirmReset();
                     SaveData.saveVersion(SaveData.VERSION);
                     SaveData.saveExtrinsic();
@@ -5207,7 +5167,7 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
                 console.log('NO STORAGE!');
             }
         };
-        SaveData.VERSION = 7;
+        SaveData.VERSION = 8;
         SaveData.confirmReset = function () {
             SaveData.extrinsic = new PlayerData_1.ExtrinsicModel();
         };
@@ -5215,19 +5175,248 @@ define("utils/SaveData", ["require", "exports", "data/PlayerData"], function (re
     }());
     exports.SaveData = SaveData;
 });
-define("game/engine/AchievementManager", ["require", "exports", "game/engine/GameEvents", "ui/AchievementPopup", "data/PlayerData", "utils/SaveData"], function (require, exports, GameEvents_9, AchievementPopup_1, PlayerData_2, SaveData_1) {
+define("ui/MuterOverlay", ["require", "exports", "JMGE/JMBUI", "TextureData", "game/engine/GameEvents", "utils/SaveData"], function (require, exports, JMBUI, TextureData_7, GameEvents_8, SaveData_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var AchievementManager = (function () {
-        function AchievementManager(canvas) {
+    var MuterOverlay = (function (_super) {
+        __extends(MuterOverlay, _super);
+        function MuterOverlay(showPause) {
+            var _this = _super.call(this) || this;
+            _this.paused = false;
+            _this.muted = false;
+            _this.togglePause = function (b) {
+                if (b || b === false) {
+                    _this.paused = b;
+                }
+                else {
+                    _this.paused = !_this.paused;
+                }
+                if (_this.paused) {
+                    _this.pause.visible = false;
+                    _this.play.visible = true;
+                }
+                else {
+                    _this.pause.visible = true;
+                    _this.play.visible = false;
+                }
+            };
+            _this.toggleSound = function (b) {
+                if (b || b === false) {
+                    _this.muted = b;
+                }
+                else {
+                    _this.muted = !_this.muted;
+                }
+                _this.options.muted = _this.muted;
+                SaveData_1.SaveData.saveExtrinsic();
+                if (_this.muted) {
+                    _this.sound.visible = false;
+                    _this.noSound.visible = true;
+                }
+                else {
+                    _this.sound.visible = true;
+                    _this.noSound.visible = false;
+                }
+            };
+            _this.beginFill(0x666666);
+            _this.lineStyle(2);
+            _this.drawRect(0, 0, 100, 50);
+            var extrinsic = SaveData_1.SaveData.getExtrinsic();
+            _this.options = extrinsic.data.options;
+            if (!_this.options) {
+                extrinsic.data.options = { muted: false };
+                _this.options = extrinsic.data.options;
+                SaveData_1.SaveData.saveExtrinsic();
+            }
+            if (showPause) {
+                _this.pause = new PIXI.Sprite(TextureData_7.TextureData.pause);
+                _this.play = new PIXI.Sprite(TextureData_7.TextureData.play);
+                _this.pause.scale.set(0.3);
+                _this.play.scale.set(0.3);
+                _this.pause.position.set(0, 5);
+                _this.play.position.set(0, 5);
+                _this.addChild(_this.pause, _this.play);
+                var pauseB = new JMBUI.ClearButton({ x: 0, y: 0, width: 30, height: 50, downFunction: function () { return GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: !_this.paused }); } });
+                _this.addChild(pauseB);
+                _this.togglePause(false);
+                GameEvents_8.GameEvents.REQUEST_PAUSE_GAME.addListener(function (e) { return _this.togglePause(e.paused); });
+            }
+            _this.sound = new PIXI.Sprite(TextureData_7.TextureData.sound);
+            _this.noSound = new PIXI.Sprite(TextureData_7.TextureData.noSound);
+            _this.sound.scale.set(0.3);
+            _this.noSound.scale.set(0.3);
+            _this.sound.position.set(45, 5);
+            _this.noSound.position.set(45, 5);
+            _this.addChild(_this.sound, _this.noSound);
+            _this.toggleSound(_this.options.muted);
+            var soundB = new JMBUI.ClearButton({ x: 45, y: 0, width: 30, height: 50, downFunction: function () { return _this.toggleSound(); } });
+            _this.addChild(soundB);
+            return _this;
+        }
+        MuterOverlay.prototype.reset = function () {
+            this.toggleSound(this.options.muted);
+            if (this.paused) {
+                this.togglePause(false);
+            }
+        };
+        MuterOverlay.prototype.getWidth = function () {
+            return 100;
+        };
+        MuterOverlay.prototype.getHeight = function () {
+            return 50;
+        };
+        return MuterOverlay;
+    }(PIXI.Graphics));
+    exports.MuterOverlay = MuterOverlay;
+});
+define("screens/WinUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "utils/SaveData", "TextureData"], function (require, exports, JMBUI, BaseUI_1, Config_8, MuterOverlay_1, SaveData_2, TextureData_8) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'WinUI';
+    var WinUI = (function (_super) {
+        __extends(WinUI, _super);
+        function WinUI(instance) {
+            var _this = _super.call(this, { width: Config_8.CONFIG.INIT.SCREEN_WIDTH, height: Config_8.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            _this.calcNewScoreAndDisplay(instance);
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_8.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_8.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_1.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            return _this;
+        }
+        WinUI.prototype.calcNewScoreAndDisplay = function (instance) {
+            var extrinsic = SaveData_2.SaveData.getExtrinsic();
+            var currentLevel = extrinsic.data.levels[instance.level];
+            if (!extrinsic.data.levels[instance.level + 1]) {
+                extrinsic.data.levels[instance.level + 1] = { score: 0 };
+            }
+            var highScore = currentLevel.score;
+            var newScore = instance.score;
+            var s = 'You Won! :)\n\nBase Score: ' + newScore + '\n';
+            var diffMult = 1 + instance.difficulty * 0.15;
+            var healthMult = 1 + (instance.healthLost ? instance.playerHealth / 5 : 2);
+            var killMult = 1 + (instance.enemiesKilled / instance.totalEnemies);
+            var healthBadge = instance.healthLost ? instance.playerHealth === 5 ? 2 : instance.playerHealth > 2 ? 1 : 0 : 3;
+            var killBadge = Math.max(Math.floor(instance.enemiesKilled / instance.totalEnemies), 3);
+            newScore *= diffMult;
+            s += 'Difficulty x' + diffMult.toFixed(2) + ' : ' + Math.floor(newScore) + '\n';
+            newScore *= healthMult;
+            s += 'Health x' + healthMult.toFixed(2) + ' : ' + Math.floor(newScore) + '\n';
+            newScore *= killMult;
+            s += 'Kills x' + killMult.toFixed(2) + ' : ' + Math.floor(newScore) + '\n';
+            s += 'Final Score: ' + Math.floor(newScore) + '\n';
+            if (newScore > highScore) {
+                s += 'Congratulations!  This is a new high score!';
+                currentLevel.score = Math.round(newScore);
+            }
+            else {
+                s += 'Highscore: ' + highScore;
+            }
+            if (!currentLevel.healthBadge || healthBadge > currentLevel.healthBadge) {
+                currentLevel.healthBadge = healthBadge;
+            }
+            if (!currentLevel.killBadge || killBadge > currentLevel.killBadge) {
+                currentLevel.killBadge = killBadge;
+            }
+            if (!currentLevel.highestDifficulty || instance.difficulty > currentLevel.highestDifficulty) {
+                currentLevel.highestDifficulty = instance.difficulty;
+            }
+            SaveData_2.SaveData.saveExtrinsic();
+            var text = new PIXI.Text(s);
+            this.addChild(text);
+            text.position.set(50, 50);
+            if (healthBadge) {
+                var healthBadgeView = TextureData_8.TextureData.getHealthSprite(healthBadge);
+                healthBadgeView.position.set(50, Config_8.CONFIG.INIT.SCREEN_HEIGHT - 150);
+                this.addChild(healthBadgeView);
+            }
+            if (killBadge) {
+                var killBadgeView = TextureData_8.TextureData.getKillSprite(killBadge);
+                killBadgeView.position.set(200, Config_8.CONFIG.INIT.SCREEN_HEIGHT - 150);
+                this.addChild(killBadgeView);
+            }
+        };
+        return WinUI;
+    }(BaseUI_1.BaseUI));
+    exports.WinUI = WinUI;
+});
+define("screens/LossUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay", "utils/SaveData"], function (require, exports, JMBUI, BaseUI_2, Config_9, MuterOverlay_2, SaveData_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'LossUI';
+    var LossUI = (function (_super) {
+        __extends(LossUI, _super);
+        function LossUI(instance) {
+            var _this = _super.call(this, { width: Config_9.CONFIG.INIT.SCREEN_WIDTH, height: Config_9.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var extrinsic = SaveData_3.SaveData.getExtrinsic();
+            var currentLevel = extrinsic.data.levels[instance.level];
+            var highScore = currentLevel.score;
+            var newScore = instance.score;
+            var s = 'You Lost :(\n\nYour score: ' + newScore + '\n';
+            if (newScore > highScore) {
+                s += 'Congratulations!  This is a new high score!';
+                currentLevel.score = newScore;
+                SaveData_3.SaveData.saveExtrinsic();
+            }
+            else {
+                s += 'Highscore: ' + highScore;
+            }
+            var text = new PIXI.Text(s);
+            _this.addChild(text);
+            text.position.set(50, 50);
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_9.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_9.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_2.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
+            return _this;
+        }
+        return LossUI;
+    }(BaseUI_2.BaseUI));
+    exports.LossUI = LossUI;
+});
+define("ui/TutorialPopup", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TutorialPopup = (function (_super) {
+        __extends(TutorialPopup, _super);
+        function TutorialPopup(text) {
+            var _this = _super.call(this) || this;
+            var background = new PIXI.Graphics();
+            background.beginFill(0xffffff);
+            background.drawRect(0, 0, 300, 100);
+            var field = new PIXI.Text(text);
+            _this.addChild(background, field);
+            return _this;
+        }
+        return TutorialPopup;
+    }(PIXI.Container));
+    exports.TutorialPopup = TutorialPopup;
+});
+define("game/engine/TutorialManager", ["require", "exports", "ui/TutorialPopup", "game/engine/GameEvents"], function (require, exports, TutorialPopup_1, GameEvents_9) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TutorialManager = (function () {
+        function TutorialManager(canvas) {
             var _this = this;
             this.canvas = canvas;
-            this.wordCompleted = function (e) {
-                _this.currentPopup = new AchievementPopup_1.AchievementPopup('you finished 1 word!');
-                _this.canvas.addChild(_this.currentPopup);
-                _this.extrinsic.data.badges[0] = true;
-                SaveData_1.SaveData.saveExtrinsic();
-                GameEvents_9.GameEvents.NOTIFY_WORD_COMPLETED.removeListener(_this.wordCompleted);
+            this.tutorialDamage = function (e) {
+                if (!_this.testFlag && e.newHealth < 5) {
+                    _this.currentPopup = new TutorialPopup_1.TutorialPopup('your health changed');
+                    GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.publish({ paused: true });
+                    _this.canvas.addChild(_this.currentPopup);
+                    _this.testFlag = false;
+                    GameEvents_9.GameEvents.NOTIFY_SET_HEALTH.removeListener(_this.tutorialDamage);
+                }
             };
             this.onPause = function (e) {
                 if (!e.paused) {
@@ -5237,18 +5426,71 @@ define("game/engine/AchievementManager", ["require", "exports", "game/engine/Gam
                     }
                 }
             };
-            this.extrinsic = SaveData_1.SaveData.getExtrinsic();
+        }
+        return TutorialManager;
+    }());
+    exports.TutorialManager = TutorialManager;
+});
+define("ui/AchievementPopup", ["require", "exports", "JMGE/JMTween", "Config"], function (require, exports, JMTween_6, Config_10) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var AchievementPopup = (function (_super) {
+        __extends(AchievementPopup, _super);
+        function AchievementPopup(title, text, tier) {
+            if (tier === void 0) { tier = 0; }
+            var _this = _super.call(this) || this;
+            _this.x = Config_10.CONFIG.INIT.SCREEN_WIDTH / 2 - 150;
+            _this.y = 50;
+            var background = new PIXI.Graphics();
+            background.beginFill(0xffffff, 0.2);
+            background.lineStyle(2, 0xffffff);
+            background.drawRect(0, 0, 300, 100);
+            var titleField = new PIXI.Text(title, { fill: 0xffffff, fontWeight: 'bold', fontSize: 12 });
+            var field = new PIXI.Text(text, { fill: 0xffffff, fontSize: 11 });
+            _this.addChild(background, titleField, field);
+            titleField.position.set((300 - titleField.width) / 2, 5);
+            field.position.set(5, 20);
+            new JMTween_6.JMTween(_this, 200).from({ alpha: 0 }).start().chain(_this, 1000).to({ alpha: 0 }).wait(5000).onComplete(function () {
+                _this.destroy();
+            });
+            return _this;
+        }
+        return AchievementPopup;
+    }(PIXI.Container));
+    exports.AchievementPopup = AchievementPopup;
+});
+define("game/engine/AchievementManager", ["require", "exports", "game/engine/GameEvents", "ui/AchievementPopup", "utils/SaveData"], function (require, exports, GameEvents_10, AchievementPopup_1, SaveData_4) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var AchievementManager = (function () {
+        function AchievementManager(canvas) {
+            var _this = this;
+            this.canvas = canvas;
+            this.wordCompleted = function (e) {
+                _this.currentPopup = new AchievementPopup_1.AchievementPopup('Complete Badge', 'you finished 1 word!');
+                _this.canvas.addChild(_this.currentPopup);
+                _this.extrinsic.data.badges[0] = true;
+                SaveData_4.SaveData.saveExtrinsic();
+                GameEvents_10.GameEvents.NOTIFY_WORD_COMPLETED.removeListener(_this.wordCompleted);
+            };
+            this.onPause = function (e) {
+                if (!e.paused) {
+                    if (_this.currentPopup) {
+                        _this.currentPopup.destroy();
+                        _this.currentPopup = null;
+                    }
+                }
+            };
+            this.extrinsic = SaveData_4.SaveData.getExtrinsic();
             console.log(this.extrinsic);
-            if (!this.extrinsic.data.badges[PlayerData_2.Badges.CONQUEROR_GOLD]) {
-                GameEvents_9.GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
-            }
-            GameEvents_9.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
+            GameEvents_10.GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
+            GameEvents_10.GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
         }
         return AchievementManager;
     }());
     exports.AchievementManager = AchievementManager;
 });
-define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "JMGE/JMBUI", "Config", "game/engine/GameEvents", "JMGE/effects/FlyingText", "game/engine/TutorialManager", "game/engine/AchievementManager"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, JMBUI_1, Config_9, GameEvents_10, FlyingText_2, TutorialManager_1, AchievementManager_1) {
+define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "JMGE/JMBUI", "Config", "game/engine/GameEvents", "JMGE/effects/FlyingText", "game/engine/TutorialManager", "game/engine/AchievementManager", "ui/MuterOverlay"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, JMBUI_1, Config_11, GameEvents_11, FlyingText_2, TutorialManager_1, AchievementManager_1, MuterOverlay_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameUI = (function (_super) {
@@ -5257,15 +5499,23 @@ define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameMana
             var _this = _super.call(this) || this;
             _this.tutorials = new TutorialManager_1.TutorialManager(_this);
             _this.achievements = new AchievementManager_1.AchievementManager(_this);
-            _this.navWin = function () {
-                _this.navForward(new WinUI_1.WinUI(), _this.previousUI);
+            _this.fadeTiming = {
+                color: 0xffffff,
+                fadeIn: 2000,
+                fadeOut: 500,
+                delay: 3000,
+                delayBlank: 1000,
             };
-            _this.navLoss = function () {
-                _this.navForward(new LossUI_1.LossUI(), _this.previousUI);
+            _this.navWin = function (instance) {
+                _this.navForward(new WinUI_1.WinUI(instance), _this.previousUI, _this.fadeTiming);
+            };
+            _this.navLoss = function (instance) {
+                _this.navForward(new LossUI_1.LossUI(instance), _this.previousUI, _this.fadeTiming);
             };
             _this.dispose = function () {
+                _this.manager.running = false;
                 _this.manager.dispose();
-                GameEvents_10.GameEvents.clearAll();
+                GameEvents_11.GameEvents.clearAll();
                 _this.destroy();
             };
             _this.updateProgress = function (e) {
@@ -5293,24 +5543,28 @@ define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameMana
             requestAnimationFrame(function () { return _this.addHealWord(_this.manager.wordInput.healWord); });
             _this.addChild(_this.manager.display);
             _this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
-            _this.wordDisplay.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
+            _this.wordDisplay.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - 50;
             _this.addChild(_this.wordDisplay);
             _this.progress = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
-            _this.progress.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
-            _this.progress.x = Config_9.CONFIG.INIT.SCREEN_WIDTH - 100;
+            _this.progress.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - 100;
+            _this.progress.x = Config_11.CONFIG.INIT.SCREEN_WIDTH - 100;
             _this.addChild(_this.progress);
             _this.score = new PIXI.Text('0', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
-            _this.score.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 100;
+            _this.score.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - 100;
             _this.addChild(_this.score);
             _this.healthBar = new JMBUI_1.Gauge(0xff0000);
-            _this.healthBar.x = (Config_9.CONFIG.INIT.SCREEN_WIDTH - _this.healthBar.getWidth()) / 2;
-            _this.healthBar.y = Config_9.CONFIG.INIT.SCREEN_HEIGHT - 50;
+            _this.healthBar.x = (Config_11.CONFIG.INIT.SCREEN_WIDTH - _this.healthBar.getWidth()) / 2;
+            _this.healthBar.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - 50;
             _this.addChild(_this.healthBar);
-            GameEvents_10.GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(_this.updateText);
-            GameEvents_10.GameEvents.NOTIFY_LETTER_DELETED.addListener(_this.showMinusText);
-            GameEvents_10.GameEvents.NOTIFY_SET_SCORE.addListener(_this.setScore);
-            GameEvents_10.GameEvents.NOTIFY_SET_PROGRESS.addListener(_this.updateProgress);
-            GameEvents_10.GameEvents.NOTIFY_SET_HEALTH.addListener(_this.setPlayerHealth);
+            var muter = new MuterOverlay_3.MuterOverlay(true);
+            muter.x = Config_11.CONFIG.INIT.SCREEN_WIDTH - muter.getWidth();
+            muter.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - muter.getHeight();
+            _this.addChild(muter);
+            GameEvents_11.GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(_this.updateText);
+            GameEvents_11.GameEvents.NOTIFY_LETTER_DELETED.addListener(_this.showMinusText);
+            GameEvents_11.GameEvents.NOTIFY_SET_SCORE.addListener(_this.setScore);
+            GameEvents_11.GameEvents.NOTIFY_SET_PROGRESS.addListener(_this.updateProgress);
+            GameEvents_11.GameEvents.NOTIFY_SET_HEALTH.addListener(_this.setPlayerHealth);
             return _this;
         }
         return GameUI;
@@ -5390,31 +5644,7 @@ define("data/StringData", ["require", "exports"], function (require, exports) {
     }
     exports.levelComplete = levelComplete;
 });
-define("data/Colors", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Colors = {
-        GOLD: 0xffcc33,
-        GOLD_OVER: 0xffee55,
-        DASH_GOLD: 0xe1e55b,
-        BLUE: 0x1b4e92,
-        BLUE_OVER: 0x55ff99,
-        MENU_BLUE: 0x000022,
-        BORDER_BLUE: 0xccccff,
-        RED: 0xff5555,
-        GREEN: 0x55ff55,
-        BRONZE: 0x774422,
-        SILVER: 0xccccdd,
-        DIFFICULTY: [
-            0x00ffff,
-            0x00ff00,
-            0xffff00,
-            0xff9900,
-            0xff0000,
-        ],
-    };
-});
-define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringData", "data/Colors"], function (require, exports, JMBUI, StringData_1, Colors_2) {
+define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringData", "data/Colors"], function (require, exports, JMBUI, StringData_1, Colors_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var DifficultyPopup = (function (_super) {
@@ -5432,11 +5662,11 @@ define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringDa
             hsText.x = 80 - hsText.width - 5;
             hsText.y = 5;
             _this.addChild(hsText);
-            _this.makeButton(StringData_1.StringData.EASY, 1, 35, Colors_2.Colors.DIFFICULTY[0]);
-            _this.makeButton(StringData_1.StringData.NORMAL, 2, 70, Colors_2.Colors.DIFFICULTY[1]);
-            _this.makeButton(StringData_1.StringData.HARD, 3, 105, Colors_2.Colors.DIFFICULTY[2]);
-            _this.makeButton(StringData_1.StringData.EXTREME, 4, 140, Colors_2.Colors.DIFFICULTY[3]);
-            _this.makeButton(StringData_1.StringData.INSANE, 5, 175, Colors_2.Colors.DIFFICULTY[4]);
+            _this.makeButton(StringData_1.StringData.EASY, 1, 35, Colors_3.Colors.DIFFICULTY[1]);
+            _this.makeButton(StringData_1.StringData.NORMAL, 2, 70, Colors_3.Colors.DIFFICULTY[2]);
+            _this.makeButton(StringData_1.StringData.HARD, 3, 105, Colors_3.Colors.DIFFICULTY[3]);
+            _this.makeButton(StringData_1.StringData.EXTREME, 4, 140, Colors_3.Colors.DIFFICULTY[4]);
+            _this.makeButton(StringData_1.StringData.INSANE, 5, 175, Colors_3.Colors.DIFFICULTY[5]);
             return _this;
         }
         DifficultyPopup.prototype.makeButton = function (text, index, y, bgColor) {
@@ -5448,7 +5678,7 @@ define("ui/DifficultyPopup", ["require", "exports", "JMGE/JMBUI", "data/StringDa
     }(PIXI.Container));
     exports.DifficultyPopup = DifficultyPopup;
 });
-define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "TextureData"], function (require, exports, JMBUI, Colors_3, TextureData_7) {
+define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "TextureData"], function (require, exports, JMBUI, Colors_4, TextureData_9) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LevelButton = (function (_super) {
@@ -5457,8 +5687,8 @@ define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "Te
             var _this = _super.call(this) || this;
             _this.button = new JMBUI.Button({ width: 50, height: 30, x: 0, y: 0, label: 'Level ' + i, output: output });
             _this.addChild(_this.button);
-            _this.killBadge = new PIXI.Sprite(TextureData_7.TextureData.kills);
-            _this.healthBadge = new PIXI.Sprite(TextureData_7.TextureData.health);
+            _this.killBadge = new PIXI.Sprite(TextureData_9.TextureData.kills);
+            _this.healthBadge = new PIXI.Sprite(TextureData_9.TextureData.health);
             _this.killBadge.position.set(55, 5);
             _this.healthBadge.position.set(85, 5);
             _this.killBadge.scale.set(0.2);
@@ -5470,7 +5700,7 @@ define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "Te
             this.data = data;
             if (data) {
                 if (data.highestDifficulty || data.highestDifficulty === 0) {
-                    var color = Colors_3.Colors.DIFFICULTY[data.highestDifficulty];
+                    var color = Colors_4.Colors.DIFFICULTY[data.highestDifficulty];
                     this.button.graphics.tint = color;
                 }
                 else {
@@ -5479,13 +5709,13 @@ define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "Te
                 }
                 switch (data.killBadge) {
                     case 3:
-                        this.killBadge.tint = Colors_3.Colors.GOLD;
+                        this.killBadge.tint = Colors_4.Colors.GOLD;
                         break;
                     case 2:
-                        this.killBadge.tint = Colors_3.Colors.SILVER;
+                        this.killBadge.tint = Colors_4.Colors.SILVER;
                         break;
                     case 1:
-                        this.killBadge.tint = Colors_3.Colors.BRONZE;
+                        this.killBadge.tint = Colors_4.Colors.BRONZE;
                         break;
                     default:
                         this.killBadge.tint = 0;
@@ -5493,13 +5723,13 @@ define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "Te
                 }
                 switch (data.healthBadge) {
                     case 3:
-                        this.healthBadge.tint = Colors_3.Colors.GOLD;
+                        this.healthBadge.tint = Colors_4.Colors.GOLD;
                         break;
                     case 2:
-                        this.healthBadge.tint = Colors_3.Colors.SILVER;
+                        this.healthBadge.tint = Colors_4.Colors.SILVER;
                         break;
                     case 1:
-                        this.healthBadge.tint = Colors_3.Colors.BRONZE;
+                        this.healthBadge.tint = Colors_4.Colors.BRONZE;
                         break;
                     default:
                         this.healthBadge.tint = 0;
@@ -5516,20 +5746,20 @@ define("ui/LevelButton", ["require", "exports", "JMGE/JMBUI", "data/Colors", "Te
     }(PIXI.Container));
     exports.LevelButton = LevelButton;
 });
-define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "screens/GameUI", "ui/DifficultyPopup", "utils/SaveData", "ui/LevelButton"], function (require, exports, JMBUI, Config_10, BaseUI_4, GameUI_1, DifficultyPopup_1, SaveData_2, LevelButton_1) {
+define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "JMGE/UI/BaseUI", "screens/GameUI", "ui/DifficultyPopup", "utils/SaveData", "ui/LevelButton", "ui/MuterOverlay"], function (require, exports, JMBUI, Config_12, BaseUI_4, GameUI_1, DifficultyPopup_1, SaveData_5, LevelButton_1, MuterOverlay_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LevelSelectUI = (function (_super) {
         __extends(LevelSelectUI, _super);
         function LevelSelectUI() {
-            var _this = _super.call(this, { width: Config_10.CONFIG.INIT.SCREEN_WIDTH, height: Config_10.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
+            var _this = _super.call(this, { width: Config_12.CONFIG.INIT.SCREEN_WIDTH, height: Config_12.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
             _this.currentLevel = 0;
             _this.currentDifficulty = 1;
             _this.NUMSHOWN = 3;
             _this.C_SHOWN = 0;
             _this.levelButtons = [];
             _this.resetLevelStuff = function () {
-                var extrinsics = SaveData_2.SaveData.getExtrinsic();
+                var extrinsics = SaveData_5.SaveData.getExtrinsic();
                 _this.levelButtons.forEach(function (button, i) { return button.updateFromData(extrinsics.data.levels[i]); });
             };
             _this.changeLevelAndStartGame = function (level, button) {
@@ -5560,8 +5790,9 @@ define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "
             };
             _this.navIn = function () {
                 _this.resetLevelStuff();
+                _this.muter.reset();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_10.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: Config_12.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
             var _loop_2 = function (i) {
                 var button = new LevelButton_1.LevelButton(i, function () { return _this.changeLevelAndStartGame(i, button); });
@@ -5581,6 +5812,10 @@ define("screens/LevelSelectUI", ["require", "exports", "JMGE/JMBUI", "Config", "
                     }
                 }
             });
+            _this.muter = new MuterOverlay_4.MuterOverlay();
+            _this.muter.x = _this.getWidth() - _this.muter.getWidth();
+            _this.muter.y = _this.getHeight() - _this.muter.getHeight();
+            _this.addChild(_this.muter);
             return _this;
         }
         return LevelSelectUI;
@@ -5842,16 +6077,16 @@ define("JMGE/UI/InventoryUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Item
     }(JMBUI.BasicElement));
     exports.InventoryWindow = InventoryWindow;
 });
-define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data/PlayerData"], function (require, exports, JMBUI, TextureData_8, PlayerData_3) {
+define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data/PlayerData"], function (require, exports, JMBUI, TextureData_10, PlayerData_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgeLine = (function (_super) {
         __extends(BadgeLine, _super);
         function BadgeLine(label, state) {
             if (label === void 0) { label = 'Hello World!'; }
-            if (state === void 0) { state = PlayerData_3.BadgeState.NONE; }
+            if (state === void 0) { state = PlayerData_2.BadgeState.NONE; }
             var _this = _super.call(this, { width: 100, height: 50, label: label }) || this;
-            _this.symbol = new PIXI.Sprite(TextureData_8.TextureData.cache.getTexture('medal'));
+            _this.symbol = new PIXI.Sprite(TextureData_10.TextureData.cache.getTexture('medal'));
             _this.label.x = 30;
             _this.addChild(_this.symbol);
             _this.setState(state);
@@ -5864,17 +6099,17 @@ define("ui/BadgeLine", ["require", "exports", "JMGE/JMBUI", "TextureData", "data
     }(JMBUI.BasicElement));
     exports.BadgeLine = BadgeLine;
 });
-define("screens/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "data/PlayerData", "ui/BadgeLine", "JMGE/UI/BaseUI"], function (require, exports, JMBUI, Config_11, PlayerData_4, BadgeLine_1, BaseUI_5) {
+define("screens/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "data/PlayerData", "ui/BadgeLine", "JMGE/UI/BaseUI", "ui/MuterOverlay"], function (require, exports, JMBUI, Config_13, PlayerData_3, BadgeLine_1, BaseUI_5, MuterOverlay_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var BadgesUI = (function (_super) {
         __extends(BadgesUI, _super);
         function BadgesUI() {
-            var _this = _super.call(this, { width: Config_11.CONFIG.INIT.SCREEN_WIDTH, height: Config_11.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
+            var _this = _super.call(this, { width: Config_13.CONFIG.INIT.SCREEN_WIDTH, height: Config_13.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 }) || this;
             _this.leave = function () {
                 _this.navBack();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_11.CONFIG.INIT.SCREEN_WIDTH - 120, y: Config_11.CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: _this.leave });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_13.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_13.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.leave });
             _this.addChild(_button);
             var scrollCanvas = new PIXI.Container();
             var scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: 300, autoSort: true });
@@ -5882,63 +6117,71 @@ define("screens/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "data/
             scroll.addScrollbar(scrollbar);
             _this.addChild(scroll);
             _this.addChild(scrollbar);
-            var badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.NONE);
+            var badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.NONE);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.BRONZE);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.BRONZE);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.SILVER);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.SILVER);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.GOLD);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.GOLD);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
             scroll.addObject(badge);
-            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_4.BadgeState.PLATINUM);
+            badge = new BadgeLine_1.BadgeLine('EMPTY', PlayerData_3.BadgeState.PLATINUM);
             scroll.addObject(badge);
+            _this.muter = new MuterOverlay_5.MuterOverlay();
+            _this.muter.x = _this.getWidth() - _this.muter.getWidth();
+            _this.muter.y = _this.getHeight() - _this.muter.getHeight();
+            _this.addChild(_this.muter);
             return _this;
         }
         return BadgesUI;
     }(BaseUI_5.BaseUI));
     exports.BadgesUI = BadgesUI;
 });
-define("screens/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_6, Config_12, MuterOverlay_3) {
+define("screens/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_6, Config_14, MuterOverlay_6) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LABEL = 'CreditsUI';
     var CreditsUI = (function (_super) {
         __extends(CreditsUI, _super);
         function CreditsUI() {
-            var _this = _super.call(this, { width: Config_12.CONFIG.INIT.SCREEN_WIDTH, height: Config_12.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            var _this = _super.call(this, { width: Config_14.CONFIG.INIT.SCREEN_WIDTH, height: Config_14.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.navMenu = function () {
                 _this.navBack();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_12.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_12.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_14.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_14.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
             _this.addChild(_button);
-            var muter = new MuterOverlay_3.MuterOverlay();
+            var muter = new MuterOverlay_6.MuterOverlay();
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
+            var s = "\n      Programmer: Jeremy Moshe\n      Artist: ???\n      Music: Binyamin Bair-Moshe\n      Sound Effects: Jeremy Moshe\n\n      Special Thanks:\n      Avi Kentridge\n      A. Walker\n      Sofia Moshe\n      Damon Kentridge\n      Kurosai\n      and YOU!\n    ";
+            var text = new PIXI.Text(s);
+            _this.addChild(text);
+            text.position.set(50, 50);
             return _this;
         }
         return CreditsUI;
     }(BaseUI_6.BaseUI));
     exports.CreditsUI = CreditsUI;
 });
-define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_7, Config_13, MuterOverlay_4) {
+define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_7, Config_15, MuterOverlay_7) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var LABEL = 'HighScoreUI';
     var HighScoreUI = (function (_super) {
         __extends(HighScoreUI, _super);
         function HighScoreUI() {
-            var _this = _super.call(this, { width: Config_13.CONFIG.INIT.SCREEN_WIDTH, height: Config_13.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            var _this = _super.call(this, { width: Config_15.CONFIG.INIT.SCREEN_WIDTH, height: Config_15.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.navMenu = function () {
                 _this.navBack();
             };
-            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_13.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_13.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_15.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_15.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
             _this.addChild(_button);
-            var muter = new MuterOverlay_4.MuterOverlay();
+            var muter = new MuterOverlay_7.MuterOverlay();
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
@@ -5948,13 +6191,13 @@ define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Base
     }(BaseUI_7.BaseUI));
     exports.HighScoreUI = HighScoreUI;
 });
-define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_14, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_5, JMTween_7) {
+define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_16, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_8, JMTween_7) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MenuUI = (function (_super) {
         __extends(MenuUI, _super);
         function MenuUI() {
-            var _this = _super.call(this, { width: Config_14.CONFIG.INIT.SCREEN_WIDTH, height: Config_14.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            var _this = _super.call(this, { width: Config_16.CONFIG.INIT.SCREEN_WIDTH, height: Config_16.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.nullFunc = function () { };
             _this.startGame = function () {
                 _this.navForward(new LevelSelectUI_1.LevelSelectUI());
@@ -6017,6 +6260,9 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
                 var t1 = new JMTween_7.JMTween(ball, 1000).to({ x: 300 }).start();
                 t1.chain(ball, 1000).to({ x: 500 }).chain(ball, 1000).to({ y: 300 }).chain(ball, 1000).to({ x: 100 }).chain(ball, 1000).to({ y: 100 }).chainTween(t1);
             };
+            _this.navIn = function () {
+                _this.muter.reset();
+            };
             _this.label.x += 50;
             var _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: _this.startGame });
             _this.addChild(_button);
@@ -6026,10 +6272,10 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
             _this.addChild(_button);
             _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: _this.navCredits });
             _this.addChild(_button);
-            var muter = new MuterOverlay_5.MuterOverlay();
-            muter.x = _this.getWidth() - muter.getWidth();
-            muter.y = _this.getHeight() - muter.getHeight();
-            _this.addChild(muter);
+            _this.muter = new MuterOverlay_8.MuterOverlay();
+            _this.muter.x = _this.getWidth() - _this.muter.getWidth();
+            _this.muter.y = _this.getHeight() - _this.muter.getHeight();
+            _this.addChild(_this.muter);
             window.addEventListener('keydown', _this.tweenTestPre);
             return _this;
         }
@@ -6037,23 +6283,23 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
     }(BaseUI_8.BaseUI));
     exports.MenuUI = MenuUI;
 });
-define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_9, MenuUI_1, Config_15, SaveData_3) {
+define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_11, MenuUI_1, Config_17, SaveData_6) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     new (_a = (function () {
             function Facade() {
                 var _this = this;
-                this._Resolution = Config_15.CONFIG.INIT.RESOLUTION;
+                this._Resolution = Config_17.CONFIG.INIT.RESOLUTION;
                 this.init = function () {
                     initializeDatas();
-                    SaveData_3.SaveData.init();
+                    SaveData_6.SaveData.init();
                     _this.currentModule = new MenuUI_1.MenuUI();
                     _this.currentModule.navOut = _this.updateCurrentModule;
                     _this.app.stage.addChild(_this.currentModule);
                 };
                 this.updateCurrentModule = function (o) {
-                    SaveData_3.SaveData.saveExtrinsic(function () {
+                    SaveData_6.SaveData.saveExtrinsic(function () {
                         if (_this.currentModule.dispose) {
                             _this.currentModule.dispose();
                         }
@@ -6066,7 +6312,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                     });
                 };
                 this.saveCallback = function (finish) {
-                    SaveData_3.SaveData.saveExtrinsic(finish);
+                    SaveData_6.SaveData.saveExtrinsic(finish);
                 };
                 if (Facade.exists)
                     throw new Error('Cannot instatiate more than one Facade Singleton.');
@@ -6077,7 +6323,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 }
                 catch (e) {
                 }
-                this.stageBorders = new JMBL.Rect(0, 0, Config_15.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_15.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
+                this.stageBorders = new JMBL.Rect(0, 0, Config_17.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_17.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
                 this.app = new PIXI.Application(this.stageBorders.width, this.stageBorders.height, {
                     backgroundColor: 0xff0000,
                     antialias: true,
@@ -6093,11 +6339,11 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 this.stageBorders.y = this.app.view.offsetTop;
                 this.app.stage.interactive = true;
                 var _background = new PIXI.Graphics();
-                _background.beginFill(Config_15.CONFIG.INIT.BACKGROUND_COLOR);
+                _background.beginFill(Config_17.CONFIG.INIT.BACKGROUND_COLOR);
                 _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
                 this.app.stage.addChild(_background);
                 JMBL.init(this.app);
-                TextureData_9.TextureData.init(this.app.renderer);
+                TextureData_11.TextureData.init(this.app.renderer);
                 window.setTimeout(this.init, 10);
             }
             return Facade;

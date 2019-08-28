@@ -16,9 +16,23 @@ export class CreditsUI extends BaseUI {
     muter.y = this.getHeight() - muter.getHeight();
     this.addChild(muter);
 
-    // let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT))
-    //   .fadeOut(2000);
-    // this.addChild(screen);
+    let s = `
+      Programmer: Jeremy Moshe
+      Artist: ???
+      Music: Binyamin Bair-Moshe
+      Sound Effects: Jeremy Moshe
+
+      Special Thanks:
+      Avi Kentridge
+      A. Walker
+      Sofia Moshe
+      Damon Kentridge
+      Kurosai
+      and YOU!
+    `;
+    let text = new PIXI.Text(s);
+    this.addChild(text);
+    text.position.set(50, 50);
   }
 
   public navMenu = () => {

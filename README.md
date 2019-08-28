@@ -18,26 +18,21 @@ TO-DO:
 - Stealth Effect
 
 #Game UI
-- Death screen (show score)
-- Victory Screen (show score and achievements)
 - Pause Screen - NONE
-- Sound FX UI - INIT
-- Fade Transition (in and out)
 
 - RESPONSIVE
 
 #Menu UI
 - Badges - INIT
-- Credits - INIT
-- Fade Transition (in and out)
+- Tooltip (MouseOver and Tap)
 
 - RESPONSIVE
 
 #Systems
 - Achievements - BASICS
 - Tutorials - BASICS
-- Level Scores
 - Sound FX
+- Online Saves
 
 - Mobile Keyboard?
 
@@ -47,8 +42,6 @@ TO-DO:
 - Achievements
 - Tutorial Progress
 
-
-
 #Outsourcing
 - New Graphics
 
@@ -57,3 +50,14 @@ TO-DO:
 - Difficulty Select (Popup)
 - Game UI
 - Level Select
+- Win UI
+- Loss UI
+- Credits UI
+- Achievement Popup
+
+#Stack
+- Webpack
+- Cordova
+- Package for Steam
+- Package for Mobile
+- External Achievements

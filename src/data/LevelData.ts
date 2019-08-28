@@ -824,13 +824,6 @@ class MethodPack {
     this.distance += distance;
   }
 
-  public loopBack(jumpIndex: number = 0) {
-    if (jumpIndex < 0) {
-      jumpIndex = this.array.length + jumpIndex;
-    }
-    this.array.push({ type: EventType.LOOP, distance: this.distance, jumpIndex });
-  }
-
   public wait(distance: number = 0): ILevelEvent {
     this.setDist(distance * this.mult);
     let m: ILevelEvent = { type: EventType.WAIT, distance: this.distance, waitTime: distance };

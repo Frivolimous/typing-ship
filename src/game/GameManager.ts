@@ -12,11 +12,11 @@ import { ActionControl } from '../game/engine/ActionControl';
 import { ISpawnEvent } from '../data/LevelData';
 import { WordInput } from '../game/engine/WordInput';
 import { TextObject } from '../game/text/TextObject';
-import { ScreenCover } from '../JMGE/effects/ScreenCover';
-import { GameEvents, IPauseEvent, IDeleteEvent } from '../game/engine/GameEvents';
+import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from '../game/engine/GameEvents';
 import { JMInteractionEvents, IKeyboardEvent } from '../JMGE/events/JMInteractionEvents';
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
+import { GameSprite } from './objects/GameSprite';
 
 export class GameManager {
   public running = true;
@@ -44,21 +44,27 @@ export class GameManager {
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
     this.levelEvents.loadLevel(level, 60 * gameSpeed);
 
+    console.log(difficulty);
     this.levelInstance = {
+      level,
+      difficulty,
       score: 0,
       gameSpeed,
       levelEnded: false,
 
       enemiesKilled: 0,
+      totalEnemies: this.levelEvents.getTotalEnemies(),
+
       lettersTyped: 0,
       lettersDeleted: 0,
 
+      playerHealth: 5,
       healthLost: false,
-      totalEnemies: this.levelEvents.getTotalEnemies(),
     };
+    console.log('total enemies', this.levelInstance.totalEnemies);
 
     this.player.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
-    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 150;
+    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
     this.player.setHealth(5);
     this.setScore(0);
 
@@ -71,6 +77,8 @@ export class GameManager {
 
     GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
     GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
+    GameEvents.NOTIFY_LETTER_ADDED.addListener(this.onLetterAdded);
+    GameEvents.NOTIFY_SET_HEALTH.addListener(this.onHealthChange);
   }
 
   public dispose = () => {
@@ -80,6 +88,8 @@ export class GameManager {
 
     GameEvents.REQUEST_HEAL_PLAYER.removeListener(this.player.addHealth);
     GameEvents.REQUEST_PAUSE_GAME.removeListener(this.togglePause);
+    GameEvents.NOTIFY_LETTER_ADDED.removeListener(this.onLetterAdded);
+    GameEvents.NOTIFY_SET_HEALTH.removeListener(this.onHealthChange);
 
     this.player.dispose();
     this.container.dispose();
@@ -128,11 +138,7 @@ export class GameManager {
       this.interactive = false;
       this.container.makeExplosionAt(this.player.x, this.player.y, 50);
       this.player.visible = false;
-      let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT)).onFadeComplete(() => {
-        this.running = false;
-        this.ui.navLoss();
-      }).fadeIn(2000, 3000, 1000);
-      this.display.addChild(screen);
+      this.ui.navLoss(this.levelInstance);
     }
   }
 
@@ -140,11 +146,7 @@ export class GameManager {
     if (!this.levelInstance.levelEnded) {
       if (this.container.numObjects() <= 1) {
         this.levelInstance.levelEnded = true;
-        let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), 0xffffff).onFadeComplete(() => {
-          this.running = false;
-          this.ui.navWin();
-        }).fadeIn(1000, 1000, 1000);
-        this.display.addChild(screen);
+        this.ui.navWin(this.levelInstance);
       }
     }
   }
@@ -156,13 +158,35 @@ export class GameManager {
   }
 
   public onLetterDelete = (e: IDeleteEvent) => {
+    this.levelInstance.lettersDeleted++;
     this.addScore(-e.numDeleted);
+  }
+
+  public onHealthChange = (e: IHealthEvent) => {
+    this.levelInstance.playerHealth = e.newHealth;
+    if (e.oldHealth > e.newHealth) {
+      this.levelInstance.healthLost = true;
+    }
+  }
+
+  public onLetterAdded = (e: ILetterEvent) => {
+    this.levelInstance.lettersTyped++;
   }
 
   public setScore = (score: number) => {
     let oldScore = this.levelInstance.score;
     this.levelInstance.score = score;
     GameEvents.NOTIFY_SET_SCORE.publish({oldScore, newScore: this.levelInstance.score});
+  }
+
+  public enemyDestroyed = (enemy: GameSprite) => {
+    if (enemy instanceof EnemyShip) {
+      this.levelInstance.enemiesKilled++;
+      console.log('enemy killed', this.levelInstance.enemiesKilled);
+    } else {
+      console.log('not enemy');
+    }
+    this.addScore(enemy.value);
   }
 
   public addScore = (add: number) => {

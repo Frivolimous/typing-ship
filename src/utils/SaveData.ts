@@ -4,8 +4,8 @@ export class SaveData {
 
   public static init() {
     this.loadVersion(version => {
-      if (true) {
-      // if (version < SaveData.VERSION) {
+      // if (true) {
+      if (version < SaveData.VERSION) {
         SaveData.confirmReset();
         SaveData.saveVersion(SaveData.VERSION);
         SaveData.saveExtrinsic();
@@ -85,7 +85,7 @@ export class SaveData {
   }
 
   private static extrinsic: ExtrinsicModel;
-  private static VERSION = 7;
+  private static VERSION = 8;
 
   private static confirmReset = () => {
     SaveData.extrinsic = new ExtrinsicModel();

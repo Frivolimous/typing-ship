@@ -12,9 +12,9 @@ export class AchievementManager {
     this.extrinsic = SaveData.getExtrinsic();
     console.log(this.extrinsic);
 
-    if (!this.extrinsic.data.badges[Badges.CONQUEROR_GOLD]) {
-      GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
-    }
+    // if (!this.extrinsic.data.badges[Badges.CONQUEROR_GOLD]) {
+    GameEvents.NOTIFY_WORD_COMPLETED.addListener(this.wordCompleted);
+    // }
 
     // SOLDIER_BRONZE,
     // SOLDIER_SILVER,
@@ -36,7 +36,7 @@ export class AchievementManager {
   }
 
   private wordCompleted = (e: {word: string}) => {
-    this.currentPopup = new AchievementPopup('you finished 1 word!');
+    this.currentPopup = new AchievementPopup('Complete Badge', 'you finished 1 word!');
     // JMBL.events.publish(GameEvents.REQUEST_PAUSE_GAME, true);
     this.canvas.addChild(this.currentPopup);
     this.extrinsic.data.badges[0] = true;

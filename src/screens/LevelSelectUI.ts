@@ -5,6 +5,7 @@ import { GameUI } from './GameUI';
 import { DifficultyPopup } from '../ui/DifficultyPopup';
 import { SaveData } from '../utils/SaveData';
 import { LevelButton } from '../ui/LevelButton';
+import { MuterOverlay } from '../ui/MuterOverlay';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -15,6 +16,7 @@ export class LevelSelectUI extends BaseUI {
   public nextB: JMBUI.Button;
   public prevB: JMBUI.Button;
   public difficultyPopup: DifficultyPopup;
+  public muter: MuterOverlay;
 
   public levelButtons: LevelButton[] = [];
 
@@ -38,6 +40,11 @@ export class LevelSelectUI extends BaseUI {
         }
       }
     });
+
+    this.muter = new MuterOverlay();
+    this.muter.x = this.getWidth() - this.muter.getWidth();
+    this.muter.y = this.getHeight() - this.muter.getHeight();
+    this.addChild(this.muter);
   }
 
   public resetLevelStuff = () => {
@@ -79,5 +86,6 @@ export class LevelSelectUI extends BaseUI {
 
   public navIn = () => {
     this.resetLevelStuff();
+    this.muter.reset();
   }
 }

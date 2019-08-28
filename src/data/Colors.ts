@@ -13,6 +13,7 @@ export const Colors = {
   SILVER: 0xccccdd,
 
   DIFFICULTY: [
+    0xffffff,
     0x00ffff,
     0x00ff00,
     0xffff00,

@@ -7,8 +7,8 @@ export class TutorialManager {
   private currentPopup: TutorialPopup;
 
   constructor(private canvas: PIXI.Container) {
-    GameEvents.NOTIFY_SET_HEALTH.addListener(this.tutorialDamage);
-    GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
+    // GameEvents.NOTIFY_SET_HEALTH.addListener(this.tutorialDamage);
+    // GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
   }
 
   private tutorialDamage = (e: IHealthEvent) => {

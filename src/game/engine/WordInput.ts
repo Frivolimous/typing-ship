@@ -34,6 +34,7 @@ export class WordInput {
     letter = letter.toLowerCase();
     if (this.checkLetter(letter)) {
       this.text += letter;
+      GameEvents.NOTIFY_LETTER_ADDED.publish({letter});
       for (let object of TextObject.allTextObjects) {
         let text = object.matchAndReturnWord(this.text);
         if (text) {
@@ -43,15 +44,6 @@ export class WordInput {
           return;
         }
       }
-      // for (let i = 0; i < TextObject.allTextObjects.length; i++) {
-      //   let text = TextObject.allTextObjects[i].matchAndReturnWord(this.text);
-      //   if (text) {
-      //     this.removeWord(text);
-      //     TextObject.allTextObjects[i].triggerWordComplete();
-      //     this.finishAddLetter();
-      //     return;
-      //   }
-      // }
 
       for (let i = 0; i < this.overflow.length; i++) {
         if (this.testWord(this.overflow[i][0])) {

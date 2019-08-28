@@ -11,6 +11,8 @@ import { JMTween, JMEasing } from '../JMGE/JMTween';
 // import { facade };
 
 export class MenuUI extends BaseUI {
+  public muter: MuterOverlay;
+
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } });
     this.label.x += 50;
@@ -25,10 +27,10 @@ export class MenuUI extends BaseUI {
     _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: this.navCredits });
     this.addChild(_button);
 
-    let muter = new MuterOverlay();
-    muter.x = this.getWidth() - muter.getWidth();
-    muter.y = this.getHeight() - muter.getHeight();
-    this.addChild(muter);
+    this.muter = new MuterOverlay();
+    this.muter.x = this.getWidth() - this.muter.getWidth();
+    this.muter.y = this.getHeight() - this.muter.getHeight();
+    this.addChild(this.muter);
 
     window.addEventListener('keydown', this.tweenTestPre);
   }
@@ -97,5 +99,9 @@ export class MenuUI extends BaseUI {
     this.addChild(ball);
     let t1 = new JMTween(ball, 1000).to({x: 300}).start();
     t1.chain(ball, 1000).to({x: 500}).chain(ball, 1000).to({y: 300}).chain(ball, 1000).to({x: 100}).chain(ball, 1000).to({y: 100}).chainTween(t1);
+  }
+
+  public navIn = () => {
+    this.muter.reset();
   }
 }

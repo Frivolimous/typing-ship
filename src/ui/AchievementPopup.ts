@@ -1,18 +1,27 @@
 import { JMTween } from '../JMGE/JMTween';
+import { CONFIG } from '../Config';
 
 export class AchievementPopup extends PIXI.Container {
-  constructor(text: string, tier: number = 0) {
+  constructor(title: string, text: string, tier: number = 0) {
     super();
 
+    this.x = CONFIG.INIT.SCREEN_WIDTH / 2 - 150;
+    this.y = 50;
+
     let background = new PIXI.Graphics();
-    background.beginFill(0xffff00);
+    background.beginFill(0xffffff, 0.2);
+    background.lineStyle(2, 0xffffff);
     background.drawRect(0, 0, 300, 100);
 
-    let field = new PIXI.Text(text);
+    let titleField = new PIXI.Text(title, {fill: 0xffffff, fontWeight: 'bold', fontSize: 12});
 
-    this.addChild(background, field);
-    new JMTween<AchievementPopup>(this).to({alpha: 0}).over(1000).wait(5000).onComplete(() => {
+    let field = new PIXI.Text(text, {fill: 0xffffff, fontSize: 11});
+
+    this.addChild(background, titleField, field);
+    titleField.position.set((300 - titleField.width) / 2, 5);
+    field.position.set(5, 20);
+    new JMTween<AchievementPopup>(this, 200).from({alpha: 0}).start().chain(this, 1000).to({alpha: 0}).wait(5000).onComplete(() => {
       this.destroy();
-    }).start();
+    });
   }
 }

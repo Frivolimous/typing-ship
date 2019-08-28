@@ -1,4 +1,4 @@
-import { BaseUI } from '../JMGE/UI/BaseUI';
+import { BaseUI, IFadeTiming } from '../JMGE/UI/BaseUI';
 import { GameManager } from '../game/GameManager';
 import { WinUI } from './WinUI';
 import { LossUI } from './LossUI';
@@ -9,6 +9,8 @@ import { TextObject } from '../game/text/TextObject';
 import { FlyingText } from '../JMGE/effects/FlyingText';
 import { TutorialManager } from '../game/engine/TutorialManager';
 import { AchievementManager } from '../game/engine/AchievementManager';
+import { ILevelInstance } from '../data/LevelInstance';
+import { MuterOverlay } from '../ui/MuterOverlay';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -20,6 +22,14 @@ export class GameUI extends BaseUI {
   private wordDisplay: PIXI.Text;
   private progress: PIXI.Text;
   private score: PIXI.Text;
+
+  private fadeTiming: IFadeTiming = {
+    color: 0xffffff,
+    fadeIn: 2000,
+    fadeOut: 500,
+    delay: 3000,
+    delayBlank: 1000,
+  };
 
   constructor(level: number, difficulty: number) {
     super();
@@ -34,7 +44,7 @@ export class GameUI extends BaseUI {
     this.addChild(this.wordDisplay);
 
     this.progress = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
-    this.progress.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
+    this.progress.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
     this.progress.x = CONFIG.INIT.SCREEN_WIDTH - 100;
     this.addChild(this.progress);
 
@@ -47,6 +57,11 @@ export class GameUI extends BaseUI {
     this.healthBar.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.healthBar);
 
+    let muter = new MuterOverlay(true);
+    muter.x = CONFIG.INIT.SCREEN_WIDTH - muter.getWidth();
+    muter.y = CONFIG.INIT.SCREEN_HEIGHT - muter.getHeight();
+    this.addChild(muter);
+
     GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
     GameEvents.NOTIFY_SET_SCORE.addListener(this.setScore);
@@ -54,23 +69,17 @@ export class GameUI extends BaseUI {
     GameEvents.NOTIFY_SET_HEALTH.addListener(this.setPlayerHealth);
   }
 
-  public navWin = () => {
-    this.navForward(new WinUI(), this.previousUI);
+  public navWin = (instance: ILevelInstance) => {
+    this.navForward(new WinUI(instance), this.previousUI, this.fadeTiming);
   }
 
-  public navLoss = () => {
-    this.navForward(new LossUI(), this.previousUI);
+  public navLoss = (instance: ILevelInstance) => {
+    this.navForward(new LossUI(instance), this.previousUI, this.fadeTiming);
   }
 
   public dispose = () => {
+    this.manager.running = false;
     this.manager.dispose();
-
-    // GameEvents.NOTIFY_UPDATE_INPUT_WORD.removeListener(this.updateText);
-    // GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.showMinusText);
-    // GameEvents.NOTIFY_SET_SCORE.removeListener(this.setScore);
-    // GameEvents.NOTIFY_SET_PROGRESS.removeListener(this.updateProgress);
-    // GameEvents.NOTIFY_SET_HEALTH.removeListener(this.setPlayerHealth);
-
     GameEvents.clearAll();
 
     this.destroy();
