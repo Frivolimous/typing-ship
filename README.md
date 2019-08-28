@@ -18,8 +18,6 @@ TO-DO:
 - Stealth Effect
 
 #Game UI
-- Pause Screen - NONE
-
 - RESPONSIVE
 
 #Menu UI
@@ -51,6 +49,7 @@ TO-DO:
 - Title
 - Difficulty Select (Popup)
 - Game UI
+- Pause Screen
 - Level Select
 - Win UI
 - Loss UI

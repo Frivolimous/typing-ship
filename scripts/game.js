@@ -5490,7 +5490,43 @@ define("game/engine/AchievementManager", ["require", "exports", "game/engine/Gam
     }());
     exports.AchievementManager = AchievementManager;
 });
-define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "JMGE/JMBUI", "Config", "game/engine/GameEvents", "JMGE/effects/FlyingText", "game/engine/TutorialManager", "game/engine/AchievementManager", "ui/MuterOverlay"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, JMBUI_1, Config_11, GameEvents_11, FlyingText_2, TutorialManager_1, AchievementManager_1, MuterOverlay_3) {
+define("ui/PauseOverlay", ["require", "exports", "JMGE/JMTween"], function (require, exports, JMTween_7) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var PauseOverlay = (function (_super) {
+        __extends(PauseOverlay, _super);
+        function PauseOverlay(bounds) {
+            var _this = _super.call(this) || this;
+            _this.state = false;
+            var background = new PIXI.Graphics();
+            background.beginFill(0x333333, 0.3);
+            background.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            var text = new PIXI.Text('- PAUSED -', { fill: 0xffff00, fontSize: 30, fontWeight: 'bold' });
+            text.position.set((bounds.width - text.width) / 2, (bounds.height - text.height) / 2);
+            _this.addChild(background, text);
+            _this.alpha = 0;
+            return _this;
+        }
+        PauseOverlay.prototype.changeState = function (b) {
+            var _this = this;
+            if (b !== this.state) {
+                this.state = b;
+                if (this.currentTween) {
+                    this.currentTween.stop();
+                }
+                if (b) {
+                    this.currentTween = new JMTween_7.JMTween(this, 200).to({ alpha: 1 }).start().onComplete(function () { return _this.currentTween = null; });
+                }
+                else {
+                    this.currentTween = new JMTween_7.JMTween(this, 200).to({ alpha: 0 }).start().onComplete(function () { return _this.currentTween = null; });
+                }
+            }
+        };
+        return PauseOverlay;
+    }(PIXI.Container));
+    exports.PauseOverlay = PauseOverlay;
+});
+define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameManager", "screens/WinUI", "screens/LossUI", "JMGE/JMBUI", "Config", "game/engine/GameEvents", "JMGE/effects/FlyingText", "game/engine/TutorialManager", "game/engine/AchievementManager", "ui/MuterOverlay", "ui/PauseOverlay"], function (require, exports, BaseUI_3, GameManager_1, WinUI_1, LossUI_1, JMBUI_1, Config_11, GameEvents_11, FlyingText_2, TutorialManager_1, AchievementManager_1, MuterOverlay_3, PauseOverlay_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GameUI = (function (_super) {
@@ -5539,9 +5575,14 @@ define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameMana
                 healWord.x = _this.healthBar.x + _this.healthBar.getWidth();
                 healWord.y = _this.healthBar.y + _this.healthBar.getHeight();
             };
+            _this.pauseGame = function (e) {
+                _this.pauseOverlay.changeState(e.paused);
+            };
             _this.manager = new GameManager_1.GameManager(level, difficulty, _this);
             requestAnimationFrame(function () { return _this.addHealWord(_this.manager.wordInput.healWord); });
             _this.addChild(_this.manager.display);
+            _this.pauseOverlay = new PauseOverlay_1.PauseOverlay(new PIXI.Rectangle(0, 0, Config_11.CONFIG.INIT.SCREEN_WIDTH, Config_11.CONFIG.INIT.SCREEN_HEIGHT));
+            _this.addChild(_this.pauseOverlay);
             _this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
             _this.wordDisplay.y = Config_11.CONFIG.INIT.SCREEN_HEIGHT - 50;
             _this.addChild(_this.wordDisplay);
@@ -5565,6 +5606,7 @@ define("screens/GameUI", ["require", "exports", "JMGE/UI/BaseUI", "game/GameMana
             GameEvents_11.GameEvents.NOTIFY_SET_SCORE.addListener(_this.setScore);
             GameEvents_11.GameEvents.NOTIFY_SET_PROGRESS.addListener(_this.updateProgress);
             GameEvents_11.GameEvents.NOTIFY_SET_HEALTH.addListener(_this.setPlayerHealth);
+            GameEvents_11.GameEvents.REQUEST_PAUSE_GAME.addListener(_this.pauseGame);
             return _this;
         }
         return GameUI;
@@ -6214,7 +6256,7 @@ define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Base
     }(BaseUI_8.BaseUI));
     exports.HighScoreUI = HighScoreUI;
 });
-define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/TypingTestUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_9, LevelSelectUI_1, Config_17, BadgesUI_1, TypingTestUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_9, JMTween_7) {
+define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/TypingTestUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_9, LevelSelectUI_1, Config_17, BadgesUI_1, TypingTestUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_9, JMTween_8) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MenuUI = (function (_super) {
@@ -6240,16 +6282,16 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
             _this.tweenTestPre = function (e) {
                 switch (e.key) {
                     case '1':
-                        _this.tweenTest(JMTween_7.JMEasing.Linear.None);
+                        _this.tweenTest(JMTween_8.JMEasing.Linear.None);
                         break;
                     case '2':
-                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.In);
+                        _this.tweenTest(JMTween_8.JMEasing.Quadratic.In);
                         break;
                     case '3':
-                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.Out);
+                        _this.tweenTest(JMTween_8.JMEasing.Quadratic.Out);
                         break;
                     case '4':
-                        _this.tweenTest(JMTween_7.JMEasing.Quadratic.InOut);
+                        _this.tweenTest(JMTween_8.JMEasing.Quadratic.InOut);
                         break;
                     case '5':
                         _this.tweenTest2();
@@ -6271,8 +6313,8 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
                 ball2.x = 100;
                 ball2.y = 100;
                 _this.addChild(ball2, ball);
-                new JMTween_7.JMTween(ball, 1000).to({ x: 300 }, false).to({ y: 300 }, true).easing(func).start().onComplete(function () { return ball.destroy(); });
-                new JMTween_7.JMTween(ball2, 1000).to({ x: 300, y: 300 }).start().onComplete(function () { return ball2.destroy(); });
+                new JMTween_8.JMTween(ball, 1000).to({ x: 300 }, false).to({ y: 300 }, true).easing(func).start().onComplete(function () { return ball.destroy(); });
+                new JMTween_8.JMTween(ball2, 1000).to({ x: 300, y: 300 }).start().onComplete(function () { return ball2.destroy(); });
             };
             _this.tweenTest2 = function () {
                 var ball = new PIXI.Graphics();
@@ -6283,7 +6325,7 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
                 ball.y = 100;
                 ball.tint = 0xff0000;
                 _this.addChild(ball);
-                var t1 = new JMTween_7.JMTween(ball, 1000).to({ x: 300 }).start();
+                var t1 = new JMTween_8.JMTween(ball, 1000).to({ x: 300 }).start();
                 t1.chain(ball, 1000).to({ x: 500 }).chain(ball, 1000).to({ y: 300 }).chain(ball, 1000).to({ x: 100 }).chain(ball, 1000).to({ y: 100 }).chainTween(t1);
             };
             _this.navIn = function () {

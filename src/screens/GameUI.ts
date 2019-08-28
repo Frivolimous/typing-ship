@@ -4,13 +4,14 @@ import { WinUI } from './WinUI';
 import { LossUI } from './LossUI';
 import { Gauge } from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
-import { GameEvents, IHealthEvent, IScoreEvent, IWordEvent, IProgressEvent } from '../game/engine/GameEvents';
+import { GameEvents, IHealthEvent, IScoreEvent, IWordEvent, IProgressEvent, IPauseEvent } from '../game/engine/GameEvents';
 import { TextObject } from '../game/text/TextObject';
 import { FlyingText } from '../JMGE/effects/FlyingText';
 import { TutorialManager } from '../game/engine/TutorialManager';
 import { AchievementManager } from '../game/engine/AchievementManager';
 import { ILevelInstance } from '../data/LevelInstance';
 import { MuterOverlay } from '../ui/MuterOverlay';
+import { PauseOverlay } from '../ui/PauseOverlay';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -19,6 +20,7 @@ export class GameUI extends BaseUI {
 
   private healthBar: Gauge;
 
+  private pauseOverlay: PauseOverlay;
   private wordDisplay: PIXI.Text;
   private progress: PIXI.Text;
   private score: PIXI.Text;
@@ -38,6 +40,9 @@ export class GameUI extends BaseUI {
 
     requestAnimationFrame(() => this.addHealWord(this.manager.wordInput.healWord));
     this.addChild(this.manager.display);
+
+    this.pauseOverlay = new PauseOverlay(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT));
+    this.addChild(this.pauseOverlay);
 
     this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
     this.wordDisplay.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
@@ -67,6 +72,7 @@ export class GameUI extends BaseUI {
     GameEvents.NOTIFY_SET_SCORE.addListener(this.setScore);
     GameEvents.NOTIFY_SET_PROGRESS.addListener(this.updateProgress);
     GameEvents.NOTIFY_SET_HEALTH.addListener(this.setPlayerHealth);
+    GameEvents.REQUEST_PAUSE_GAME.addListener(this.pauseGame);
   }
 
   public navWin = (instance: ILevelInstance) => {
@@ -110,5 +116,9 @@ export class GameUI extends BaseUI {
     this.addChild(healWord);
     healWord.x = this.healthBar.x + this.healthBar.getWidth();
     healWord.y = this.healthBar.y + this.healthBar.getHeight();
+  }
+
+  public pauseGame = (e: IPauseEvent) => {
+    this.pauseOverlay.changeState(e.paused);
   }
 }
