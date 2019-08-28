@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { ColorGradient } from '../others/Colors';
 
 export class Charge extends PIXI.Graphics{

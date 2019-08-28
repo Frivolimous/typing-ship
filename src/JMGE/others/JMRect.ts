@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 export class JMRect extends PIXI.Rectangle {
   public setLeft(n: number) {
     this.width += this.x - n;

@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBL from './JMBL';
 import * as _ from 'lodash';
 import { JMTween } from './JMTween';
@@ -559,7 +560,7 @@ export class Scrollbar extends BasicElement {
       this.dragging = false;
     });
 
-    this.on("mousemove", (e) => {
+    this.on("mousemove", (e: any) => {
       if (this.dragging) {
         //this.mover.y=e.mouse.y-this.y-this.offsetY;
         let point: PIXI.Point = e.data.getLocalPosition(this);

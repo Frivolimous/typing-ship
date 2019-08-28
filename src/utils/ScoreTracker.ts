@@ -1,7 +1,7 @@
 import * as JMBL from '../JMGE/JMBL';
 // import { GameEvents } from '../game/data/Misc';
 import { SaveData } from './SaveData';
-import { ExtrinsicModel } from '../game/data/PlayerData';
+import { ExtrinsicModel } from '../data/PlayerData';
 
 export class ScoreTracker {
   private extrinsic: ExtrinsicModel;

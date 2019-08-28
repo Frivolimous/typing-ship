@@ -5,6 +5,7 @@ import { EnemyShip } from '../game/objects/EnemyShip';
 import { BossShip } from '../game/objects/BossShip';
 import { BossShip0 } from '../game/objects/BossShip0';
 import { BossShip1 } from '../game/objects/BossShip1';
+import * as PIXI from 'pixi.js';
 import { BossShip2 } from '../game/objects/BossShip2';
 import { PlayerShip } from '../game/objects/PlayerShip';
 import { EventInterpreter } from '../game/engine/EventInterpreter';

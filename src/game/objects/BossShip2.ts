@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { BossShip } from './BossShip';
 import { CONFIG } from '../../Config';
 import { ClearObject } from './ClearObject';

@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { GameSprite } from './GameSprite';
 import { BossShip } from './BossShip';
 

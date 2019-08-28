@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { TextObject } from '../text/TextObject';
 import { DisplayLayer } from '../engine/ObjectManager';
 import * as JMBL from '../../JMGE/JMBL';
@@ -16,7 +17,7 @@ export class BaseObject extends PIXI.Container {
   public onWordComplete: (e: BaseObject) => void;
 
   public makeDisplay(image: string, scale: number) {
-    this.display = PIXI.Sprite.fromImage(image);
+    this.display = PIXI.Sprite.from(image);
     this.display.anchor.set(0.5);
     this.display.scale.set(scale);
     this.addChild(this.display);

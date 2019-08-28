@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { ImageRepo } from '../TextureData';
 import { ActionType } from './Types';
 

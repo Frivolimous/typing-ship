@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMBUI';
 import { InventoryWindow } from './InventoryUI';
 

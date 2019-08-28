@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { JMTween } from '../../JMGE/JMTween';
 
 export class Shield extends PIXI.Graphics {

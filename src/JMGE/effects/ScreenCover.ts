@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { JMTween } from '../JMTween';
 
 export class ScreenCover extends PIXI.Graphics {

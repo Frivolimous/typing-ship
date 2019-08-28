@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBL from '../JMBL';
 import { JMTicker } from '../events/JMTicker';
 

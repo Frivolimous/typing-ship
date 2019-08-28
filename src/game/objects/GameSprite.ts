@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { BaseObject } from './BaseObject';
 import { Shield } from './Shield';
 import { Turret } from './Turret';

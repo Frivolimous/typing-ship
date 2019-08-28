@@ -65,7 +65,7 @@ export const StringData = {
   FINAL_CREDITS: 'As the debris settles in the depths of space a heavy sigh of relief washes across all the people of earth.  The evil emperor has been defeated and the planet freed... an age of peace and prosperity is sure to follow.\n\n\nConcept and Design by:\nYermiyah Hornick\n\n\nProgramming by:\nYermiyah Hornick\n\n\nArt by:\nAvi Kentridge\n\n\nMusic By:\nBinyamin Hornick\n\n\nSound Effects by:\nYermiyah Hornick\nAvi Kentridge\n\n\nThank you for playing!',
 };
 
-export function getAchieveArray(s): string[] {
+export function getAchieveArray(s: string): string[] {
   switch (s) {
     case StringData.SOLDIER: return ['DESTROY 10 ENEMY SHIPS', 'DESTROY 1,000 ENEMY SHIPS', 'DESTROY 20,000 ENEMY SHIPS'];
     case StringData.CONQUEROR: return ['DEFEAT THE FIRST BOSS', 'DEFEAT THE SECOND BOSS', 'FINISH THE GAME'];

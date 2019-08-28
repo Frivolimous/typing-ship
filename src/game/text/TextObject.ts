@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as WordList from '../../data/WordList';
 import { Fonts } from '../../data/Fonts';
 import { BaseObject } from '../objects/BaseObject';

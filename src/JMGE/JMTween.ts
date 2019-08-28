@@ -102,6 +102,7 @@ export class JMTween<T = any> {
     _remove(this);
 
     this.properties.forEach(property => {
+      // @ts-ignore
       this.object[property.key] = property.end;
     });
 
@@ -141,10 +142,12 @@ export class JMTween<T = any> {
 
     this.properties.forEach(property => {
       if (property.to || property.to === 0) {
+        // @ts-ignore
         property.start = this.object[property.key] || 0;
         property.end = property.to;
       } else if (property.from || property.from === 0) {
         property.start = property.from;
+        // @ts-ignore
         property.end = this.object[property.key] || 0;
       }
 
@@ -156,6 +159,7 @@ export class JMTween<T = any> {
         property.inc = property.end - property.start;
       }
 
+      // @ts-ignore
       this.object[property.key] = property.start;
     });
 
@@ -166,6 +170,7 @@ export class JMTween<T = any> {
 
   public to = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
+      // @ts-ignore
       this.properties.push({ key, eased, to: props[key]});
 
       // this.properties.push({ key, start: this.object[key], end: props[key], inc: (props[key] - this.object[key]), eased });
@@ -176,6 +181,7 @@ export class JMTween<T = any> {
 
   public from = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
+      // @ts-ignore
       this.properties.push({ key, eased, from: props[key]});
 
       // this.properties.push({ key, start: props[key], end: this.object[key], inc: (this.object[key] - props[key]), eased });
@@ -186,6 +192,7 @@ export class JMTween<T = any> {
 
   public colorTo = (props: Partial<T>, eased = true) => {
     for (let key of Object.keys(props)) {
+      // @ts-ignore
       this.properties.push({ key, eased, to: props[key], isColor: true});
 
       // this.properties.push({
@@ -247,12 +254,14 @@ export class JMTween<T = any> {
         let percent = property.eased ? eased : raw;
 
         if (property.isColor) {
-          this.object[property.key] = Math.round(property.start +
+          // @ts-ignore
+          (this.object[property.key] as number) = Math.round(property.start +
             Math.floor(property.incR * percent) * 0x010000 +
             Math.floor(property.incG * percent) * 0x000100 +
             Math.floor(property.incB * percent));
         } else {
-          this.object[property.key] = property.start + property.inc * percent;
+          // @ts-ignore
+          (this.object[property.key] as number) = property.start + property.inc * percent;
         }
       });
 

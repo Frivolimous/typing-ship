@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { GameSprite } from './GameSprite';
 import { ICommand } from '../../data/LevelData';
 import { CONFIG } from '../../Config';

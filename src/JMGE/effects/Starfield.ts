@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 export class Starfield extends PIXI.Container{
   public stars:Star[]=[]
   public objects:any[]=[]

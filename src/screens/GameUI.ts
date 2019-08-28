@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { BaseUI, IFadeTiming } from '../JMGE/UI/BaseUI';
 import { GameManager } from '../game/GameManager';
 import { WinUI } from './WinUI';

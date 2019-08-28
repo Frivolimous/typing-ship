@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 export class TutorialPopup extends PIXI.Container {
 
   constructor(text: string) {
@@ -11,3 +12,5 @@ export class TutorialPopup extends PIXI.Container {
     this.addChild(background, field);
   }
 }
+
+// sept 6;

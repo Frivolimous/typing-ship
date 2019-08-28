@@ -52,7 +52,7 @@ export class ActionControl {
 
   public shootPlayerLaser(origin: PlayerShip, target: GameSprite) {
     origin.laserCharge.startCharge(() => {
-      if (target && target.position) {
+      if (target && target.parent) {
         this.manager.container.makeLaser(origin, target, 0x00ffff);
         this.enemyDestroyed(target);
         // soundC.sound(SoundControl.LASER);

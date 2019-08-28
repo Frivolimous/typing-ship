@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBL from '../../JMGE/JMBL';
 import { TutorialPopup } from '../../ui/TutorialPopup';
 import { GameEvents, IHealthEvent, IPauseEvent } from './GameEvents';

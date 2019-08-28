@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { BossShip } from './BossShip';
 import { ImageRepo } from '../../TextureData';
 import { ISpawnEvent } from '../../data/LevelData';

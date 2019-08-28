@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { JMTween } from '../JMGE/JMTween';
 import { CONFIG } from '../Config';
 

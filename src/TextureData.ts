@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { JMTextureCache } from './JMGE/others/JMTextureCache';
 import { Colors } from './data/Colors';
 

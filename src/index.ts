@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBL from './JMGE/JMBL';
 import { TextureData } from './TextureData';
 import { MenuUI } from './screens/MenuUI';
@@ -37,16 +38,17 @@ new class Facade {
     }
 
     this.stageBorders = new JMBL.Rect(0, 0, CONFIG.INIT.SCREEN_WIDTH / this._Resolution, CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
-    this.app = new PIXI.Application(this.stageBorders.width, this.stageBorders.height, {
+    this.app = new PIXI.Application({
       backgroundColor: 0xff0000,
       antialias: true,
       resolution: this._Resolution,
-      roundPixels: true,
+      width: this.stageBorders.width,
+      height: this.stageBorders.height,
     });
     (document.getElementById('game-canvas') as any).append(this.app.view);
 
     // if (this.app){
-    // 	let test=PIXI.Sprite.fromImage('./Bitmaps/a ship sprite sheet.png')
+    // 	let test=PIXI.Sprite.from('./Bitmaps/a ship sprite sheet.png')
     // 	this.app.stage.addChild(test);
     // 	return;
     // }

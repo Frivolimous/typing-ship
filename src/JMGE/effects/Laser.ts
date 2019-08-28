@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBL from '../JMBL';
 import * as Colors from '../others/Colors';
 import { JMTween } from '../JMTween';

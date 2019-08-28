@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { StringData } from '../data/StringData';
 import { Colors } from '../data/Colors';

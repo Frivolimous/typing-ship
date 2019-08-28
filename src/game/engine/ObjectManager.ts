@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
 import { BaseObject } from '../objects/BaseObject';
 import { FlyingText } from '../../JMGE/effects/FlyingText';
@@ -119,25 +120,29 @@ export class ObjectManager extends PIXI.Container {
 
       if (filter.has) {
         for (let v in filter.has) {
+          // @ts-ignore
           if (object[v] !== filter.has[v]) continue main;
         }
       }
 
       if (filter.greater) {
         for (let v in filter.greater) {
+          // @ts-ignore
           if (object[v] <= filter.greater[v]) continue main;
         }
       }
 
       if (filter.less) {
         for (let v in filter.less) {
+          // @ts-ignore
           if (object[v] >= filter.less[v]) continue main;
         }
       }
 
       if (filter.not) {
         for (let v in filter.not) {
-          if (object[v] === filter.not[v]) continue main;
+          // @ts-ignore
+          if ((object[v] as any) === filter.not[v]) continue main;
         }
       }
 

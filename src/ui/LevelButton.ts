@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { Colors } from '../data/Colors';
 import { ILevelScores } from '../data/PlayerData';

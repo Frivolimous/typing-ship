@@ -1,4 +1,4 @@
-// import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 
 export class JMTextureCache {
   private cache: { [key: string]: PIXI.Texture } = {};

@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import * as JMBL from '../JMGE/JMBL';
 import { CONFIG } from '../Config';

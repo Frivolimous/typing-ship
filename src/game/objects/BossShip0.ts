@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { BossShip } from './BossShip';
 import { EnemyShip } from './EnemyShip';
 import { ImageRepo } from '../../TextureData';
@@ -15,7 +16,7 @@ export class BossShip0 extends BossShip {
     this.makeDisplay(ImageRepo.boss0, 0.5);
     this.hitBounds = new PIXI.Rectangle(-150, -30, 300, 60);
 
-    this.over = PIXI.Sprite.fromImage(ImageRepo.boss0Over0);
+    this.over = PIXI.Sprite.from(ImageRepo.boss0Over0);
     this.over.anchor.set(0.5);
     this.over.scale.set(0.5);
     this.overOffset.set(-3, 14);

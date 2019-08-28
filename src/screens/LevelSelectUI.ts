@@ -27,7 +27,7 @@ export class LevelSelectUI extends BaseUI {
     this.addChild(_button);
 
     for (let i = 0; i < 12; i++) {
-      let button = new LevelButton(i, () => this.changeLevelAndStartGame(i, button));
+      let button: LevelButton = new LevelButton(i, () => this.changeLevelAndStartGame(i, button));
       button.position.set(5 + Math.floor(i / 6) * 130, 20 + (i % 6) * 40);
       this.levelButtons.push(button);
       this.addChild(button);

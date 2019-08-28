@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import { GameEvents, IPauseEvent } from './GameEvents';
 import { AchievementPopup } from '../../ui/AchievementPopup';
 import { ExtrinsicModel, Badges } from '../../data/PlayerData';

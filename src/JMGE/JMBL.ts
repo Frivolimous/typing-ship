@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
 
 import { JMInteractionEvents } from './events/JMInteractionEvents';
@@ -160,7 +161,7 @@ export class MouseObject extends PIXI.Point {
     }
   }
 
-  public onDown = (e) => {
+  public onDown = (e: any) => {
     this.onMove(e);
 
     this.down = true;
@@ -187,7 +188,7 @@ export class MouseObject extends PIXI.Point {
     }
   }
 
-  public onUp = (e) => {
+  public onUp = (e: any) => {
     this.onMove(e);
     this.down = false;
 
@@ -205,7 +206,7 @@ export class MouseObject extends PIXI.Point {
     }
   }
 
-  public onMove = (e) => {
+  public onMove = (e: any) => {
     this.target = e.target;
     if (e.target && e.target.isUI) {
       this.onUI = true;

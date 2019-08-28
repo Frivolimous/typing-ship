@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMBUI';
 import * as _ from 'lodash';
 import { ScreenCover } from '../effects/ScreenCover';

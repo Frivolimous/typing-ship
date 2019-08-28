@@ -1,5 +1,5 @@
 export const JMTicker = {
-  tickEvents: [],
+  tickEvents: [] as (() => void)[],
 
   active: false,
 
