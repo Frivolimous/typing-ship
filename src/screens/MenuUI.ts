@@ -3,6 +3,7 @@ import { BaseUI } from '../JMGE/UI/BaseUI';
 import { LevelSelectUI } from './LevelSelectUI';
 import { CONFIG } from '../Config';
 import { BadgesUI } from './BadgesUI';
+import { TypingTestUI } from './TypingTestUI';
 import { CreditsUI } from './CreditsUI';
 import { HighScoreUI } from './HighScoreUI';
 import { MuterOverlay } from '../ui/MuterOverlay';
@@ -18,13 +19,13 @@ export class MenuUI extends BaseUI {
     this.label.x += 50;
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
     this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'High Score', output: this.navHighScore });
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: this.navTypingTest });
     this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 280, label: 'View Badges', output: this.navBadges });
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
     this.addChild(_button);
-    // _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 320, label: 'More Games', output: this.nullFunc });
-    // this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: this.navCredits });
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: this.navBadges });
+    this.addChild(_button);
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: this.navCredits });
     this.addChild(_button);
 
     this.muter = new MuterOverlay();
@@ -39,7 +40,10 @@ export class MenuUI extends BaseUI {
 
   public startGame = () => {
     this.navForward(new LevelSelectUI());
-    // this.navForward(new GameManager());
+  }
+
+  public navTypingTest = () => {
+    this.navForward(new TypingTestUI());
   }
 
   public navBadges = () => {

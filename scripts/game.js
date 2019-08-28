@@ -6141,13 +6141,13 @@ define("screens/BadgesUI", ["require", "exports", "JMGE/JMBUI", "Config", "data/
     }(BaseUI_5.BaseUI));
     exports.BadgesUI = BadgesUI;
 });
-define("screens/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_6, Config_14, MuterOverlay_6) {
+define("screens/TypingTestUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_6, Config_14, MuterOverlay_6) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var LABEL = 'CreditsUI';
-    var CreditsUI = (function (_super) {
-        __extends(CreditsUI, _super);
-        function CreditsUI() {
+    var LABEL = 'TypingTest';
+    var TypingTestUI = (function (_super) {
+        __extends(TypingTestUI, _super);
+        function TypingTestUI() {
             var _this = _super.call(this, { width: Config_14.CONFIG.INIT.SCREEN_WIDTH, height: Config_14.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.navMenu = function () {
                 _this.navBack();
@@ -6158,23 +6158,19 @@ define("screens/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
-            var s = "\n      Programmer: Jeremy Moshe\n      Artist: ???\n      Music: Binyamin Bair-Moshe\n      Sound Effects: Jeremy Moshe\n\n      Special Thanks:\n      Avi Kentridge\n      A. Walker\n      Sofia Moshe\n      Damon Kentridge\n      Kurosai\n      and YOU!\n    ";
-            var text = new PIXI.Text(s);
-            _this.addChild(text);
-            text.position.set(50, 50);
             return _this;
         }
-        return CreditsUI;
+        return TypingTestUI;
     }(BaseUI_6.BaseUI));
-    exports.CreditsUI = CreditsUI;
+    exports.TypingTestUI = TypingTestUI;
 });
-define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_7, Config_15, MuterOverlay_7) {
+define("screens/CreditsUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_7, Config_15, MuterOverlay_7) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var LABEL = 'HighScoreUI';
-    var HighScoreUI = (function (_super) {
-        __extends(HighScoreUI, _super);
-        function HighScoreUI() {
+    var LABEL = 'CreditsUI';
+    var CreditsUI = (function (_super) {
+        __extends(CreditsUI, _super);
+        function CreditsUI() {
             var _this = _super.call(this, { width: Config_15.CONFIG.INIT.SCREEN_WIDTH, height: Config_15.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.navMenu = function () {
                 _this.navBack();
@@ -6185,22 +6181,52 @@ define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/Base
             muter.x = _this.getWidth() - muter.getWidth();
             muter.y = _this.getHeight() - muter.getHeight();
             _this.addChild(muter);
+            var s = "\n      Programmer: Jeremy Moshe\n      Artist: ???\n      Music: Binyamin Bair-Moshe\n      Sound Effects: Jeremy Moshe\n\n      Special Thanks:\n      Avi Kentridge\n      A. Walker\n      Sofia Moshe\n      Damon Kentridge\n      Kurosai\n      and YOU!\n    ";
+            var text = new PIXI.Text(s);
+            _this.addChild(text);
+            text.position.set(50, 50);
+            return _this;
+        }
+        return CreditsUI;
+    }(BaseUI_7.BaseUI));
+    exports.CreditsUI = CreditsUI;
+});
+define("screens/HighScoreUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "Config", "ui/MuterOverlay"], function (require, exports, JMBUI, BaseUI_8, Config_16, MuterOverlay_8) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var LABEL = 'HighScoreUI';
+    var HighScoreUI = (function (_super) {
+        __extends(HighScoreUI, _super);
+        function HighScoreUI() {
+            var _this = _super.call(this, { width: Config_16.CONFIG.INIT.SCREEN_WIDTH, height: Config_16.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            _this.navMenu = function () {
+                _this.navBack();
+            };
+            var _button = new JMBUI.Button({ width: 100, height: 30, x: Config_16.CONFIG.INIT.SCREEN_WIDTH - 150, y: Config_16.CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: _this.navMenu });
+            _this.addChild(_button);
+            var muter = new MuterOverlay_8.MuterOverlay();
+            muter.x = _this.getWidth() - muter.getWidth();
+            muter.y = _this.getHeight() - muter.getHeight();
+            _this.addChild(muter);
             return _this;
         }
         return HighScoreUI;
-    }(BaseUI_7.BaseUI));
+    }(BaseUI_8.BaseUI));
     exports.HighScoreUI = HighScoreUI;
 });
-define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_8, LevelSelectUI_1, Config_16, BadgesUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_8, JMTween_7) {
+define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", "screens/LevelSelectUI", "Config", "screens/BadgesUI", "screens/TypingTestUI", "screens/CreditsUI", "screens/HighScoreUI", "ui/MuterOverlay", "JMGE/JMTween"], function (require, exports, JMBUI, BaseUI_9, LevelSelectUI_1, Config_17, BadgesUI_1, TypingTestUI_1, CreditsUI_1, HighScoreUI_1, MuterOverlay_9, JMTween_7) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MenuUI = (function (_super) {
         __extends(MenuUI, _super);
         function MenuUI() {
-            var _this = _super.call(this, { width: Config_16.CONFIG.INIT.SCREEN_WIDTH, height: Config_16.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
+            var _this = _super.call(this, { width: Config_17.CONFIG.INIT.SCREEN_WIDTH, height: Config_17.CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } }) || this;
             _this.nullFunc = function () { };
             _this.startGame = function () {
                 _this.navForward(new LevelSelectUI_1.LevelSelectUI());
+            };
+            _this.navTypingTest = function () {
+                _this.navForward(new TypingTestUI_1.TypingTestUI());
             };
             _this.navBadges = function () {
                 _this.navForward(new BadgesUI_1.BadgesUI());
@@ -6266,13 +6292,15 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
             _this.label.x += 50;
             var _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: _this.startGame });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'High Score', output: _this.navHighScore });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: _this.navTypingTest });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 280, label: 'View Badges', output: _this.navBadges });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: _this.navHighScore });
             _this.addChild(_button);
-            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 360, label: 'Credits', output: _this.navCredits });
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: _this.navBadges });
             _this.addChild(_button);
-            _this.muter = new MuterOverlay_8.MuterOverlay();
+            _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: _this.navCredits });
+            _this.addChild(_button);
+            _this.muter = new MuterOverlay_9.MuterOverlay();
             _this.muter.x = _this.getWidth() - _this.muter.getWidth();
             _this.muter.y = _this.getHeight() - _this.muter.getHeight();
             _this.addChild(_this.muter);
@@ -6280,17 +6308,17 @@ define("screens/MenuUI", ["require", "exports", "JMGE/JMBUI", "JMGE/UI/BaseUI", 
             return _this;
         }
         return MenuUI;
-    }(BaseUI_8.BaseUI));
+    }(BaseUI_9.BaseUI));
     exports.MenuUI = MenuUI;
 });
-define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_11, MenuUI_1, Config_17, SaveData_6) {
+define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/MenuUI", "Config", "utils/SaveData"], function (require, exports, JMBL, TextureData_11, MenuUI_1, Config_18, SaveData_6) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     new (_a = (function () {
             function Facade() {
                 var _this = this;
-                this._Resolution = Config_17.CONFIG.INIT.RESOLUTION;
+                this._Resolution = Config_18.CONFIG.INIT.RESOLUTION;
                 this.init = function () {
                     initializeDatas();
                     SaveData_6.SaveData.init();
@@ -6323,7 +6351,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 }
                 catch (e) {
                 }
-                this.stageBorders = new JMBL.Rect(0, 0, Config_17.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_17.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
+                this.stageBorders = new JMBL.Rect(0, 0, Config_18.CONFIG.INIT.SCREEN_WIDTH / this._Resolution, Config_18.CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
                 this.app = new PIXI.Application(this.stageBorders.width, this.stageBorders.height, {
                     backgroundColor: 0xff0000,
                     antialias: true,
@@ -6339,7 +6367,7 @@ define("index", ["require", "exports", "JMGE/JMBL", "TextureData", "screens/Menu
                 this.stageBorders.y = this.app.view.offsetTop;
                 this.app.stage.interactive = true;
                 var _background = new PIXI.Graphics();
-                _background.beginFill(Config_17.CONFIG.INIT.BACKGROUND_COLOR);
+                _background.beginFill(Config_18.CONFIG.INIT.BACKGROUND_COLOR);
                 _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
                 this.app.stage.addChild(_background);
                 JMBL.init(this.app);

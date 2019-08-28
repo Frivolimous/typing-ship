@@ -24,6 +24,7 @@ TO-DO:
 
 #Menu UI
 - Badges - INIT
+- Typing Test - INIT
 - Tooltip (MouseOver and Tap)
 
 - RESPONSIVE
@@ -33,6 +34,7 @@ TO-DO:
 - Tutorials - BASICS
 - Sound FX
 - Online Saves
+- Typing Test
 
 - Mobile Keyboard?
 

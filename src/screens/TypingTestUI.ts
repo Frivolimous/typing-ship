@@ -3,8 +3,8 @@ import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 
-const LABEL = 'HighScoreUI';
-export class HighScoreUI extends BaseUI {
+const LABEL = 'TypingTest';
+export class TypingTestUI extends BaseUI {
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
 
