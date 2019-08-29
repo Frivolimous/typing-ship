@@ -49,6 +49,8 @@ export class SoundData {
   }
 
   public static playMusic = (i: number) => {
+    return;
+
     let nextTrack: Howl = SoundData.music[i];
     if (SoundData.musicPlaying === nextTrack) {
       return;
@@ -180,24 +182,24 @@ export class SoundData {
   ];
 }
 
-window.addEventListener('keydown', (e: any) => {
-  switch (e.key) {
-    case '1': SoundData.playSound(0); break;
-    case '2': SoundData.playSound(1); break;
-    case '3': SoundData.playSound(2); break;
-    case '4': SoundData.playSound(3); break;
-    case '5': SoundData.playSound(4); break;
-    case '6': SoundData.playSound(5); break;
-    case '7': SoundData.playSound(6); break;
-    case '8': SoundData.playSound(7); break;
-    case '9': SoundData.playSound(8); break;
-    case '0': SoundData.playSound(9); break;
-    case '-': SoundData.playSound(10); break;
-    case '=': SoundData.playSound(11); break;
-    case 'q': SoundData.playMusic(0); break;
-    case 'w': SoundData.playMusic(1); break;
-    case 'e': SoundData.playMusic(2); break;
-    case 'r': SoundData.playMusic(3); break;
-    case 't': SoundData.playMusic(4); break;
-  }
-});
+// window.addEventListener('keydown', (e: any) => {
+//   switch (e.key) {
+//     case '1': SoundData.playSound(0); break;
+//     case '2': SoundData.playSound(1); break;
+//     case '3': SoundData.playSound(2); break;
+//     case '4': SoundData.playSound(3); break;
+//     case '5': SoundData.playSound(4); break;
+//     case '6': SoundData.playSound(5); break;
+//     case '7': SoundData.playSound(6); break;
+//     case '8': SoundData.playSound(7); break;
+//     case '9': SoundData.playSound(8); break;
+//     case '0': SoundData.playSound(9); break;
+//     case '-': SoundData.playSound(10); break;
+//     case '=': SoundData.playSound(11); break;
+//     case 'q': SoundData.playMusic(0); break;
+//     case 'w': SoundData.playMusic(1); break;
+//     case 'e': SoundData.playMusic(2); break;
+//     case 'r': SoundData.playMusic(3); break;
+//     case 't': SoundData.playMusic(4); break;
+//   }
+// });
