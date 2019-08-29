@@ -9,6 +9,7 @@ import { CreditsUI } from './CreditsUI';
 import { HighScoreUI } from './HighScoreUI';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { JMTween, JMEasing } from '../JMGE/JMTween';
+import { SoundData } from '../utils/SoundData';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
@@ -108,5 +109,6 @@ export class MenuUI extends BaseUI {
 
   public navIn = () => {
     this.muter.reset();
+    SoundData.playMusic(0);
   }
 }

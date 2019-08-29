@@ -1,23 +1,24 @@
-import { ObjectManager, DisplayLayer } from '../game/engine/ObjectManager';
+import { ObjectManager, DisplayLayer } from './engine/ObjectManager';
 import { Starfield } from '../JMGE/effects/Starfield';
 import { CONFIG } from '../Config';
-import { EnemyShip } from '../game/objects/EnemyShip';
-import { BossShip } from '../game/objects/BossShip';
-import { BossShip0 } from '../game/objects/BossShip0';
-import { BossShip1 } from '../game/objects/BossShip1';
+import { EnemyShip } from './objects/EnemyShip';
+import { BossShip } from './objects/BossShip';
+import { BossShip0 } from './objects/BossShip0';
+import { BossShip1 } from './objects/BossShip1';
 import * as PIXI from 'pixi.js';
-import { BossShip2 } from '../game/objects/BossShip2';
-import { PlayerShip } from '../game/objects/PlayerShip';
-import { EventInterpreter } from '../game/engine/EventInterpreter';
-import { ActionControl } from '../game/engine/ActionControl';
+import { BossShip2 } from './objects/BossShip2';
+import { PlayerShip } from './objects/PlayerShip';
+import { EventInterpreter } from './engine/EventInterpreter';
+import { ActionControl } from './engine/ActionControl';
 import { ISpawnEvent } from '../data/LevelData';
-import { WordInput } from '../game/engine/WordInput';
-import { TextObject } from '../game/text/TextObject';
-import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from '../game/engine/GameEvents';
+import { WordInput } from './engine/WordInput';
+import { TextObject } from './text/TextObject';
+import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from './engine/GameEvents';
 import { JMInteractionEvents, IKeyboardEvent } from '../JMGE/events/JMInteractionEvents';
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
 import { GameSprite } from './objects/GameSprite';
+import { SoundData } from '../utils/SoundData';
 
 export class GameManager {
   public running = true;

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
-import { TextureData } from '../TextureData';
+import { TextureData } from '../utils/TextureData';
 import { BadgeState } from '../data/PlayerData';
 
 export class BadgeLine extends JMBUI.BasicElement {

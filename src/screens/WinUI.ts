@@ -5,7 +5,7 @@ import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { ILevelInstance } from '../data/LevelInstance';
 import { SaveData } from '../utils/SaveData';
-import { ImageRepo, TextureData } from '../TextureData';
+import { ImageRepo, TextureData } from '../utils/TextureData';
 
 const LABEL = 'WinUI';
 export class WinUI extends BaseUI {

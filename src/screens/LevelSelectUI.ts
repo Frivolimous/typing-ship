@@ -6,6 +6,7 @@ import { DifficultyPopup } from '../ui/DifficultyPopup';
 import { SaveData } from '../utils/SaveData';
 import { LevelButton } from '../ui/LevelButton';
 import { MuterOverlay } from '../ui/MuterOverlay';
+import { SoundData } from '../utils/SoundData';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -87,5 +88,6 @@ export class LevelSelectUI extends BaseUI {
   public navIn = () => {
     this.resetLevelStuff();
     this.muter.reset();
+    SoundData.playMusic(0);
   }
 }

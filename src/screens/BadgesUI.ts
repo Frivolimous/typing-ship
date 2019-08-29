@@ -5,7 +5,7 @@ import { CONFIG } from '../Config';
 import { IInventoryUI, InventoryWindow } from '../JMGE/UI/InventoryUI';
 import { SaveData } from '../utils/SaveData';
 import { MenuUI } from './MenuUI';
-import { TextureData } from '../TextureData';
+import { TextureData } from '../utils/TextureData';
 import { BadgeState } from '../data/PlayerData';
 import { BadgeLine } from '../ui/BadgeLine';
 import { BaseUI } from '../JMGE/UI/BaseUI';

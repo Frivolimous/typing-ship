@@ -3,7 +3,7 @@ import { BossShip } from './BossShip';
 import { CONFIG } from '../../Config';
 import { ClearObject } from './ClearObject';
 import { GameSprite } from './GameSprite';
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../../utils/TextureData';
 import { GameManager } from '../GameManager';
 
 export class BossShip2 extends BossShip {

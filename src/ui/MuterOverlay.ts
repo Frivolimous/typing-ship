@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
-import { TextureData } from '../TextureData';
+import { TextureData } from '../utils/TextureData';
 import { GameEvents } from '../game/engine/GameEvents';
 import { SaveData } from '../utils/SaveData';
+import { SoundData } from '../utils/SoundData';
 
 export class MuterOverlay extends PIXI.Graphics {
   private pause: PIXI.Sprite;
@@ -88,6 +89,8 @@ export class MuterOverlay extends PIXI.Graphics {
   }
 
   private toggleSound = (b?: boolean) => {
+    // SoundData.runTest();
+    // console.log(SoundData);
     if (b || b === false) {
       this.muted = b;
     } else {
@@ -95,6 +98,7 @@ export class MuterOverlay extends PIXI.Graphics {
     }
 
     this.options.muted = this.muted;
+    SoundData.setMute(this.muted);
     SaveData.saveExtrinsic();
 
     if (this.muted) {

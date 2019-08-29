@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as JMBL from './JMGE/JMBL';
-import { TextureData } from './TextureData';
+import { TextureData } from './utils/TextureData';
 import { MenuUI } from './screens/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
@@ -86,6 +86,7 @@ new class Facade {
     this.currentModule = new MenuUI();
     this.currentModule.navOut = this.updateCurrentModule;
     this.app.stage.addChild(this.currentModule);
+    this.currentModule.navIn();
   }
 
   public updateCurrentModule = (o: any) => {

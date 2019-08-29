@@ -1,5 +1,5 @@
 import { GameSprite } from './GameSprite';
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../../utils/TextureData';
 import { Laser } from '../../JMGE/effects/Laser';
 import { ActionType } from '../../data/Types';
 

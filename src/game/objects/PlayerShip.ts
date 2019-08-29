@@ -1,7 +1,7 @@
 import { GameSprite } from './GameSprite';
 import * as JMBL from '../../JMGE/JMBL';
 import { Charge } from '../../JMGE/effects/Charge';
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../../utils/TextureData';
 import { IHealthEvent, IHealEvent, GameEvents } from '../engine/GameEvents';
 
 export class PlayerShip extends GameSprite {

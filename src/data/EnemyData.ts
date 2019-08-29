@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { ImageRepo } from '../TextureData';
+import { ImageRepo } from '../utils/TextureData';
 import { ActionType } from './Types';
 
 export interface IEnemyConfig {

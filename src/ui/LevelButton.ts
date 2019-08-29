@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { Colors } from '../data/Colors';
 import { ILevelScores } from '../data/PlayerData';
-import { TextureData } from '../TextureData';
+import { TextureData } from '../utils/TextureData';
 
 export class LevelButton extends PIXI.Container {
   public data: ILevelScores;

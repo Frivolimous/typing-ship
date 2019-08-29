@@ -13,6 +13,7 @@ import { AchievementManager } from '../game/engine/AchievementManager';
 import { ILevelInstance } from '../data/LevelInstance';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { PauseOverlay } from '../ui/PauseOverlay';
+import { SoundData } from '../utils/SoundData';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -74,6 +75,8 @@ export class GameUI extends BaseUI {
     GameEvents.NOTIFY_SET_PROGRESS.addListener(this.updateProgress);
     GameEvents.NOTIFY_SET_HEALTH.addListener(this.setPlayerHealth);
     GameEvents.REQUEST_PAUSE_GAME.addListener(this.pauseGame);
+
+    SoundData.playMusicForLevel(level);
   }
 
   public navWin = (instance: ILevelInstance) => {

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { BossShip } from './BossShip';
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../../utils/TextureData';
 import { ISpawnEvent } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
 import { GameManager } from '../GameManager';

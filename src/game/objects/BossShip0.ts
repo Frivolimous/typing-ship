@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { BossShip } from './BossShip';
 import { EnemyShip } from './EnemyShip';
-import { ImageRepo } from '../../TextureData';
+import { ImageRepo } from '../../utils/TextureData';
 import { DisplayLayer } from '../engine/ObjectManager';
 import { boss0Suicides } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
