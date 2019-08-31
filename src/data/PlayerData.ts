@@ -51,6 +51,9 @@ export class ExtrinsicModel {
         options: {
           muted: false,
         },
+
+        wpm: 0,
+        recommended: 0,
       };
     }
   }
@@ -68,6 +71,9 @@ export interface IExtrinsicData {
   options: {
     muted: boolean,
   };
+
+  wpm: number;
+  recommended: number;
 }
 
 export interface ILevelScores {

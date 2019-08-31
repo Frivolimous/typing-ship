@@ -56,6 +56,7 @@ export class JMTween<T = any> {
   private onWaitCompleteCallback: (object: T) => void;
   private properties: ITweenProperty[] = [];
   private hasWait: boolean;
+  private _Yoyo: boolean;
 
   private nextTween: JMTween;
 
@@ -88,6 +89,12 @@ export class JMTween<T = any> {
     return this;
   }
 
+  public yoyo = (b: boolean = true) => {
+    this._Yoyo = b;
+
+    return this;
+  }
+
   public stop = () => {
     this.running = false;
 
@@ -97,22 +104,27 @@ export class JMTween<T = any> {
   }
 
   public complete = (time: number) => {
-    this.running = false;
-
-    _remove(this);
-
     this.properties.forEach(property => {
       // @ts-ignore
       this.object[property.key] = property.end;
     });
 
-    this.tickThis = () => {};
-    if (this.onCompleteCallback) this.onCompleteCallback(this.object);
+    if (this._Yoyo) {
+      this.reverseProps();
+      this.startTime = time;
+      this.endTime = this.startTime + (this.totalTime || 0);
+    } else {
+      this.running = false;
 
-    if (this.nextTween) {
-      this.nextTween.reset();
-      this.nextTween.start();
-      this.nextTween.tickThis(time);
+      _remove(this);
+      this.tickThis = () => {};
+      if (this.onCompleteCallback) this.onCompleteCallback(this.object);
+
+      if (this.nextTween) {
+        this.nextTween.reset();
+        this.nextTween.start();
+        this.nextTween.tickThis(time);
+      }
     }
     return this;
   }
@@ -172,8 +184,6 @@ export class JMTween<T = any> {
     for (let key of Object.keys(props)) {
       // @ts-ignore
       this.properties.push({ key, eased, to: props[key]});
-
-      // this.properties.push({ key, start: this.object[key], end: props[key], inc: (props[key] - this.object[key]), eased });
     }
 
     return this;
@@ -183,8 +193,6 @@ export class JMTween<T = any> {
     for (let key of Object.keys(props)) {
       // @ts-ignore
       this.properties.push({ key, eased, from: props[key]});
-
-      // this.properties.push({ key, start: props[key], end: this.object[key], inc: (this.object[key] - props[key]), eased });
     }
 
     return this;
@@ -194,17 +202,6 @@ export class JMTween<T = any> {
     for (let key of Object.keys(props)) {
       // @ts-ignore
       this.properties.push({ key, eased, to: props[key], isColor: true});
-
-      // this.properties.push({
-      //   key,
-      //   start: this.object[key],
-      //   end: props[key],
-      //   incR: Math.floor(props[key] / 0x010000) - Math.floor(this.object[key] / 0x010000),
-      //   incG: Math.floor((props[key] % 0x010000) / 0x000100) - Math.floor((this.object[key] % 0x010000) / 0x000100),
-      //   incB: Math.floor(props[key] % 0x000100) - Math.floor(this.object[key] % 0x000100),
-      //   eased,
-      //   isColor: true,
-      // });
     }
 
     return this;
@@ -267,6 +264,22 @@ export class JMTween<T = any> {
 
       if (this.onUpdateCallback) this.onUpdateCallback(this.object);
     }
+  }
+
+  private reverseProps = () => {
+    this.properties.forEach(property => {
+      let start = property.start;
+      property.start = property.end;
+      property.end = start;
+
+      if (property.isColor) {
+        property.incR = Math.floor(property.end / 0x010000) - Math.floor(property.start / 0x010000);
+        property.incG = Math.floor((property.end % 0x010000) / 0x000100) - Math.floor((property.start % 0x010000) / 0x000100);
+        property.incB = Math.floor(property.end % 0x000100) - Math.floor(property.start % 0x000100);
+      } else {
+        property.inc = property.end - property.start;
+      }
+    });
   }
 }
 

@@ -71,7 +71,7 @@ export class BasicElement extends PIXI.Container {
     return this.graphics.height;
   }
 
-  flashing: boolean;
+  private flashing: boolean;
   colorFlash(color: number, timeUp: number, wait: number, timeDown: number) {
     if (this.flashing) return;
     this.flashing = true;
@@ -80,6 +80,28 @@ export class BasicElement extends PIXI.Container {
         this.flashing = false;
       }).start();
     }).start();
+  }
+
+  private _Highlight: PIXI.Graphics;
+  private _HighlightTween: JMTween;
+  highlight(b: boolean) {
+    if (b) {
+      if (this._Highlight) return;
+      this._Highlight = new PIXI.Graphics();
+      this._Highlight.lineStyle(3, 0xffff00);
+      this._Highlight.drawRect(0, 0, this.getWidth(), this.getHeight());
+      this._HighlightTween = new JMTween(this._Highlight, 500).to({alpha: 0}).yoyo().start();
+      this.addChild(this._Highlight);
+    } else {
+      if (this._HighlightTween) {
+        this._HighlightTween.stop();
+        this._HighlightTween = null;
+      }
+      if (this._Highlight) {
+        this._Highlight.destroy();
+        this._Highlight = null;
+      }
+    }
   }
 }
 

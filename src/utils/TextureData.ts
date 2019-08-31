@@ -35,6 +35,7 @@ export class TextureData {
   public static play: PIXI.Texture;
   public static sound: PIXI.Texture;
   public static noSound: PIXI.Texture;
+  public static bigX: PIXI.Texture;
 
   public static init = (renderer: any) => {
     TextureData.cache = new JMTextureCache(renderer);
@@ -106,6 +107,28 @@ export class TextureData {
     _graphic.moveTo(0, 100);
     _graphic.lineTo(100, 0);
     TextureData.noSound = TextureData.cache.addTextureFromGraphic('noSound', _graphic);
+
+    _graphic.clear();
+    _graphic.beginFill(0xff0000);
+    // _graphic.drawRect(40, 0, 20, 100);
+    _graphic.moveTo(5, 0);
+    _graphic.lineTo(50, 45);
+    _graphic.lineTo(95, 0);
+    _graphic.lineTo(100, 5);
+    _graphic.lineTo(55, 50);
+    _graphic.lineTo(100, 95);
+    _graphic.lineTo(95, 100);
+    _graphic.lineTo(50, 55);
+    _graphic.lineTo(5, 100);
+    _graphic.lineTo(0, 95);
+    _graphic.lineTo(45, 50);
+    _graphic.lineTo(0, 5);
+    _graphic.lineTo(5, 0);
+    // _graphic.drawRect(0, 40, 100, 20);
+    // _graphic.rotation = Math.PI / 4;
+    TextureData.bigX = TextureData.cache.addTextureFromGraphic('bigX', _graphic);
+    _graphic.rotation = 0;
+
   }
 
   public static getHealthSprite(tier: number): PIXI.Sprite {

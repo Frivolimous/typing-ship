@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
 import { BaseUI } from '../JMGE/UI/BaseUI';
@@ -7,6 +8,9 @@ import { SaveData } from '../utils/SaveData';
 import { LevelButton } from '../ui/LevelButton';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { SoundData } from '../utils/SoundData';
+import { TypingTestUI } from './TypingTestUI';
+import { StringData } from '../data/StringData';
+import { Colors } from '../data/Colors';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -20,12 +24,20 @@ export class LevelSelectUI extends BaseUI {
   public muter: MuterOverlay;
 
   public levelButtons: LevelButton[] = [];
+  private typingTestButton: JMBUI.Button;
+  private wpmText: PIXI.Text;
+  private recommendedSuper: PIXI.Text;
+  private recommended: JMBUI.BasicElement;
 
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
 
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
     this.addChild(_button);
+
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Typing Test', output: this.navTypingTest });
+    this.addChild(_button);
+    this.typingTestButton = _button;
 
     for (let i = 0; i < 12; i++) {
       let button: LevelButton = new LevelButton(i, () => this.changeLevelAndStartGame(i, button));
@@ -50,8 +62,36 @@ export class LevelSelectUI extends BaseUI {
 
   public resetLevelStuff = () => {
     let extrinsics = SaveData.getExtrinsic();
-
+    let wpm = extrinsics.data.wpm;
+    let recommended = extrinsics.data.recommended;
     this.levelButtons.forEach((button, i) => button.updateFromData(extrinsics.data.levels[i]));
+
+    if (wpm) {
+      this.typingTestButton.highlight(false);
+    } else {
+      this.typingTestButton.highlight(true);
+    }
+
+    if (this.recommended) {
+      this.recommended.destroy();
+    }
+    console.log(recommended);
+    if (recommended) {
+      this.recommended = new JMBUI.BasicElement({label: StringData.DIFFICULTY[recommended], bgColor: Colors.DIFFICULTY[recommended], width: 100, height: 30, y: this.typingTestButton.y, x: this.typingTestButton.x + this.typingTestButton.getWidth() + 10});
+      this.addChild(this.recommended);
+      if (!this.wpmText) {
+        this.wpmText = new PIXI.Text('');
+        this.wpmText.position.set(this.typingTestButton.x + this.typingTestButton.getWidth() + 10, this.typingTestButton.y);
+        this.addChild(this.wpmText);
+      }
+      this.wpmText.text = 'WPM:' + String(Math.round(wpm));
+      this.recommended.x = this.wpmText.x + this.wpmText.width + 5;
+      if (!this.recommendedSuper) {
+        this.recommendedSuper = new PIXI.Text('Recommended:', {fontSize: 14});
+        this.addChild(this.recommendedSuper);
+      }
+      this.recommendedSuper.position.set(this.recommended.x + (this.recommended.getWidth() - this.recommendedSuper.width) / 2, this.recommended.y - this.recommendedSuper.height - 3);
+    }
   }
 
   public changeLevelAndStartGame = (level: number, button: LevelButton) => {
@@ -89,5 +129,9 @@ export class LevelSelectUI extends BaseUI {
     this.resetLevelStuff();
     this.muter.reset();
     SoundData.playMusic(0);
+  }
+
+  public navTypingTest = () => {
+    this.navForward(new TypingTestUI());
   }
 }

@@ -29,11 +29,12 @@ export const StringData = {
   LOW_HEALTH: 'Low Health!',
 
   // diff
-  EASY: 'EASY',
-  NORMAL: 'NORMAL',
-  HARD: 'HARD',
-  EXTREME: 'EXTREME',
-  INSANE: 'INSANE',
+  DIFFICULTY: ['FREEZE', 'EASY', 'NORMAL', 'HARD', 'EXTREME', 'INSANE'],
+  // EASY: 'EASY',
+  // NORMAL: 'NORMAL',
+  // HARD: 'HARD',
+  // EXTREME: 'EXTREME',
+  // INSANE: 'INSANE',
 
   // game over screen
   MENU: 'MENU',

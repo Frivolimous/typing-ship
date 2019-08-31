@@ -10,11 +10,13 @@ import { HighScoreUI } from './HighScoreUI';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { JMTween, JMEasing } from '../JMGE/JMTween';
 import { SoundData } from '../utils/SoundData';
+import { SaveData } from '../utils/SaveData';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
 export class MenuUI extends BaseUI {
   public muter: MuterOverlay;
+  private typingTestButton: JMBUI.Button;
 
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } });
@@ -23,6 +25,7 @@ export class MenuUI extends BaseUI {
     this.addChild(_button);
     _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: this.navTypingTest });
     this.addChild(_button);
+    this.typingTestButton = _button;
     _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
     this.addChild(_button);
     _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: this.navBadges });
@@ -36,6 +39,20 @@ export class MenuUI extends BaseUI {
     this.addChild(this.muter);
 
     window.addEventListener('keydown', this.tweenTestPre);
+  }
+
+  public navIn = () => {
+    this.muter.reset();
+    SoundData.playMusic(0);
+
+    let extrinsic = SaveData.getExtrinsic();
+    let wpm = extrinsic.data.wpm;
+
+    if (wpm) {
+      this.typingTestButton.highlight(true);
+    } else {
+      this.typingTestButton.highlight(true);
+    }
   }
 
   public nullFunc = () => { };
@@ -62,6 +79,8 @@ export class MenuUI extends BaseUI {
 
   public tweenTestPre = (e: any) => {
     switch (e.key) {
+      case '9': this.typingTestButton.highlight(true); break;
+      case '0': this.typingTestButton.highlight(false); break;
       case '1': this.tweenTest(JMEasing.Linear.None); break;
       case '2': this.tweenTest(JMEasing.Quadratic.In); break;
       case '3': this.tweenTest(JMEasing.Quadratic.Out); break;
@@ -105,10 +124,5 @@ export class MenuUI extends BaseUI {
     this.addChild(ball);
     let t1 = new JMTween(ball, 1000).to({x: 300}).start();
     t1.chain(ball, 1000).to({x: 500}).chain(ball, 1000).to({y: 300}).chain(ball, 1000).to({x: 100}).chain(ball, 1000).to({y: 100}).chainTween(t1);
-  }
-
-  public navIn = () => {
-    this.muter.reset();
-    SoundData.playMusic(0);
   }
 }

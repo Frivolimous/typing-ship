@@ -22,9 +22,8 @@ TO-DO:
 
 #Menu UI
 - Badges - INIT
-- Typing Test - INIT
-- Tooltip (MouseOver and Tap)
-
+- Tooltip - INIT (Mouseover, Tap, Size / Format, Implement)
+ 
 - RESPONSIVE
 
 #Systems
@@ -32,13 +31,10 @@ TO-DO:
 - Tutorials - BASICS
 - Sound FX - IMPLEMENT
 - Online Saves
-- Typing Test
 
 - Mobile Keyboard?
 
 #Save System
-- Save Stuff
-- Load Stuff
 - Achievements
 - Tutorial Progress
 
@@ -55,6 +51,7 @@ TO-DO:
 - Loss UI
 - Credits UI
 - Achievement Popup
+- Typing Test UI
 
 #Stack
 - Cordova

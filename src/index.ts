@@ -4,6 +4,7 @@ import { TextureData } from './utils/TextureData';
 import { MenuUI } from './screens/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
+import { TooltipReader } from './JMGE/TooltipReader';
 // import { ScoreTracker } from './utils/ScoreTracker';
 
 new class Facade {
@@ -13,6 +14,7 @@ new class Facade {
   public stageBorders: JMBL.Rect;
   public currentModule: any;
 
+  private tooltipReader: TooltipReader;
   private _Resolution = CONFIG.INIT.RESOLUTION;
 
   // windowToLocal=(e:any):PIXI.Point=>{
@@ -71,6 +73,7 @@ new class Facade {
     // 	this.stageBorders.top=this.app.view.offsetTop;
     // });
 
+    this.tooltipReader = new TooltipReader(this.app.stage, this.stageBorders);
     JMBL.init(this.app);
     TextureData.init(this.app.renderer);
     // new ScoreTracker();

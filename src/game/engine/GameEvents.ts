@@ -19,6 +19,7 @@ export const GameEvents = {
   NOTIFY_BOSS_DAMAGED: new JMEventListener<IHealthEvent>(),
   NOTIFY_COMMANDS_COMPLETE: new JMEventListener<IObjectEvent>(),
   NOTIFY_ENEMY_DESTROYED: new JMEventListener<IObjectEvent>(),
+  NOTIFY_TEST_COMPLETE: new JMEventListener<ITestEvent>(),
   // NOTIFY_ACHIEVEMENT: new JMEventListener<{index: number}>(),
 
   clearAll : () => {
@@ -38,6 +39,7 @@ export const GameEvents = {
     GameEvents.NOTIFY_BOSS_DAMAGED.clear();
     GameEvents.NOTIFY_COMMANDS_COMPLETE.clear();
     GameEvents.NOTIFY_ENEMY_DESTROYED.clear();
+    // GameEvents.NOTIFY_TEST_COMPLETE.clear();
   },
 };
 
@@ -83,4 +85,8 @@ export interface IDeleteEvent {
 
 export interface ILetterEvent {
   letter: string;
+}
+
+export interface ITestEvent {
+  wpm: number;
 }
