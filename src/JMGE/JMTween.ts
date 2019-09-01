@@ -207,6 +207,15 @@ export class JMTween<T = any> {
     return this;
   }
 
+  public colorFrom = (props: Partial<T>, eased = true) => {
+    for (let key of Object.keys(props)) {
+      // @ts-ignore
+      this.properties.push({ key, eased, from: props[key], isColor: true});
+    }
+
+    return this;
+  }
+
   public easing = (func: (percent: number) => number) => {
     this._Easing = func;
 

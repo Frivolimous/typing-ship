@@ -9,13 +9,10 @@ TO-DO:
 - Screen Size check / zoom
 
 - Check all bosses to make sure working
-- Check all enemies to make sure working
 - Secret Commands
 
 - Multiple Missiles (player)
-- Word Positioning (BR not CENTER)
-
-- Stealth Effect
+- Turrets
 
 #Game UI
 - RESPONSIVE

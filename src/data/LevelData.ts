@@ -33,6 +33,17 @@ export function getLevel(level: number, wpm: number = 60): ILevelEvent[] {
   let pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
 
   switch (level) {
+    case -2:
+      pack.missile('sn', 0.01, 2, 0, 2, 8, 2, 0);
+      pack.missile('mn', 0, 6, 0, 6, 8, 6, 0);
+      pack.missile('lb', 0, 8, 0, 8, 8, 8, 0);
+      pack.laser('sn', 0.02, 2, 0);
+      pack.laser('mn', 0, 5, 0);
+      pack.laser('lb', 0, 10, 0);
+      pack.suicide('mn', 0.02, 0, 3, 3, 3);
+      pack.suicide('sn', 0, 8.5, 0, 8.5, 6);
+      pack.stealth(0.01, 6, 4, 6, 0);
+      break;
     case -1:
       pack.boss(0.01, 0);
       break;

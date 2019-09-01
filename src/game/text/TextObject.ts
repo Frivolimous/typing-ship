@@ -31,6 +31,12 @@ export class TextObject extends PIXI.Container {
     this.word = WordList.shift(wordSize);
     this.frontText.text = this.word;
     this.frontText.visible = true;
+    this.centerWord();
+  }
+
+  public centerWord() {
+    this.frontText.x = -this.frontText.width / 2;
+    this.frontText.y = -this.frontText.height / 2;
   }
 
   public hasWord(): boolean {
@@ -55,9 +61,9 @@ export class TextObject extends PIXI.Container {
 
   public update() {
     if (this.following) {
-      let point = this.parent.toLocal(this.following.wordOffset, this.following);
-      this.x = point.x;
-      this.y = point.y;
+      let point = this.parent.toLocal(new PIXI.Point(0, 0), this.following);
+      this.x = point.x + this.following.wordOffset.x;
+      this.y = point.y + this.following.wordOffset.y;
       this.setPriority(this.following.priority);
     }
   }

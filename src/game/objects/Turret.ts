@@ -11,6 +11,8 @@ export class Turret extends GameSprite {
     this.addWord(3, 0);
     this.killBy = ActionType.LASER;
 
+    this.wordOffset.set(-10, 5);
+
     this.makeDisplay(ImageRepo.turret, 0.1);
   }
 

@@ -5,6 +5,7 @@ import { ActionType } from './Types';
 export interface IEnemyConfig {
   textureUrl: string;
   textureScale: number;
+  wordOffset: PIXI.Point;
   wordSize: number;
   value: number;
   moveSpeed: number;
@@ -20,6 +21,7 @@ export interface IEnemyConfig {
 export interface IMissileConfig {
   textureUrl: string;
   textureScale: number;
+  wordOffset: PIXI.Point;
   wordSize: number;
   value: number;
   moveSpeed: number;
@@ -33,6 +35,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   sm: {
     textureUrl: ImageRepo.sm,
     textureScale: 0.7,
+    wordOffset: new PIXI.Point(10, 20),
     shield: new PIXI.Rectangle(0, 0, 45, 45),
     health: 1,
     wordSize: 4,
@@ -45,6 +48,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   sl: {
     textureUrl: ImageRepo.sl,
     textureScale: 0.5,
+    wordOffset: new PIXI.Point(10, 15),
     shield: new PIXI.Rectangle(0, 5, 55, 55),
     health: 1,
     wordSize: 5,
@@ -57,6 +61,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   ss: {
     textureUrl: ImageRepo.ss,
     textureScale: 0.1,
+    wordOffset: new PIXI.Point(10, 10),
     shield: new PIXI.Rectangle(0, 0, 30, 30),
     health: 1,
     wordSize: 3,
@@ -69,6 +74,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   mm: {
     textureUrl: ImageRepo.mm,
     textureScale: 0.8,
+    wordOffset: new PIXI.Point(15, 30),
     shield: new PIXI.Rectangle(2, 0, 60, 60),
     health: 2,
     wordSize: 6,
@@ -81,6 +87,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   ml: {
     textureUrl: ImageRepo.ml,
     textureScale: 0.6,
+    wordOffset: new PIXI.Point(15, 20),
     shield: new PIXI.Rectangle(0, 2, 70, 70),
     health: 2,
     wordSize: 7,
@@ -93,6 +100,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   ms: {
     textureUrl: ImageRepo.ms,
     textureScale: 0.2,
+    wordOffset: new PIXI.Point(10, 10),
     shield: new PIXI.Rectangle(0, 0, 35, 35),
     health: 1,
     wordSize: 3,
@@ -105,6 +113,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   lm: {
     textureUrl: ImageRepo.lm,
     textureScale: 1,
+    wordOffset: new PIXI.Point(20, 40),
     shield: new PIXI.Rectangle(1, 7, 82, 116),
     health: 4,
     wordSize: 8,
@@ -116,7 +125,8 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   },
   ll: {
     textureUrl: ImageRepo.ll,
-    textureScale: 0.7,
+    textureScale: 1,
+    wordOffset: new PIXI.Point(20, 40),
     shield: new PIXI.Rectangle(0, 8, 65, 110),
     health: 4,
     wordSize: 9,
@@ -129,6 +139,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   xm: {
     textureUrl: ImageRepo.ls,
     textureScale: 0.5,
+    wordOffset: new PIXI.Point(20, 20),
     shield: new PIXI.Rectangle(0, 0, 35, 50),
     health: 1,
     wordSize: 7,
@@ -141,6 +152,7 @@ export const EnemyData: { [key: string]: IEnemyConfig } = {
   nl: {
     textureUrl: null,
     textureScale: 1,
+    wordOffset: new PIXI.Point(0, 0),
     shield: new PIXI.Rectangle(0, 0, 35, 50),
     health: 1,
     wordSize: 7,
@@ -157,6 +169,7 @@ export const MissileData: { player: IMissileConfig, enemy: IMissileConfig } = {
   player: {
     textureUrl: ImageRepo.playerMissile,
     textureScale: 0.1,
+    wordOffset: new PIXI.Point(0, 0),
     wordSize: -1,
     value: 0,
     moveSpeed: 7,
@@ -168,6 +181,7 @@ export const MissileData: { player: IMissileConfig, enemy: IMissileConfig } = {
   enemy: {
     textureUrl: ImageRepo.enemyMissile,
     textureScale: 0.1,
+    wordOffset: new PIXI.Point(10, 10),
     wordSize: 3,
     value: 1,
     moveSpeed: 2,

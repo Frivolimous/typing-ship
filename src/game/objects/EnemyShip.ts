@@ -7,6 +7,7 @@ import { Turret } from './Turret';
 import * as JMBL from '../../JMGE/JMBL';
 import { CONFIG } from '../../Config';
 import { GameEvents } from '../engine/GameEvents';
+import { JMTween, JMEasing } from '../../JMGE/JMTween';
 
 interface IEnemyCallbacks {
   onFire?: (enemy: EnemyShip, fires: ActionType) => void;
@@ -37,8 +38,14 @@ export class EnemyShip extends GameSprite {
       default: throw (new Error(config.type.substring(0, 2) + ' is not a recognized ship code.'));
     }
 
+    this.wordOffset = enemyConfig.wordOffset;
     if (enemyConfig.textureUrl) {
       this.makeDisplay(enemyConfig.textureUrl, enemyConfig.textureScale);
+    }
+
+    if (config.type.substring(0, 2) === 'xm') {
+      new JMTween(this.display, 500).from({alpha: 0}).easing(JMEasing.Quadratic.Out).start();
+      new JMTween(this.display.scale, 300).from({x: 5, y: 5}).start();
     }
 
     this.wordSize = enemyConfig.wordSize;

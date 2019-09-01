@@ -55,6 +55,9 @@ export class LevelSelectUI extends BaseUI {
       }
     });
 
+    _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 150, label: 'TEST LEVEL', output: () => (this.currentLevel = -2, this.startGame()) });
+    this.addChild(_button);
+
     this.muter = new MuterOverlay();
     this.muter.x = this.getWidth() - this.muter.getWidth();
     this.muter.y = this.getHeight() - this.muter.getHeight();

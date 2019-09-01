@@ -25,6 +25,7 @@ export class Missile extends GameSprite {
     if (missileConfig.textureUrl) {
       this.makeDisplay(missileConfig.textureUrl, missileConfig.textureScale);
     }
+    this.wordOffset = missileConfig.wordOffset;
 
     this.wordSize = missileConfig.wordSize;
     this.value = missileConfig.value;

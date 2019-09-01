@@ -6,6 +6,8 @@ import { MuterOverlay } from '../ui/MuterOverlay';
 import { ILevelInstance } from '../data/LevelInstance';
 import { SaveData } from '../utils/SaveData';
 import { ImageRepo, TextureData } from '../utils/TextureData';
+import { TooltipReader } from '../JMGE/TooltipReader';
+import { StringData } from '../data/StringData';
 
 const LABEL = 'WinUI';
 export class WinUI extends BaseUI {
@@ -44,7 +46,7 @@ export class WinUI extends BaseUI {
     let killMult = 1 + (instance.enemiesKilled / instance.totalEnemies);
 
     let healthBadge = instance.healthLost ? instance.playerHealth === 5 ? 2 : instance.playerHealth > 2 ? 1 : 0 : 3;
-    let killBadge = Math.max(Math.floor(instance.enemiesKilled / instance.totalEnemies), 3);
+    let killBadge = Math.min(Math.floor(instance.enemiesKilled / instance.totalEnemies), 3);
 
     newScore *= diffMult;
     s += 'Difficulty x' + diffMult.toFixed(2) + ' : ' + Math.floor(newScore) + '\n';
@@ -79,11 +81,13 @@ export class WinUI extends BaseUI {
 
     if (healthBadge) {
       let healthBadgeView = TextureData.getHealthSprite(healthBadge);
+      TooltipReader.addTooltip(healthBadgeView, {title: StringData.HEALTH_AWARD, description: StringData.HEALTH_AWARD_DESC});
       healthBadgeView.position.set(50, CONFIG.INIT.SCREEN_HEIGHT - 150);
       this.addChild(healthBadgeView);
     }
     if (killBadge) {
       let killBadgeView = TextureData.getKillSprite(killBadge);
+      TooltipReader.addTooltip(killBadgeView, {title: StringData.KILLS_AWARD, description: StringData.KILLS_AWARD_DESC});
       killBadgeView.position.set(200, CONFIG.INIT.SCREEN_HEIGHT - 150);
       this.addChild(killBadgeView);
     }
