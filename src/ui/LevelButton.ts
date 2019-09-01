@@ -3,7 +3,8 @@ import * as JMBUI from '../JMGE/JMBUI';
 import { Colors } from '../data/Colors';
 import { ILevelScores } from '../data/PlayerData';
 import { TextureData } from '../utils/TextureData';
-import { ITooltipable } from '../JMGE/TooltipReader';
+import { TooltipReader } from '../JMGE/TooltipReader';
+import { StringData } from '../data/StringData';
 
 export class LevelButton extends PIXI.Container {
   public data: ILevelScores;
@@ -20,9 +21,8 @@ export class LevelButton extends PIXI.Container {
 
     this.killBadge = new PIXI.Sprite(TextureData.kills);
     this.healthBadge = new PIXI.Sprite(TextureData.health);
-
-    (this.killBadge as any).tooltip = {title: 'Kills', description: 'Get this badge based on kills on this level.'};
-    this.killBadge.interactive = true;
+    TooltipReader.addTooltip(this.killBadge, {title: StringData.KILLS_AWARD, description: StringData.KILLS_AWARD_DESC});
+    TooltipReader.addTooltip(this.healthBadge, {title: StringData.HEALTH_AWARD, description: StringData.HEALTH_AWARD_DESC});
 
     this.killBadge.position.set(55, 5);
     this.healthBadge.position.set(85, 5);

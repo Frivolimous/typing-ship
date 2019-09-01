@@ -11,6 +11,7 @@ import { SoundData } from '../utils/SoundData';
 import { TypingTestUI } from './TypingTestUI';
 import { StringData } from '../data/StringData';
 import { Colors } from '../data/Colors';
+import { TooltipReader } from '../JMGE/TooltipReader';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -68,20 +69,24 @@ export class LevelSelectUI extends BaseUI {
 
     if (wpm) {
       this.typingTestButton.highlight(false);
+      TooltipReader.addTooltip(this.typingTestButton, null);
     } else {
       this.typingTestButton.highlight(true);
+      TooltipReader.addTooltip(this.typingTestButton, {title: StringData.TYPING_TEST_TITLE, description: StringData.TYPING_TEST_DESC});
     }
 
     if (this.recommended) {
       this.recommended.destroy();
     }
-    console.log(recommended);
+
     if (recommended) {
       this.recommended = new JMBUI.BasicElement({label: StringData.DIFFICULTY[recommended], bgColor: Colors.DIFFICULTY[recommended], width: 100, height: 30, y: this.typingTestButton.y, x: this.typingTestButton.x + this.typingTestButton.getWidth() + 10});
+      TooltipReader.addTooltip(this.recommended, {title: StringData.RECOMMENDED_TITLE, description: StringData.RECOMMENDED_DESC});
       this.addChild(this.recommended);
       if (!this.wpmText) {
         this.wpmText = new PIXI.Text('');
         this.wpmText.position.set(this.typingTestButton.x + this.typingTestButton.getWidth() + 10, this.typingTestButton.y);
+        TooltipReader.addTooltip(this.wpmText, {title: StringData.RECOMMENDED_TITLE, description: StringData.RECOMMENDED_DESC});
         this.addChild(this.wpmText);
       }
       this.wpmText.text = 'WPM:' + String(Math.round(wpm));

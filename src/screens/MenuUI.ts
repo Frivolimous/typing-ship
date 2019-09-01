@@ -11,6 +11,8 @@ import { MuterOverlay } from '../ui/MuterOverlay';
 import { JMTween, JMEasing } from '../JMGE/JMTween';
 import { SoundData } from '../utils/SoundData';
 import { SaveData } from '../utils/SaveData';
+import { StringData } from '../data/StringData';
+import { TooltipReader } from '../JMGE/TooltipReader';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
@@ -49,9 +51,11 @@ export class MenuUI extends BaseUI {
     let wpm = extrinsic.data.wpm;
 
     if (wpm) {
-      this.typingTestButton.highlight(true);
+      this.typingTestButton.highlight(false);
+      TooltipReader.addTooltip(this.typingTestButton, null);
     } else {
       this.typingTestButton.highlight(true);
+      TooltipReader.addTooltip(this.typingTestButton, {title: StringData.TYPING_TEST_TITLE, description: StringData.TYPING_TEST_DESC});
     }
   }
 

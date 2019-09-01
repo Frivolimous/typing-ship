@@ -1,16 +1,17 @@
 import * as PIXI from 'pixi.js';
 import { TooltipPopup } from './UI/TooltipPopup';
 
-export interface ITooltipable {
-  tooltip: ITooltip;
-}
-
 export interface ITooltip {
   title: string;
   description: string;
 }
 
 export class TooltipReader {
+  public static addTooltip(object: any, tooltip: ITooltip) {
+    object.interactive = true;
+    object.tooltip = tooltip;
+  }
+
   private currentTarget: any;
 
   private currentTooltip: TooltipPopup;

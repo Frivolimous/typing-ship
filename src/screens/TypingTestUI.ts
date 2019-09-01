@@ -22,7 +22,7 @@ export class TypingTestUI extends BaseUI {
   private startedAt: number;
 
   constructor() {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, labelStyle: { fontSize: 30, fill: 0x3333ff } });
 
     let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
     this.addChild(_button);
@@ -41,6 +41,10 @@ export class TypingTestUI extends BaseUI {
     this.bottomText.position.set(50, this.topText.y + this.topText.height + 50);
 
     this.addChild(this.topText, this.topTextOver, this.bottomText);
+    this.graphics.beginFill(0x0033dd);
+    this.graphics.lineStyle(3, 0x001155);
+    this.graphics.drawRect(45, 45, this.topText.width + 10, this.topText.height + 10);
+    this.graphics.drawRect(45, this.bottomText.y - 5, this.topText.width + 10, this.topText.height + 10);
     window.addEventListener('keydown', this.keyDown);
   }
 

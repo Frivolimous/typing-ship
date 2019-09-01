@@ -11,6 +11,15 @@ export const StringData = {
   GOLD: 'GOLD',
   DONE: 'DONE',
 
+  HEALTH_AWARD: 'Health Award',
+  KILLS_AWARD: 'Kill Award',
+  HEALTH_AWARD_DESC: 'Earn Gold / Silver / Bronze based on health remaining at the end of a map.',
+  KILLS_AWARD_DESC: 'Earn Gold / Silver / Bronze based on the number of ships you destroyed.',
+  RECOMMENDED_TITLE: 'Recommended Difficulty',
+  RECOMMENDED_DESC: 'Based on your performance, this is the difficulty we recommend.',
+  TYPING_TEST_TITLE: 'Typing Test',
+  TYPING_TEST_DESC: 'We recommend you start with the Typing Test to determine which difficulty best suits you.',
+
   // score menu
   LEVEL_SCORE: 'LEVEL SCORE: ',
   DIFF_BONUS: 'DIFFICULTY BONUS x',
@@ -30,11 +39,6 @@ export const StringData = {
 
   // diff
   DIFFICULTY: ['FREEZE', 'EASY', 'NORMAL', 'HARD', 'EXTREME', 'INSANE'],
-  // EASY: 'EASY',
-  // NORMAL: 'NORMAL',
-  // HARD: 'HARD',
-  // EXTREME: 'EXTREME',
-  // INSANE: 'INSANE',
 
   // game over screen
   MENU: 'MENU',

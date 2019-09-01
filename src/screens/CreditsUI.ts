@@ -7,7 +7,7 @@ import { MuterOverlay } from '../ui/MuterOverlay';
 const LABEL = 'CreditsUI';
 export class CreditsUI extends BaseUI {
   constructor() {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, labelStyle: { fontSize: 30, fill: 0x3333ff } });
 
     let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
     this.addChild(_button);

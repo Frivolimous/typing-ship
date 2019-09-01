@@ -22,7 +22,6 @@ TO-DO:
 
 #Menu UI
 - Badges - INIT
-- Tooltip - INIT (Mouseover, Tap, Size / Format, Implement)
  
 - RESPONSIVE
 
@@ -32,7 +31,7 @@ TO-DO:
 - Sound FX - IMPLEMENT
 - Online Saves
 
-- Mobile Keyboard?
+
 
 #Save System
 - Achievements
@@ -52,6 +51,11 @@ TO-DO:
 - Credits UI
 - Achievement Popup
 - Typing Test UI
+
+
+#Mobile
+- Tooltip - Tap
+- Mobile Keyboard
 
 #Stack
 - Cordova
