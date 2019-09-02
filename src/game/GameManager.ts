@@ -60,14 +60,14 @@ export class GameManager {
       lettersTyped: 0,
       lettersDeleted: 0,
 
-      playerHealth: 5,
+      playerHealth: CONFIG.GAME.playerHealth,
       healthLost: false,
     };
     console.log('total enemies', this.levelInstance.totalEnemies);
 
     this.player.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
     this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
-    this.player.setHealth(5);
+    this.player.setHealth(CONFIG.GAME.playerHealth);
     this.setScore(0);
 
     this.display.addChild(this.starfield, this.container);

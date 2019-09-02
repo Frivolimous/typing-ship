@@ -14,6 +14,12 @@ export class BaseUI extends JMBUI.BasicElement {
 
   public navIn = () => { };
 
+  public navOut = () => { };
+
+  public dispose = () => {
+    this.destroy();
+  }
+
   public navBack = (fadeTiming?: IFadeTiming) => {
     if (!this.previousUI) {
       return;
@@ -40,19 +46,18 @@ export class BaseUI extends JMBUI.BasicElement {
     }
   }
 
-  protected dispose = () => {
-    this.destroy();
-  }
-
   private finishNav = (nextUI: BaseUI, fadeTiming: IFadeTiming, andDispose?: boolean) => {
     fadeTiming = _.defaults(fadeTiming || {}, dFadeTiming);
 
     let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).onFadeComplete(() => {
+      this.navOut();
       this.parent.addChild(nextUI);
       this.parent.removeChild(this);
       nextUI.navIn();
       let screen2 = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).fadeOut(fadeTiming.fadeOut);
       nextUI.addChild(screen2);
+
+      
       if (andDispose) {
         this.dispose();
       }

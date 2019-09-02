@@ -2,6 +2,7 @@ import { TextObject } from '../text/TextObject';
 import * as JMBL from '../../JMGE/JMBL';
 import { PlayerShip } from '../objects/PlayerShip';
 import { GameEvents, IHealthEvent, IWordEvent } from './GameEvents';
+import { CONFIG } from '../../Config';
 
 export class WordInput {
   public static OVERFLOW_DURATION: number = 100;
@@ -111,13 +112,12 @@ export class WordInput {
   }
 
   private checkHealth = (e: IHealthEvent) => {
-    console.log('wicheck');
-    if (e.newHealth < PlayerShip.MAX_HEALTH) {
+    if (e.newHealth < CONFIG.GAME.playerHealth) {
       if (!this.healWord.hasWord()) {
         this.healWord.newWord(8);
       }
       this.healWord.setPriority(Math.min(3, 4 - e.newHealth));
-    } else if (e.newHealth >= PlayerShip.MAX_HEALTH) {
+    } else if (e.newHealth >= CONFIG.GAME.playerHealth) {
       if (this.healWord) {
         this.healWord.dispose();
       }

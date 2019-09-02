@@ -14,6 +14,8 @@ TO-DO:
 - Multiple Missiles (player)
 - Turrets
 
+- Game Disposal
+
 #Game UI
 - RESPONSIVE
 
@@ -27,8 +29,6 @@ TO-DO:
 - Tutorials - BASICS
 - Sound FX - IMPLEMENT
 - Online Saves
-
-
 
 #Save System
 - Achievements

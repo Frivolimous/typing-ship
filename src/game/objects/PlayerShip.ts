@@ -1,11 +1,10 @@
 import { GameSprite } from './GameSprite';
-import * as JMBL from '../../JMGE/JMBL';
 import { Charge } from '../../JMGE/effects/Charge';
 import { ImageRepo } from '../../utils/TextureData';
-import { IHealthEvent, IHealEvent, GameEvents } from '../engine/GameEvents';
+import { IHealEvent, GameEvents } from '../engine/GameEvents';
+import { CONFIG } from '../../Config';
 
 export class PlayerShip extends GameSprite {
-  public static MAX_HEALTH = 5;
   public injured: boolean;
   public shieldSize: number;
   public animA: string[] = [];
@@ -39,7 +38,7 @@ export class PlayerShip extends GameSprite {
 
   public setHealth = (i: number) => {
     let oldHealth = this.health;
-    this.health = Math.max(Math.min(i, 5), 0);
+    this.health = Math.max(Math.min(i, CONFIG.GAME.playerHealth), 0);
     GameEvents.NOTIFY_SET_HEALTH.publish({oldHealth, newHealth: this.health});
   }
 

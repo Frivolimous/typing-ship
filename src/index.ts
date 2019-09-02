@@ -87,22 +87,8 @@ new class Facade {
     SaveData.init();
 
     this.currentModule = new MenuUI();
-    this.currentModule.navOut = this.updateCurrentModule;
     this.app.stage.addChild(this.currentModule);
     this.currentModule.navIn();
-  }
-
-  public updateCurrentModule = (o: any) => {
-    SaveData.saveExtrinsic(() => {
-      if (this.currentModule.dispose) {
-        this.currentModule.dispose();
-      } else if (this.currentModule.destroy) {
-        this.currentModule.destroy();
-      }
-      this.currentModule = o;
-      o.navOut = this.updateCurrentModule;
-      this.app.stage.addChild(o);
-    });
   }
 
   public saveCallback = (finish: () => void) => {

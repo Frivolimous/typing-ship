@@ -31,7 +31,7 @@ export class WinUI extends BaseUI {
 
   private calcNewScoreAndDisplay(instance: ILevelInstance) {
     let extrinsic = SaveData.getExtrinsic();
-    let currentLevel = extrinsic.data.levels[instance.level];
+    let currentLevel = extrinsic.data.levels[instance.level] || {};
 
     if (!extrinsic.data.levels[instance.level + 1]) {
       extrinsic.data.levels[instance.level + 1] = {score: 0};

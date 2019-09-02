@@ -14,6 +14,7 @@ import { ILevelInstance } from '../data/LevelInstance';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
+import { PlayerShip } from '../game/objects/PlayerShip';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -87,11 +88,13 @@ export class GameUI extends BaseUI {
     this.navForward(new LossUI(instance), this.previousUI, this.fadeTiming);
   }
 
-  public dispose = () => {
+  public navOut = () => {
     this.manager.running = false;
     this.manager.dispose();
     GameEvents.clearAll();
+  }
 
+  public dispose = () => {
     this.destroy();
   }
 
@@ -113,7 +116,7 @@ export class GameUI extends BaseUI {
   }
 
   public setPlayerHealth = (e: IHealthEvent) => {
-    this.healthBar.setValue(e.newHealth, 5);
+    this.healthBar.setValue(e.newHealth, CONFIG.GAME.playerHealth);
   }
 
   public addHealWord = (healWord: TextObject) => {

@@ -13,7 +13,8 @@ export const CONFIG = {
   },
   GAME: {
     skillPerLevel: 0.2,
-    godmode: true,
+    godmode: false,
+    playerHealth: 10,
   },
   toPS: (n: number): number => {
     return Math.floor(CONFIG.INIT.FPS * 10 / n) / 10;
