@@ -1,3 +1,7 @@
+/** 
+ Starting the conversion from ??? to SECONDS
+**/
+
 export enum EventType {
   LOOP,
   WAIT,
@@ -30,144 +34,146 @@ export interface ICommand {
 }
 
 export function getLevel(level: number, gameSpeed: number = 1): ILevelEvent[] {
+  // let pack = new MethodPack(Math.max(1 - wpm / 300, 0.5));
   let pack = new MethodPack(gameSpeed);
 
   switch (level) {
     case -2:
-      pack.missile('sn', 0.01, 2, 0, 2, 8, 2, 0);
-      pack.missile('mn', 0, 6, 0, 6, 8, 6, 0);
-      pack.missile('lb', 0, 8, 0, 8, 8, 8, 0);
-      pack.laser('sn', 0.02, 2, 0);
-      pack.laser('mn', 0, 5, 0);
-      pack.laser('lb', 0, 10, 0);
-      pack.suicide('mn', 0.02, 0, 3, 3, 3);
-      pack.suicide('sn', 0, 8.5, 0, 8.5, 6);
-      pack.stealth(0.01, 6, 4, 6, 0);
+      pack.missile('sn', 1, 2, 0, 2, 8, 2, 0);
+      pack.missile('mn', 5, 6, 0, 6, 8, 6, 0);
+      pack.missile('lb', 5, 8, 0, 8, 8, 8, 0);
+      pack.wait(5);
+      pack.laser('sn', 5, 2, 0);
+      pack.laser('mn', 5, 5, 0);
+      pack.laser('lb', 5, 10, 0);
+      pack.suicide('mn', 5, 0, 3, 3, 3);
+      pack.suicide('sn', 5, 8.5, 0, 8.5, 6);
+      pack.stealth(5, 6, 4, 6, 0);
       break;
     case -1:
       pack.boss(0.01, 0);
       break;
     case 0:
-      pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
+      pack.missile('sn', 4, 5, 0, 5, 6, 4, 12);
       pack.mirror();
 
-      pack.wait(0.15);
+      pack.wait(12);
       pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
-      pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
-      pack.repeat(0.01, 3, 2);
+      pack.missile('sn', 0.8, 12, 6, 5, 6, 0, 6);
+      pack.repeat(0.8, 3, 2);
 
-      pack.wait(0.1);
+      pack.wait(8);
       pack.laser('sn', 0, 6, 0);
 
-      pack.wait(0.1);
+      pack.wait(8);
       pack.missile('sn', 0, 3, 0, 7, 5, 4, 5, 7, 0);
-      pack.repeat(0.01, 5);
+      pack.repeat(1, 5);
       pack.laser('sn', 0, 12, 5);
 
-      pack.wait(0.13);
+      pack.wait(10);
       pack.missile('sn', 0, 2, 0, 2, 4, 12, 9);
-      pack.repeat(0.01, 7, 1, true);
+      pack.repeat(0.8, 7, 1, true);
       pack.laser('sn', 0, 0, 6);
       pack.insert(-4);
       pack.laser('sn', 0, 12, 6);
       pack.insert(-4);
 
-      pack.wait(0.15);
+      pack.wait(12);
       pack.laser('sn', 0, 0, 3);
-      pack.laser('sn', 0.005, 12, 3);
-      pack.laser('sn', 0.005, 0, 6);
-      pack.laser('sn', 0.005, 12, 6);
+      pack.laser('sn', 0.4, 12, 3);
+      pack.laser('sn', 0.4, 0, 6);
+      pack.laser('sn', 0.4, 12, 6);
 
-      pack.wait(0.13);
+      pack.wait(10);
       pack.missile('sn', 0, 3, 0, 4, 4, 7, 0);
-      pack.missile('sn', 0.01, 12, 5, 7, 6, 0, 5);
-      pack.repeat(0.02, 4, 2);
-      pack.laser('sn', 0.04, 0, 2);
-      pack.laser('sn', 0.01, 12, 2);
-      pack.laser('sn', 0.02, 0, 4);
-      pack.laser('sn', 0.01, 12, 4);
-      pack.missile('sn', 0.07, 9, 0, 8, 4, 5, 0);
-      pack.missile('sn', 0.01, 0, 5, 5, 6, 12, 5);
-      pack.repeat(0.02, 4, 2);
+      pack.missile('sn', 0.8, 12, 5, 7, 6, 0, 5);
+      pack.repeat(1.5, 4, 2);
+      pack.laser('sn', 3, 0, 2);
+      pack.laser('sn', 0.5, 12, 2);
+      pack.laser('sn', 1.5, 0, 4);
+      pack.laser('sn', 0.5, 12, 4);
+      pack.missile('sn', 5, 9, 0, 8, 4, 5, 0);
+      pack.missile('sn', 0.8, 0, 5, 5, 6, 12, 5);
+      pack.repeat(1.5, 4, 2);
       break;
 
     case 1:
-      pack.wait(0.1);
+      pack.wait(8.2);
       pack.missile('sn', 0, 4, 0, 4, 7, 0, 12);
       pack.missile('sn', 0, 2, 0, 2, 6, 0, 9);
       pack.repeat(0, 1, 2, true);
 
-      pack.wait(0.12);
+      pack.wait(9.84);
       pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
       pack.offset(0, 0, 1);
-      pack.repeat(0.015, 1, 2);
-      pack.missile('sn', 0.02, 12, 5, 5, 5, 0, 5);
+      pack.repeat(1.23, 1, 2);
+      pack.missile('sn', 1.64, 12, 5, 5, 5, 0, 5);
       pack.offset(0, 0, 1);
-      pack.repeat(0.015, 1, 2);
+      pack.repeat(1.23, 1, 2);
       pack.laser('ss', 0, 6, 0);
 
-      pack.wait(0.14);
+      pack.wait(11.48);
       pack.suicide('mn', 0, 3, 0, 3, 3);
-      pack.repeat(0.008, 3, 1, true);
+      pack.repeat(0.656, 3, 1, true);
 
-      pack.wait(0.1);
+      pack.wait(8.2);
       pack.suicide('mn', 0, 0, 2, 8, 2);
-      pack.mirror(0.005);
+      pack.mirror(0.41);
       pack.suicide('mn', 0.03, 3, 0, 3, 3);
-      pack.mirror(0.001);
-      pack.repeat(0.01, 5, 4);
+      pack.mirror(0.082);
+      pack.repeat(0.82, 5, 4);
 
-      pack.wait(0.15);
+      pack.wait(12.3);
       pack.missile('sn', 0, 0, 3, 7, 4, 12, 7);
-      pack.repeat(0.02, 9, 1, true);
+      pack.repeat(1.64, 9, 1, true);
       pack.laser('ss', 0, 4, 0);
       pack.insert(-6);
       pack.laser('ss', 0, 8, 0);
       pack.insert(-2);
-      pack.suicide('mn', 0.05, 1, 0, 4, 4);
-      pack.repeat(0.01, 3, 1, true);
+      pack.suicide('mn', 4.1, 1, 0, 4, 4);
+      pack.repeat(0.82, 3, 1, true);
 
-      pack.wait(0.12);
+      pack.wait(9.84);
       pack.laser('ss', 0, 0, 3);
-      pack.laser('ss', 0.005, 12, 3);
-      pack.laser('ss', 0.01, 0, 6);
-      pack.laser('ss', 0.005, 12, 6);
+      pack.laser('ss', 0.41, 12, 3);
+      pack.laser('ss', 0.82, 0, 6);
+      pack.laser('ss', 0.41, 12, 6);
 
-      pack.wait(0.18);
+      pack.wait(14.76);
       pack.missile('sn', 0, 2, 0, 2, 6, 0, 7);
       pack.missile('sn', 0, 3, 0, 3, 6, 12, 9);
-      pack.repeat(0.03, 4, 2, true);
-      pack.suicide('mn', 0.04, 0, 3, 4, 5);
-      pack.repeat(0.005, 3, 1, true);
+      pack.repeat(2.46, 4, 2, true);
+      pack.suicide('mn', 3.28, 0, 3, 4, 5);
+      pack.repeat(0.41, 3, 1, true);
 
-      pack.wait(0.13);
+      pack.wait(10.66);
       pack.laser('sn', 0, 0, 3);
-      pack.laser('sn', 0.005, 12, 3);
-      pack.laser('sn', 0.01, 0, 6);
-      pack.laser('sn', 0.005, 12, 6);
-      pack.suicide('mn', 0.025, 2, 12, 3, 4);
-      pack.repeat(0.005, 7, 1, true);
+      pack.laser('sn', 0.41, 12, 3);
+      pack.laser('sn', 0.82, 0, 6);
+      pack.laser('sn', 0.41, 12, 6);
+      pack.suicide('mn', 2.05, 2, 12, 3, 4);
+      pack.repeat(0.41, 7, 1, true);
 
-      pack.wait(0.2);
+      pack.wait(16.4);
       pack.suicide('mn', 0, 0, 7, 3, 6);
       pack.mirror();
-      pack.suicide('mn', 0.01, 0, 2, 6, 3);
+      pack.suicide('mn', 0.82, 0, 2, 6, 3);
       pack.mirror();
-      pack.suicide('mn', 0.01, 0, 4, 4, 3);
+      pack.suicide('mn', 0.82, 0, 4, 4, 3);
       pack.mirror();
-      pack.suicide('mn', 0.01, 5, 0, 5, 1);
+      pack.suicide('mn', 0.82, 5, 0, 5, 1);
       pack.mirror();
 
-      pack.wait(0.12);
+      pack.wait(9.84);
       pack.missile('sn', 0, 3, 0, 6, 7, 12, 8);
-      pack.repeat(0.02, 11, 1, true);
+      pack.repeat(1.64, 11, 1, true);
       pack.laser('ss', 0, 0, 6);
       pack.insert(-7);
       pack.laser('ss', 0, 12, 6);
       pack.insert(-3);
       pack.laser('mn', 0, 6, 0);
-      pack.suicide('mn', 0.03, 0, 2, 6, 3);
-      pack.repeat(0.01, 3, 1, true);
+      pack.suicide('mn', 2.46, 0, 2, 6, 3);
+      pack.repeat(0.82, 3, 1, true);
 
       break;
 
@@ -933,6 +939,7 @@ class MethodPack {
   }
 
   public repeat(distance: number, repeatN: number = 1, repeatC: number = 1, reverse?: boolean) {
+    // pack.repeat(0.82, 3, 2);
     for (let i = 0; i < repeatN * repeatC; i++) {
       if (i % repeatC === 0) {
         if (reverse) {

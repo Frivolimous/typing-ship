@@ -6,7 +6,6 @@ export class EventInterpreter {
 
   public level: number;
   public data: ILevelEvent[];
-  public wpm: number;
   public finalDistance: number;
   public distance: number;
   public boss: BossShip;
@@ -15,27 +14,29 @@ export class EventInterpreter {
 
   }
 
-  public loadLevel(level: number, wpm: number) {
+  public loadLevel(level: number, gameSpeed: number) {
     this.level = level;
-    this.wpm = wpm;
-    this.data = getLevel(level, wpm);
+    this.data = getLevel(level, gameSpeed);
     this.finalDistance = this.data[this.data.length - 1].distance;
     this.distance = 0;
+    // console.log('level', this.data);
+    // console.log('time', this.finalDistance);
   }
 
-  public loadBossLoop(bossType: number) {
-    this.data = getBossLoop(bossType, this.wpm);
+  public loadBossLoop(bossType: number, gameSpeed: number) {
+    this.data = getBossLoop(bossType, gameSpeed);
     this.data.forEach(event => event.distance += this.distance);
   }
 
-  public addDistance(inc: number): number {
-    this.distance += inc * this.DISTANCE_MULT;
+  public addDistance(gameSpeed: number, timeElapsed: number): number {
+    this.distance += gameSpeed * this.DISTANCE_MULT; // ??? based timing
+    // this.distance += timeElapsed * 0.001; // USE THIS for second based timing
     while (this.data.length > 0 && this.distance > this.data[0].distance) {
       let nextEvent = this.data.shift();
 
       switch (nextEvent.type) {
         case EventType.LOOP:
-          let tArray: ILevelEvent[] = getLevel(this.level, this.wpm).splice(nextEvent.jumpIndex);
+          let tArray: ILevelEvent[] = getLevel(this.level, gameSpeed).splice(nextEvent.jumpIndex);
           this.data = this.data.concat(tArray);
           break;
         case EventType.SPAWN:
@@ -51,7 +52,7 @@ export class EventInterpreter {
         this.data = [];
       } else {
         if (this.data.length === 0 && this.boss.commands.length === 0) {
-          this.loadBossLoop(this.boss.bossType);
+          this.loadBossLoop(this.boss.bossType, gameSpeed);
         }
       }
     }

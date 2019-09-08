@@ -44,9 +44,8 @@ export class GameManager {
     this.actionC.missileRate = 0.4;
 
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
-    this.levelEvents.loadLevel(level, 60 * gameSpeed);
+    this.levelEvents.loadLevel(level, gameSpeed);
 
-    console.log(difficulty);
     this.levelInstance = {
       level,
       difficulty,
@@ -63,7 +62,8 @@ export class GameManager {
       playerHealth: CONFIG.GAME.playerHealth,
       healthLost: false,
     };
-    console.log('total enemies', this.levelInstance.totalEnemies);
+    // console.log('total enemies', this.levelInstance.totalEnemies);
+    // console.log('game speed', gameSpeed, difficulty);
 
     this.player.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
     this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
@@ -114,7 +114,7 @@ export class GameManager {
     }
   }
 
-  public onTick = () => {
+  public onTick = (ms: number) => {
     if (!this.running) return;
 
     this.starfield.update(this.levelInstance.gameSpeed);
@@ -123,7 +123,7 @@ export class GameManager {
     if (this.levelEvents.isComplete()) {
       this.endLevel();
     } else {
-      this.levelEvents.addDistance(this.levelInstance.gameSpeed);
+      this.levelEvents.addDistance(this.levelInstance.gameSpeed, ms);
     }
 
     GameEvents.NOTIFY_SET_PROGRESS.publish({ current: this.levelEvents.distance, total: this.levelEvents.finalDistance });
