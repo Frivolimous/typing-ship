@@ -8,7 +8,7 @@ export class TooltipPopup extends PIXI.Container {
   constructor(title: string, description: string) {
     super();
 
-    this.interactive = true;
+    // this.interactive = true;
 
     this.titleField = new PIXI.Text(title, { fontSize: 13 });
     this.descriptionField = new PIXI.Text(description, { fontSize: 13, wordWrap: true, wordWrapWidth: 300 });

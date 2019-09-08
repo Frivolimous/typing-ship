@@ -85,8 +85,8 @@ export class TypingTestUI extends BaseUI {
   public finishTest() {
     let finalTime = (new Date().getTime() - this.startedAt) / 60000;
     let wordCount = CONTENT.split(' ').length;
-    let wpm = wordCount / finalTime;
-    let difficulty = Math.min(Math.max(Math.floor((wpm - 20) / 15), 0), 4) + 1;
+    let wpm = Math.floor(wordCount / finalTime);
+    let difficulty = Math.max(Math.min(Math.floor(wpm / 15), 5), 0);
     console.log(finalTime, wordCount, wpm);
     let dialogue = new TypingTestResultUI('Your typing speed is:\n   ' + Math.round(wpm) + ' WPM.\nRecommended difficulty: ', difficulty);
     this.addChild(dialogue);

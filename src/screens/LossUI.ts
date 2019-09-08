@@ -13,7 +13,7 @@ export class LossUI extends BaseUI {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
 
     let extrinsic = SaveData.getExtrinsic();
-    let currentLevel = extrinsic.data.levels[instance.level];
+    let currentLevel = extrinsic.data.levels[instance.level] || {};
 
     let highScore = currentLevel.score;
     let newScore = instance.score;
