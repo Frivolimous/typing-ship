@@ -18,12 +18,10 @@ import { PlayerShip } from '../game/objects/PlayerShip';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
-  private tutorials: TutorialManager = new TutorialManager(this);
-  private achievements: AchievementManager = new AchievementManager(this);
-
   private healthBar: Gauge;
 
   private pauseOverlay: PauseOverlay;
+  private muter: MuterOverlay;
   private wordDisplay: PIXI.Text;
   private progress: PIXI.Text;
   private score: PIXI.Text;
@@ -65,10 +63,10 @@ export class GameUI extends BaseUI {
     this.healthBar.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.healthBar);
 
-    let muter = new MuterOverlay(true);
-    muter.x = CONFIG.INIT.SCREEN_WIDTH - muter.getWidth();
-    muter.y = CONFIG.INIT.SCREEN_HEIGHT - muter.getHeight();
-    this.addChild(muter);
+    this.muter = new MuterOverlay(true);
+    this.muter.x = CONFIG.INIT.SCREEN_WIDTH - this.muter.getWidth();
+    this.muter.y = CONFIG.INIT.SCREEN_HEIGHT - this.muter.getHeight();
+    this.addChild(this.muter);
 
     GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
@@ -90,11 +88,18 @@ export class GameUI extends BaseUI {
 
   public navOut = () => {
     this.manager.running = false;
-    this.manager.dispose();
-    GameEvents.clearAll();
+    // GameEvents.clearAll();
   }
 
   public dispose = () => {
+    GameEvents.NOTIFY_UPDATE_INPUT_WORD.removeListener(this.updateText);
+    GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.showMinusText);
+    GameEvents.NOTIFY_SET_SCORE.removeListener(this.setScore);
+    GameEvents.NOTIFY_SET_PROGRESS.removeListener(this.updateProgress);
+    GameEvents.NOTIFY_SET_HEALTH.removeListener(this.setPlayerHealth);
+    GameEvents.REQUEST_PAUSE_GAME.removeListener(this.pauseGame);
+    this.manager.dispose();
+    this.muter.dispose();
     this.destroy();
   }
 

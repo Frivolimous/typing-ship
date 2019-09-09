@@ -4,6 +4,7 @@ import { TooltipPopup } from './UI/TooltipPopup';
 export interface ITooltip {
   title: string;
   description: string;
+  fixedPosition?: {x: number, y: number};
 }
 
 export class TooltipReader {
@@ -37,13 +38,17 @@ export class TooltipReader {
         this.currentTooltip = new TooltipPopup(tooltip.title, tooltip.description);
         this.stage.addChild(this.currentTooltip);
 
-        let position = this.stage.toLocal(target, target.parent);
-        let width = (target.getWidth ? target.getWidth() : target.width) || 0;
-        let height = (target.getHeight ? target.getHeight() : target.height) || 0;
+        if (tooltip.fixedPosition) {
+          this.currentTooltip.position.set(tooltip.fixedPosition.x, tooltip.fixedPosition.y);
+        } else {
+          let position = this.stage.toLocal(target, target.parent);
+          let width = (target.getWidth ? target.getWidth() : target.width) || 0;
+          let height = (target.getHeight ? target.getHeight() : target.height) || 0;
 
-        let rect = new PIXI.Rectangle(position.x, position.y, width, height);
+          let rect = new PIXI.Rectangle(position.x, position.y, width, height);
 
-        this.currentTooltip.reposition(rect, this.borders);
+          this.currentTooltip.reposition(rect, this.borders);
+        }
       }
     }
   }

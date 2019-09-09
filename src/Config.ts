@@ -13,7 +13,7 @@ export const CONFIG = {
   },
   GAME: {
     skillPerLevel: 0.2,
-    godmode: false,
+    godmode: true,
     playerHealth: 10,
   },
   toPS: (n: number): number => {

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { TextureData } from '../utils/TextureData';
-import { GameEvents } from '../game/engine/GameEvents';
+import { GameEvents, IPauseEvent } from '../game/engine/GameEvents';
 import { SaveData } from '../utils/SaveData';
 import { SoundData } from '../utils/SoundData';
 
@@ -16,7 +16,7 @@ export class MuterOverlay extends PIXI.Graphics {
 
   private options: {muted: boolean};
 
-  constructor(showPause?: boolean) {
+  constructor(private showPause?: boolean) {
     super();
     this.beginFill(0x666666);
     this.lineStyle(2);
@@ -40,8 +40,8 @@ export class MuterOverlay extends PIXI.Graphics {
       this.addChild(this.pause, this.play);
       let pauseB = new JMBUI.ClearButton({x: 0, y: 0, width: 30, height: 50, downFunction: () => GameEvents.REQUEST_PAUSE_GAME.publish({paused: !this.paused})});
       this.addChild(pauseB);
-      this.togglePause(false);
-      GameEvents.REQUEST_PAUSE_GAME.addListener(e => this.togglePause(e.paused));
+      this.togglePause({paused: false});
+      GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
     }
 
     this.sound = new PIXI.Sprite(TextureData.sound);
@@ -57,10 +57,16 @@ export class MuterOverlay extends PIXI.Graphics {
     this.addChild(soundB);
   }
 
+  public dispose() {
+    if (this.showPause) {
+      GameEvents.REQUEST_PAUSE_GAME.removeListener(this.togglePause);
+    }
+  }
+
   public reset() {
     this.toggleSound(this.options.muted);
     if (this.paused) {
-      this.togglePause(false);
+      this.togglePause({paused: false});
     }
   }
 
@@ -72,9 +78,9 @@ export class MuterOverlay extends PIXI.Graphics {
     return 50;
   }
 
-  private togglePause = (b?: boolean) => {
-    if (b || b === false) {
-      this.paused = b;
+  private togglePause = (e: IPauseEvent) => {
+    if (e.paused || e.paused === false) {
+      this.paused = e.paused;
     } else {
       this.paused = !this.paused;
     }

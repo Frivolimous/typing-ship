@@ -14,8 +14,6 @@ TO-DO:
 - Multiple Missiles (player)
 - Turrets
 
-- Game Disposal
-
 #Game UI
 - RESPONSIVE
 

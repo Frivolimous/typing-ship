@@ -5,6 +5,8 @@ import { MenuUI } from './screens/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
 import { TooltipReader } from './JMGE/TooltipReader';
+import { TutorialManager } from './game/engine/TutorialManager';
+import { AchievementManager } from './game/engine/AchievementManager';
 // import { ScoreTracker } from './utils/ScoreTracker';
 
 new class Facade {
@@ -16,6 +18,8 @@ new class Facade {
 
   private tooltipReader: TooltipReader;
   private _Resolution = CONFIG.INIT.RESOLUTION;
+  private tutorials: TutorialManager;
+  private achievements: AchievementManager;
 
   // windowToLocal=(e:any):PIXI.Point=>{
   // 	return new PIXI.Point((e.x+this.stageBorders.x)*this._Resolution,(e.y+this.stageBorders.y)*this._Resolution);
@@ -83,18 +87,13 @@ new class Facade {
   public init = () => {
     // this will happen after 'preloader'
 
-    initializeDatas();
-    SaveData.init();
+    SaveData.init().then(() => {
+      this.tutorials = new TutorialManager(this.app.stage);
+      this.achievements = new AchievementManager(this.app.stage);
 
-    this.currentModule = new MenuUI();
-    this.app.stage.addChild(this.currentModule);
-    this.currentModule.navIn();
-  }
-
-  public saveCallback = (finish: () => void) => {
-    SaveData.saveExtrinsic(finish);
+      this.currentModule = new MenuUI();
+      this.app.stage.addChild(this.currentModule);
+      this.currentModule.navIn();
+    });
   }
 }();
-
-function initializeDatas() {
-}

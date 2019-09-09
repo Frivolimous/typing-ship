@@ -19,30 +19,34 @@ export class BadgesUI extends BaseUI {
   public spellStorageWindow: InventoryWindow;
   public muter: MuterOverlay;
 
+  private tooltipPosition = {x: 350, y: 20};
+
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
 
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.leave });
     this.addChild(_button);
     let scrollCanvas = new PIXI.Container();
-    let scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: 300, autoSort: true });
-    let scrollbar = new JMBUI.Scrollbar({ height: 300, x: 320, y: 20 });
+    let scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: CONFIG.INIT.SCREEN_HEIGHT - 40, autoSort: true });
+    let scrollbar = new JMBUI.Scrollbar({ height: CONFIG.INIT.SCREEN_HEIGHT - 40, x: 320, y: 20 });
     scroll.addScrollbar(scrollbar);
     this.addChild(scroll);
     this.addChild(scrollbar);
-    let badge = new BadgeLine('EMPTY', BadgeState.NONE);
+    let badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.NONE);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.BRONZE);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.NONE);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.SILVER);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.BRONZE);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.GOLD);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.SILVER);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.PLATINUM);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.GOLD);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.PLATINUM);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.NONE);
     scroll.addObject(badge);
-    badge = new BadgeLine('EMPTY', BadgeState.PLATINUM);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.NONE);
+    scroll.addObject(badge);
+    badge = new BadgeLine({title: 'EMPTY', description: 'something', fixedPosition: this.tooltipPosition}, BadgeState.NONE);
     scroll.addObject(badge);
 
     this.muter = new MuterOverlay();

@@ -35,6 +35,9 @@ export class BaseObject extends PIXI.Container {
 
   public dispose() {
     this.toDestroy = true;
+    if (this.textObject) {
+      this.textObject.dispose();
+    }
   }
 
   public addWord(i: number = 0, priority: number = 1) {

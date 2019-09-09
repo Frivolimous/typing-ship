@@ -2,24 +2,28 @@ import { ExtrinsicModel } from '../data/PlayerData';
 
 export class SaveData {
 
-  public static init() {
-    this.loadVersion(version => {
-      // if (true) {
-      if (version < SaveData.VERSION) {
-        SaveData.confirmReset();
-        SaveData.saveVersion(SaveData.VERSION);
-        SaveData.saveExtrinsic();
-      } else {
-        SaveData.loadExtrinsic(extrinsic => {
-          if (extrinsic) {
-            SaveData.extrinsic = extrinsic;
-          } else {
-            SaveData.confirmReset();
-          }
-        });
-      }
+  public static async init(): Promise<null> {
+    return new Promise((resolve) => {
+      this.loadVersion().then(version => {
+        // if (true) {
+        if (version < SaveData.VERSION) {
+          SaveData.confirmReset();
+          SaveData.saveVersion(SaveData.VERSION);
+          SaveData.saveExtrinsic();
+        } else {
+          SaveData.loadExtrinsic().then(extrinsic => {
+            if (extrinsic) {
+              SaveData.extrinsic = extrinsic;
+            } else {
+              SaveData.confirmReset();
+            }
+            resolve();
+          });
+        }
+      });
     });
   }
+
   public static resetData(): () => void {
     return this.confirmReset;
   }
@@ -30,20 +34,18 @@ export class SaveData {
     }
   }
 
-  public static saveExtrinsic(callback?: (extrinsic?: ExtrinsicModel) => void, extrinsic?: ExtrinsicModel) {
-    extrinsic = extrinsic || this.extrinsic;
-    SaveData.saveExtrinsicToLocal(extrinsic);
-    if (callback) {
-      callback(extrinsic);
-    }
+  public static async saveExtrinsic(extrinsic?: ExtrinsicModel): Promise<ExtrinsicModel> {
+    return new Promise((resolve) => {
+      extrinsic = extrinsic || this.extrinsic;
+      SaveData.saveExtrinsicToLocal(extrinsic);
+      resolve(extrinsic);
+    });
   }
 
-  public static loadExtrinsic(callback?: (extrinsic?: ExtrinsicModel) => void) {
-    let extrinsic = this.loadExtrinsicFromLocal();
-    if (callback) {
-      callback(extrinsic);
-
-    }
+  public static async loadExtrinsic(): Promise<ExtrinsicModel> {
+    return new Promise((resolve) => {
+      resolve(this.loadExtrinsicFromLocal());
+    });
   }
 
   public static saveExtrinsicToLocal(extrinsic?: ExtrinsicModel) {
@@ -67,13 +69,15 @@ export class SaveData {
     }
   }
 
-  public static loadVersion(callback: (version: number) => void) {
-    if (typeof Storage !== undefined) {
-      callback(Number(window.localStorage.getItem('Version')));
-    } else {
-      console.log('NO STORAGE!');
-      callback(0);
-    }
+  public static loadVersion(): Promise<number> {
+    return new Promise((resolve) => {
+      if (typeof Storage !== undefined) {
+        resolve(Number(window.localStorage.getItem('Version')));
+      } else {
+        console.log('NO STORAGE!');
+        resolve(0);
+      }
+    });
   }
 
   public static saveVersion(version: number) {

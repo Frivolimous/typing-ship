@@ -84,6 +84,7 @@ export class GameManager {
   }
 
   public dispose = () => {
+    console.log('dispose');
     GameEvents.ticker.remove(this.onTick);
     JMInteractionEvents.KEY_DOWN.removeListener(this.keyDown);
     GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.onLetterDelete);
@@ -93,7 +94,6 @@ export class GameManager {
     GameEvents.NOTIFY_LETTER_ADDED.removeListener(this.onLetterAdded);
     GameEvents.NOTIFY_SET_HEALTH.removeListener(this.onHealthChange);
 
-    this.player.dispose();
     this.container.dispose();
     this.wordInput.dispose();
     this.display.destroy();

@@ -349,9 +349,10 @@ export class MaskedWindow extends BasicElement {
     this.horizontal = options.horizontal;
 
     this.on("mousedown", (e: PIXI.interaction.InteractionEvent) => {
-      if (e.target !== this) {
-        return;
-      }
+      console.log('down');
+      // if (e.target !== this) {
+      //   return;
+      // }
       let point: PIXI.Point = e.data.getLocalPosition(this);
       if (this.horizontal) {
         this.offset = point.x - this.x - this.container.x;

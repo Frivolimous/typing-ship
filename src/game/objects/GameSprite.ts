@@ -39,14 +39,7 @@ export class GameSprite extends BaseObject {
   public turnRateAccel: number = 0;
   public shieldOn: boolean;
   public turret: Turret;
-  public halt: boolean;
-  public viewSource: any;
   public fires: number;
-  public walkMult: number = 1;
-  public legFrame: number = 0;
-  public torsoFrame: number = 0;
-  public frame: number = 0;
-  public cAnim: Animation = Animation.IDLE;
   public health: number = 1;
   public shieldView: Shield = new Shield();
   public firePoint: PIXI.Point = new PIXI.Point(0, 0);
@@ -64,50 +57,8 @@ export class GameSprite extends BaseObject {
     return new PIXI.Point(x, y);
   }
 
-  // public init(){
-  //   this.config=config;
-
-  //   if (config.boss){
-  //     this.vT=0.01;
-  //     // view.bitmapData=viewSource.clone();
-  //     // view.scaleX=view.scaleY=scale;
-  //     // addChild(view);
-  //     // view.x=-view.width/2;
-  //     // view.y=-view.height/2;
-  //     this.n=Math.PI/2;
-  //     this.rotation=0;
-  //   }else{
-  //     //Facade.spriteC.update(this,0);
-
-  //     //view.y=-0.5*view.height;
-  //     //view.x=0.5*view.width;
-  //     this.n=config.n;
-  //     this.rotation=config.n*180/Math.PI;
-  //   }
-
-  //   // if (display!=null) display.gotoAndStop(1);
-
-  //   this.turnRate=config.a/7;
-  //   this.addWord();
-  //   this.priority=config.p;
-  // }
-
   public update = (speed: number) => {
     return;
-    // if (this.moreUpdate()){
-    //   this.vT+=((this.halt)?0:this.a)-this.vT*0.1;
-    //   this.vX=this.vT*Math.cos(this.n);
-    //   this.vY=this.vT*Math.sin(this.n);
-
-    //   if (Math.abs(this.vT)<Math.abs(this.a)){
-    //     this.vX=this.vY=this.vT=0;
-    //   }else{
-    //     this.x+=this.vX;
-    //     this.y+=this.vY;
-    //   }
-    //   return;
-    // }
-    // return;
   }
 
   public rotateTo = (target: {x?: number, y?: number}, speed: number) => {
@@ -132,7 +83,6 @@ export class GameSprite extends BaseObject {
         if (this.n > angle) this.n = angle;
       }
 
-      // let n = Math.atan2(this.vY, this.vX);
       this.rotation = this.n + Math.PI / 2;
 
       this.turnRate += this.turnRateAccel * speed;
@@ -153,29 +103,8 @@ export class GameSprite extends BaseObject {
     this.vX = Math.cos(this.n) * this.vT;
     this.vY = Math.sin(this.n) * this.vT;
 
-    // if (Math.abs(this.vX) < this.a * aMult && Math.abs(this.vY) < this.a * aMult) {
-    //   this.vX = 0;
-    //   this.vY = 0;
-    // } else {
     this.x += this.vX;
     this.y += this.vY;
-    // }
-    // this.x += speed * Math.cos(angle);
-    // this.y += speed * Math.sin(angle);
-
-    // this.vT += this.a - this.vT * 0.1;
-    // this.vX = this.vT * Math.cos(this.n);
-    // this.vY = this.vT * Math.sin(this.n);
-
-    // if (Math.abs(this.vT) < Math.abs(this.a)) {
-      //   this.vX = 0;
-      //   this.vY = 0;
-      //   this.vT = 0;
-      // } else {
-        //   this.x += this.vX;
-        //   this.y += this.vY;
-        // }
-    // this.rotation = angle + Math.PI / 2;
   }
 
   public homeTarget(_target: BaseObject) {
@@ -212,16 +141,4 @@ export class GameSprite extends BaseObject {
       this.shieldView.fadeOut();
     }
   }
-
-  // public getFirePoint(_local:boolean=false):PIXI.Point{
-  //   //var m:Point=new Point(display.torso.x+display.torso.anim.x+display.torso.anim.firePoint.x,display.torso.y+display.torso.anim.y+display.torso.anim.firePoint.y);
-  //   var m=new PIXI.Point(0,0);
-  //   m.x*=display.scaleX;
-  //   m.y*=display.scaleY;
-  //   if (!_local){
-  //     m.x+=x;
-  //     m.y+=y;
-  //   }
-  //   return m;
-  // }
 }
