@@ -207,8 +207,8 @@ export class ObjectManager extends PIXI.Container {
     new Firework(this.layers[DisplayLayer.EXPLOSIONS], x, y, size);
   }
 
-  public makeLaser(origin: GameSprite, target: GameSprite, color: number) {
-    new Laser(origin.getFirePoint(), target, color, 1, this.layers[DisplayLayer.PROJECTILES]);
+  public makeLaser(origin: {x: number, y: number}, target: {x: number, y: number}, color: number) {
+    new Laser(origin, target, color, 1, this.layers[DisplayLayer.PROJECTILES]);
   }
 
   public makeEMP(origin: GameSprite, target: GameSprite) {

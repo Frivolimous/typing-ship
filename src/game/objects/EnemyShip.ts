@@ -13,6 +13,7 @@ interface IEnemyCallbacks {
   onFire?: (enemy: EnemyShip, fires: ActionType) => void;
   onFinishCommands?: (enemy: EnemyShip) => void;
   onWordComplete?: (enemy: EnemyShip) => void;
+  onTurretWordComplete?: (turret: Turret) => void;
 }
 
 export class EnemyShip extends GameSprite {
@@ -74,8 +75,8 @@ export class EnemyShip extends GameSprite {
 
     switch (config.type.charAt(2)) {
       case 's': this.addShield(); this.value += 2; break;
-      case 't': this.addTurret(); this.value += 2; break;
-      case 'b': this.addShield(); this.addTurret(); this.value += 5; break;
+      case 't': this.addTurret(); this.value += 1; break;
+      case 'b': this.addShield(); this.addTurret(); this.value += 4; break;
       default: break;
     }
 
@@ -173,7 +174,7 @@ export class EnemyShip extends GameSprite {
 
   public addTurret() {
     if (!this.turret) {
-      this.turret = new Turret();
+      this.turret = new Turret(this);
       this.addChild(this.turret);
     }
   }
@@ -182,6 +183,13 @@ export class EnemyShip extends GameSprite {
     if (this.turret) {
       this.turret.dispose();
       this.turret.destroy();
+      this.turret = null;
+    }
+  }
+
+  public onTurretWordComplete = () => {
+    if (this.callbacks.onTurretWordComplete) {
+      this.callbacks.onTurretWordComplete(this.turret);
     }
   }
 

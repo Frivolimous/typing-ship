@@ -12,7 +12,6 @@ TO-DO:
 - Secret Commands
 
 - Multiple Missiles (player)
-- Turrets
 
 #Game UI
 - RESPONSIVE

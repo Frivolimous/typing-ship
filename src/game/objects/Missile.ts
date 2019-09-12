@@ -1,10 +1,12 @@
 import { GameSprite } from './GameSprite';
 import { PlayerShip } from './PlayerShip';
 import { MissileData, IMissileConfig } from '../../data/EnemyData';
+import { Turret } from './Turret';
 
 export interface IMissile {
   onComplete?: (target: GameSprite) => void;
   onWordComplete?: (missile: Missile) => void;
+  onTurretFire?: (missle: Missile, turret: Turret) => void;
   angle?: number;
   delay?: number;
 }
@@ -72,7 +74,9 @@ export class Missile extends GameSprite {
         // this.x += speed * this.speed * Math.cos(angle);
         // this.y += speed * this.speed * Math.sin(angle);
         if (this.target.turret) {
+          this.target.turret.trackTarget(this);
           if (this.target.turret.targetInRange(this)) {
+            if (this.config.onTurretFire) this.config.onTurretFire(this, this.target.turret);
             this.toDestroy = true;
             this.target.addWord();
           }

@@ -205,7 +205,11 @@ export class GameManager {
       command.y *= (CONFIG.INIT.SCREEN_HEIGHT + CONFIG.INIT.STAGE_BUFFER) / 12;
       command.timer *= 6;
     });
-    let newShip = new EnemyShip(spawnEvent, { onFire: enemy => this.actionC.enemyFires(this.player, enemy), onWordComplete: enemy => this.actionC.playerFires(this.player, enemy) });
+    let newShip = new EnemyShip(spawnEvent, { 
+      onFire: enemy => this.actionC.enemyFires(this.player, enemy),
+      onWordComplete: enemy => this.actionC.playerFires(this.player, enemy),
+      onTurretWordComplete: turret => this.actionC.playerFires(this.player, turret),
+    });
 
     this.container.addObject(newShip, DisplayLayer.ENEMIES);
     return newShip;
