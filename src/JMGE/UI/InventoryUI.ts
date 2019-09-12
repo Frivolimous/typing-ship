@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMBUI';
-import * as JMBL from '../JMBL';
 import { ItemObject } from './ItemObject';
 import { ItemSlot } from './ItemSlot';
 import { JMInteractionEvents } from '../events/JMInteractionEvents';
+import { MouseObject } from '../events/objects/MouseObject';
 
 export interface IInventoryUI extends JMBUI.GraphicOptions {
   dragLayer: PIXI.Container;
@@ -78,7 +78,7 @@ export class InventoryWindow extends JMBUI.BasicElement {
     window.otherInventory = this;
   }
 
-  public mouseDown = (e: JMBL.MouseObject) => {
+  public mouseDown = (e: MouseObject) => {
     // let local:PIXI.Point=new PIXI.Point(e.x-this.x,e.y-this.y);
     let index: number = this.getIndexAtLoc(e.x, e.y);
     if (this.slots[index]) {
@@ -96,7 +96,7 @@ export class InventoryWindow extends JMBUI.BasicElement {
     }
   }
 
-  public moveDrag = (object: ItemObject, e: JMBL.MouseObject) => {
+  public moveDrag = (object: ItemObject, e: MouseObject) => {
     // let global:PIXI.Point=this.toGlobal(new PIXI.Point(e.x-this.x+e.drag.offset.x,e.y-this.y+e.drag.offset.y));
     // object.x=global.x;
     // object.y=global.y;
@@ -107,7 +107,7 @@ export class InventoryWindow extends JMBUI.BasicElement {
     return true;
   }
 
-  public endDrag = (object: ItemObject, e: JMBL.MouseObject) => {
+  public endDrag = (object: ItemObject, e: MouseObject) => {
     let index: number = this.getIndexAtLoc(e.x, e.y);
     if (this.slots[index]) {
       this.dropItem(object, index);

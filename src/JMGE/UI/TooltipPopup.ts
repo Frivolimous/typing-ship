@@ -20,7 +20,7 @@ export class TooltipPopup extends PIXI.Container {
     this.background.lineStyle(3);
     this.background.drawRect(0, 0, 300, this.titleField.height + 10);
     this.background.drawRect(0, this.titleField.height + 10, 300, this.descriptionField.height + 10);
-    this.addChild(this.background, this.titleField, this.descriptionField);
+    this.addChild<any>(this.background, this.titleField, this.descriptionField);
   }
 
   public reposition(target: PIXI.Rectangle, borders: PIXI.Rectangle) {

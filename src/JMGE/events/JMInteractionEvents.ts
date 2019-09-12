@@ -1,5 +1,5 @@
-import { MouseObject } from '../JMBL';
 import { JMEventListener } from './JMEventListener';
+import { MouseObject } from './objects/MouseObject';
 
 export const JMInteractionEvents = {
   MOUSE_MOVE: new JMEventListener<MouseObject>(),
