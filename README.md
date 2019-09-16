@@ -1,5 +1,3 @@
-"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --args --allow-file-access-from-files
-
 # typing-ship
 
 TO-DO:
@@ -8,20 +6,18 @@ TO-DO:
 - Adjust Level Length (Length: 1-5 min)
 - Diff Timing (Shorter levels at Easy)
 - Speed Adjust
-- Screen Size check / zoom
 
 - Check all bosses to make sure working
 - Secret Commands
 
-- Multiple Missiles (player)
-
 #Game UI
-- RESPONSIVE
+- RESPONSIVE LAYOUT
+- RESPONSIVE "MASKING"
 
 #Menu UI
 - Badges - INIT
- 
-- RESPONSIVE
+
+- RESPONSIVE LAYOUT
 
 #Systems
 - Achievements - BASICS

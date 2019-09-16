@@ -1,5 +1,6 @@
 import { JMEventListener } from './JMEventListener';
 import { MouseObject } from './objects/MouseObject';
+import { JMRect } from '../others/JMRect';
 
 export const JMInteractionEvents = {
   MOUSE_MOVE: new JMEventListener<MouseObject>(),
@@ -13,6 +14,7 @@ export const JMInteractionEvents = {
 
   UI_OVER: new JMEventListener<IMouseWheelEvent>(),
   UI_OFF: new JMEventListener<IMouseWheelEvent>(),
+  WINDOW_RESIZE: new JMEventListener<IResizeEvent>(),
 };
 
 export interface IMouseWheelEvent {
@@ -22,4 +24,9 @@ export interface IMouseWheelEvent {
 
 export interface IKeyboardEvent {
   key: string;
+}
+
+export interface IResizeEvent {
+  outerBounds: JMRect;
+  innerBounds: JMRect;
 }

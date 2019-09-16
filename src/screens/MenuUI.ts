@@ -13,27 +13,29 @@ import { SoundData } from '../utils/SoundData';
 import { SaveData } from '../utils/SaveData';
 import { StringData } from '../data/StringData';
 import { TooltipReader } from '../JMGE/TooltipReader';
+import { JMRect } from '../JMGE/others/JMRect';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
 export class MenuUI extends BaseUI {
   public muter: MuterOverlay;
-  private typingTestButton: JMBUI.Button;
+
+  private startB: JMBUI.Button;
+  private typingTestB: JMBUI.Button;
+  private highScoreB: JMBUI.Button;
+  private badgeB: JMBUI.Button;
+  private creditsB: JMBUI.Button;
 
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } });
     this.label.x += 50;
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
-    this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: this.navTypingTest });
-    this.addChild(_button);
-    this.typingTestButton = _button;
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
-    this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: this.navBadges });
-    this.addChild(_button);
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: this.navCredits });
-    this.addChild(_button);
+    this.startB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
+    this.typingTestB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: this.navTypingTest });
+    this.highScoreB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
+    this.badgeB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: this.navBadges });
+    this.creditsB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: this.navCredits });
+    this.addChild(this.startB, this.typingTestB, this.highScoreB, this.badgeB, this.creditsB);
 
     this.muter = new MuterOverlay();
     this.muter.x = this.getWidth() - this.muter.getWidth();
@@ -41,6 +43,10 @@ export class MenuUI extends BaseUI {
     this.addChild(this.muter);
 
     window.addEventListener('keydown', this.tweenTestPre);
+  }
+
+  public positionElements = (e: IResizeEvent) => {
+
   }
 
   public navIn = () => {
@@ -51,11 +57,11 @@ export class MenuUI extends BaseUI {
     let wpm = extrinsic.data.wpm;
 
     if (wpm) {
-      this.typingTestButton.highlight(false);
-      TooltipReader.addTooltip(this.typingTestButton, null);
+      this.typingTestB.highlight(false);
+      TooltipReader.addTooltip(this.typingTestB, null);
     } else {
-      this.typingTestButton.highlight(true);
-      TooltipReader.addTooltip(this.typingTestButton, {title: StringData.TYPING_TEST_TITLE, description: StringData.TYPING_TEST_DESC});
+      this.typingTestB.highlight(true);
+      TooltipReader.addTooltip(this.typingTestB, {title: StringData.TYPING_TEST_TITLE, description: StringData.TYPING_TEST_DESC});
     }
   }
 
@@ -83,8 +89,8 @@ export class MenuUI extends BaseUI {
 
   public tweenTestPre = (e: any) => {
     switch (e.key) {
-      case '9': this.typingTestButton.highlight(true); break;
-      case '0': this.typingTestButton.highlight(false); break;
+      case '9': this.typingTestB.highlight(true); break;
+      case '0': this.typingTestB.highlight(false); break;
       case '1': this.tweenTest(JMEasing.Linear.None); break;
       case '2': this.tweenTest(JMEasing.Quadratic.In); break;
       case '3': this.tweenTest(JMEasing.Quadratic.Out); break;

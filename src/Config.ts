@@ -7,6 +7,11 @@ export const CONFIG = {
     BACKGROUND_COLOR: 0,
     MOUSE_HOLD: 200,
     FPS: 60,
+    BORDER: false,
+  },
+  STAGE: {
+    SCREEN_WIDTH: 800,
+    SCREEN_HEIGHT: 800,
   },
   TILEMAP: {
     TILE_SIZE: 30,

@@ -1,6 +1,14 @@
 import * as PIXI from 'pixi.js';
 
 export class JMRect extends PIXI.Rectangle {
+
+  public set(x: number, y: number, width: number, height: number) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
   public setLeft(n: number) {
     this.width += this.x - n;
     this.x = n;

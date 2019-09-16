@@ -36,6 +36,9 @@ export class GameUI extends BaseUI {
 
   constructor(level: number, difficulty: number) {
     super();
+    let background = new PIXI.Graphics();
+    background.beginFill(0).drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
+    this.addChild(background);
 
     this.manager = new GameManager(level, difficulty, this);
 
@@ -48,6 +51,21 @@ export class GameUI extends BaseUI {
     this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
     this.wordDisplay.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.wordDisplay);
+
+    let UILayer = new PIXI.Graphics();
+    UILayer.beginFill(0x002233);
+    // UILayer.drawRect(0, CONFIG.INIT.SCREEN_HEIGHT - 120, CONFIG.INIT.SCREEN_WIDTH, 120);
+    // UILayer.moveTo(0, CONFIG.INIT.SCREEN_HEIGHT - 120).lineTo()
+    UILayer.drawPolygon([0, CONFIG.INIT.SCREEN_HEIGHT - 120,
+                        CONFIG.INIT.SCREEN_WIDTH / 4, CONFIG.INIT.SCREEN_HEIGHT - 120,
+                        CONFIG.INIT.SCREEN_WIDTH / 3, CONFIG.INIT.SCREEN_HEIGHT - 80,
+                        CONFIG.INIT.SCREEN_WIDTH * 2 / 3, CONFIG.INIT.SCREEN_HEIGHT - 80,
+                        CONFIG.INIT.SCREEN_WIDTH * 3 / 4, CONFIG.INIT.SCREEN_HEIGHT - 120,
+                        CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT - 120,
+                        CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT,
+                        0, CONFIG.INIT.SCREEN_HEIGHT,
+                      ]);
+    this.addChild(UILayer);
 
     this.progress = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
     this.progress.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
@@ -67,6 +85,15 @@ export class GameUI extends BaseUI {
     this.muter.x = CONFIG.INIT.SCREEN_WIDTH - this.muter.getWidth();
     this.muter.y = CONFIG.INIT.SCREEN_HEIGHT - this.muter.getHeight();
     this.addChild(this.muter);
+
+    let BUFFER = CONFIG.INIT.STAGE_BUFFER * 2;
+    let overlay = new PIXI.Graphics();
+    overlay.beginFill(0x333333);
+    overlay.drawRect(0, 0, -BUFFER, CONFIG.INIT.SCREEN_HEIGHT);
+    overlay.drawRect(CONFIG.INIT.SCREEN_WIDTH, 0, BUFFER, CONFIG.INIT.SCREEN_HEIGHT);
+    overlay.drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, -BUFFER);
+    overlay.drawRect(0, CONFIG.INIT.SCREEN_HEIGHT, CONFIG.INIT.SCREEN_WIDTH, BUFFER);
+    this.addChild(overlay);
 
     GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
@@ -100,7 +127,7 @@ export class GameUI extends BaseUI {
     GameEvents.REQUEST_PAUSE_GAME.removeListener(this.pauseGame);
     this.manager.dispose();
     this.muter.dispose();
-    this.destroy();
+    super.dispose();
   }
 
   public updateProgress = (e: IProgressEvent) => {

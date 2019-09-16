@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as _ from 'lodash';
 import * as JMBL from './JMGE/JMBL';
 import { TextureData } from './utils/TextureData';
 import { MenuUI } from './screens/MenuUI';
@@ -7,17 +8,21 @@ import { SaveData } from './utils/SaveData';
 import { TooltipReader } from './JMGE/TooltipReader';
 import { TutorialManager } from './game/engine/TutorialManager';
 import { AchievementManager } from './game/engine/AchievementManager';
+import { JMRect } from './JMGE/others/JMRect';
+import { JMInteractionEvents } from './JMGE/events/JMInteractionEvents';
 // import { ScoreTracker } from './utils/ScoreTracker';
 
 new class Facade {
   private static exists = false;
 
-  public app: any;
-  public stageBorders: JMBL.Rect;
-  public currentModule: any;
+  public app: PIXI.Application;
+  public stageBorders: JMRect;
+  public innerBorders: JMRect;
+  public screen: PIXI.Container;
+  public border: PIXI.Graphics;
+  // public currentModule: any;
 
   private tooltipReader: TooltipReader;
-  private _Resolution = CONFIG.INIT.RESOLUTION;
   private tutorials: TutorialManager;
   private achievements: AchievementManager;
 
@@ -43,45 +48,78 @@ new class Facade {
 
     }
 
-    this.stageBorders = new JMBL.Rect(0, 0, CONFIG.INIT.SCREEN_WIDTH / this._Resolution, CONFIG.INIT.SCREEN_HEIGHT / this._Resolution);
+    let element = document.getElementById('game-canvas') as HTMLCanvasElement;
+
     this.app = new PIXI.Application({
-      backgroundColor: 0xff0000,
+      backgroundColor: 0x770000,
       antialias: true,
-      resolution: this._Resolution,
-      width: this.stageBorders.width,
-      height: this.stageBorders.height,
+      resolution: CONFIG.INIT.RESOLUTION,
+      width: element.offsetWidth,
+      height: element.offsetHeight,
     });
-    (document.getElementById('game-canvas') as any).append(this.app.view);
+    element.append(this.app.view);
 
     // if (this.app){
     // 	let test=PIXI.Sprite.from('./Bitmaps/a ship sprite sheet.png')
     // 	this.app.stage.addChild(test);
     // 	return;
     // }
-    this.stageBorders.width *= this._Resolution;
-    this.stageBorders.height *= this._Resolution;
 
-    this.app.stage.scale.x = 1 / this._Resolution;
-    this.app.stage.scale.y = 1 / this._Resolution;
-    this.stageBorders.x = this.app.view.offsetLeft;
-    this.stageBorders.y = this.app.view.offsetTop;
+    this.app.stage.scale.x = 1 / CONFIG.INIT.RESOLUTION;
+    this.app.stage.scale.y = 1 / CONFIG.INIT.RESOLUTION;
+    // this.stageBorders.x = this.app.view.offsetLeft;
+    // this.stageBorders.y = this.app.view.offsetTop;
     this.app.stage.interactive = true;
+    this.screen = new PIXI.Container();
+    this.app.stage.addChild(this.screen);
+    if (CONFIG.INIT.BORDER) {
+      this.border = new PIXI.Graphics();
+      this.border.lineStyle(3, 0xff00ff).drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
+      this.app.stage.addChild(this.border);
+    }
 
-    let _background = new PIXI.Graphics();
-    _background.beginFill(CONFIG.INIT.BACKGROUND_COLOR);
-    _background.drawRect(0, 0, this.stageBorders.width, this.stageBorders.height);
-    this.app.stage.addChild(_background);
+    let finishResize = _.debounce(() => {
+      let viewWidth = element.offsetWidth;
+      let viewHeight = element.offsetHeight;
+      this.app.view.width = viewWidth;
+      this.app.view.height = viewHeight;
 
-    // window.addEventListener('resize',()=>{
-    // 	this.stageBorders.left=this.app.view.offsetLeft;
-    // 	this.stageBorders.top=this.app.view.offsetTop;
-    // });
+      let innerWidth = CONFIG.STAGE.SCREEN_WIDTH;
+      let innerHeight = CONFIG.STAGE.SCREEN_HEIGHT;
+      let scale = Math.min(viewWidth / innerWidth, viewHeight / innerHeight);
+      this.screen.scale.set(scale);
+      this.screen.x = (viewWidth - innerWidth * scale) / 2;
+      this.screen.y = (viewHeight - innerHeight * scale) / 2;
+      this.stageBorders.set(0 - this.screen.x / scale, 0 - this.screen.y / scale, viewWidth / scale, viewHeight / scale);
 
+      if (this.border) {
+        this.border.clear();
+        this.border.lineStyle(10, 0xff00ff);
+        this.border.drawShape(this.stageBorders);
+        this.border.lineStyle(3, 0x00ffff);
+        this.border.drawShape(this.innerBorders);
+        this.border.scale.set(scale);
+        this.border.position.set(this.screen.x, this.screen.y);
+      }
+
+      JMInteractionEvents.WINDOW_RESIZE.publish({outerBounds: this.stageBorders, innerBounds: this.innerBorders});
+      console.log('resize', this.stageBorders);
+    }, 500);
+
+    window.addEventListener('resize', () => {
+      finishResize();
+    });
+
+    this.stageBorders = new JMRect();
+    this.innerBorders = new JMRect(0, 0, CONFIG.STAGE.SCREEN_WIDTH, CONFIG.STAGE.SCREEN_HEIGHT);
+
+    finishResize();
     this.tooltipReader = new TooltipReader(this.app.stage, this.stageBorders);
     JMBL.init(this.app);
     TextureData.init(this.app.renderer);
     // new ScoreTracker();
-    window.setTimeout(this.init, 10);
+    window.requestAnimationFrame(this.init);
+
   }
 
   public init = () => {
@@ -91,9 +129,9 @@ new class Facade {
       this.tutorials = new TutorialManager(this.app.stage);
       this.achievements = new AchievementManager(this.app.stage);
 
-      this.currentModule = new MenuUI();
-      this.app.stage.addChild(this.currentModule);
-      this.currentModule.navIn();
+      let menu = new MenuUI();
+      this.screen.addChild(menu);
+      menu.navIn();
     });
   }
 }();

@@ -11,8 +11,8 @@ import { GameEvents } from './GameEvents';
 
 export enum DisplayLayer {
   DEFAULT,
-  EXPLOSIONS,
   ENEMIES,
+  EXPLOSIONS,
   PROJECTILES,
   TEXT,
 }

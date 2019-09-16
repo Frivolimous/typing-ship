@@ -66,7 +66,7 @@ export class GameManager {
     // console.log('game speed', gameSpeed, difficulty);
 
     this.player.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
-    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
+    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 120;
     this.player.setHealth(CONFIG.GAME.playerHealth);
     this.setScore(0);
 
@@ -205,7 +205,7 @@ export class GameManager {
       command.y *= (CONFIG.INIT.SCREEN_HEIGHT + CONFIG.INIT.STAGE_BUFFER) / 12;
       command.timer *= 6;
     });
-    let newShip = new EnemyShip(spawnEvent, { 
+    let newShip = new EnemyShip(spawnEvent, {
       onFire: enemy => this.actionC.enemyFires(this.player, enemy),
       onWordComplete: enemy => this.actionC.playerFires(this.player, enemy),
       onTurretWordComplete: turret => this.actionC.playerFires(this.player, turret),

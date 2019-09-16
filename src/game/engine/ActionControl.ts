@@ -6,6 +6,7 @@ import { EnemyShip } from '../objects/EnemyShip';
 import { ActionType } from '../../data/Types';
 import { GameManager } from '../GameManager';
 import { Turret } from '../objects/Turret';
+import { JMTween } from '../../JMGE/JMTween';
 
 export class ActionControl {
   public missileCount: number = 0;
@@ -29,27 +30,33 @@ export class ActionControl {
   }
 
   public shootPlayerMissile(origin: PlayerShip, target: GameSprite) {
-    this.manager.container.addObject(new Missile(origin, target, { onComplete: this.enemyDestroyed, onTurretFire: this.fireTurret }), DisplayLayer.DEFAULT, false);
-    // switch (target.health){
-    //   case 4:
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI*5/6),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI/6,100),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI*3/4,200),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI/4,300),DisplayLayer.DEFAULT,false);
-    //     break;
-    //   case 3:
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI/2),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI*3/4,100),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI/4,200),DisplayLayer.DEFAULT,false);
-    //     break;
-    //   case 2:
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed),DisplayLayer.DEFAULT,false);
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed,-Math.PI,100),DisplayLayer.DEFAULT,false);
-    //   break;
-    //   case 1:
-    //     this.manager.container.addObject(new Missile(origin,target,this.enemyDestroyed),DisplayLayer.DEFAULT,false);
-    //     break;
-    // }
+    switch (target.health) {
+      case 1: this.createPlayerMissile(origin, target);
+              break;
+      case 2: this.createPlayerMissile(origin, target, {x: 15, y: 0}, 0);
+              this.createPlayerMissile(origin, target, {x: -15, y: 0}, 100);
+              break;
+      case 3: this.createPlayerMissile(origin, target, {x: 0, y: 0}, 0);
+              this.createPlayerMissile(origin, target, {x: 15, y: 0}, 100);
+              this.createPlayerMissile(origin, target, {x: -15, y: 0}, 200);
+              break;
+      case 4: this.createPlayerMissile(origin, target, {x: 15, y: -15}, 0);
+              this.createPlayerMissile(origin, target, {x: -15, y: -15}, 100);
+              this.createPlayerMissile(origin, target, {x: 15, y: 15}, 200);
+              this.createPlayerMissile(origin, target, {x: -15, y: 15}, 300);
+              break;
+    }
+  }
+
+  public createPlayerMissile = (origin: PlayerShip, target: GameSprite, offset: {x: number, y: number} = {x: 0, y: 0}, delay?: number) => {
+    if (delay) {
+      new JMTween({}, 0).wait(delay).onWaitComplete(() => this.createPlayerMissile(origin, target, offset)).start();
+    } else {
+      let missile = new Missile(origin, target, { onComplete: this.enemyHit, onTurretFire: this.fireTurret });
+      missile.x += offset.x;
+      missile.y += offset.y;
+      this.manager.container.addObject(missile, DisplayLayer.DEFAULT, false);
+    }
   }
 
   public shootPlayerLaser(origin: PlayerShip, target: GameSprite) {
@@ -148,6 +155,17 @@ export class ActionControl {
   public damagePlayer(amount: number = -1) {
     this.manager.container.makeExplosionAt(this.manager.player.x, this.manager.player.y, amount * -3);
     this.manager.player.addHealth({amount: -1});
+  }
+
+  public enemyHit = (enemy: GameSprite) => {
+    if (enemy.toDestroy) return;
+
+    enemy.health--;
+    if (enemy.health <= 0) {
+      this.enemyDestroyed(enemy);
+    } else {
+      this.manager.container.makeExplosionAt(enemy.x, enemy.y, 10);
+    }
   }
 
   public enemyDestroyed = (enemy: GameSprite) => {

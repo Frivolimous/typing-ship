@@ -34,6 +34,7 @@ export class PlayerShip extends GameSprite {
     this.firePoint.set(0, -20);
     this.laserCharge.y = this.firePoint.y;
     this.empCharge.y = this.firePoint.y;
+    this.n = -Math.PI / 2;
   }
 
   public setHealth = (i: number) => {
