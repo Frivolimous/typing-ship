@@ -1,17 +1,23 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMBUI';
 import * as _ from 'lodash';
 import { ScreenCover } from '../effects/ScreenCover';
-import { CONFIG } from '../../Config';
 import { JMInteractionEvents, IResizeEvent } from '../events/JMInteractionEvents';
 
-export class BaseUI extends JMBUI.BasicElement {
-  protected previousUI: BaseUI;
-  private saveCallback?: (finishNav: () => void) => void;
-  private previousResize: IResizeEvent;
+export interface IBaseUI {
+  bgColor: number;
+}
 
-  constructor(UIConfig?: JMBUI.GraphicOptions) {
-    super(UIConfig);
+export class BaseUI extends PIXI.Container {
+  protected previousUI: BaseUI;
+  protected previousResize: IResizeEvent;
+  private saveCallback?: (finishNav: () => void) => void;
+
+  private background: PIXI.Graphics;
+
+  constructor(private config?: IBaseUI) {
+    super();
+    this.background = new PIXI.Graphics();
+    this.addChild(this.background);
     JMInteractionEvents.WINDOW_RESIZE.addListener(this.onResize);
     // this.positionElements(resize);
   }
@@ -25,8 +31,6 @@ export class BaseUI extends JMBUI.BasicElement {
     this.destroy();
   }
 
-  public positionElements = (e: IResizeEvent) => { };
-
   public navBack = (fadeTiming?: IFadeTiming) => {
     if (!this.previousUI) {
       return;
@@ -39,6 +43,8 @@ export class BaseUI extends JMBUI.BasicElement {
       this.finishNav(this.previousUI, fadeTiming, true);
     }
   }
+
+  protected positionElements = (e: IResizeEvent) => { };
 
   protected navForward = (nextUI: BaseUI, previousUI?: BaseUI, fadeTiming?: IFadeTiming) => {
     nextUI.previousUI = previousUI || this;
@@ -56,14 +62,19 @@ export class BaseUI extends JMBUI.BasicElement {
   private onResize = (e: IResizeEvent) => {
     this.previousResize = e;
     if (this.parent) {
+      this.redrawBase(e);
       this.positionElements(e);
     }
+  }
+
+  private redrawBase = (e: IResizeEvent) => {
+    this.background.clear().beginFill(this.config.bgColor).drawShape(e.outerBounds);
   }
 
   private finishNav = (nextUI: BaseUI, fadeTiming: IFadeTiming, andDispose?: boolean) => {
     fadeTiming = _.defaults(fadeTiming || {}, dFadeTiming);
 
-    let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).onFadeComplete(() => {
+    let screen = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).onFadeComplete(() => {
       this.navOut();
       this.parent.addChild(nextUI);
       this.parent.removeChild(this);
@@ -71,7 +82,7 @@ export class BaseUI extends JMBUI.BasicElement {
       if (this.previousResize) {
         nextUI.onResize(this.previousResize);
       }
-      let screen2 = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).fadeOut(fadeTiming.fadeOut);
+      let screen2 = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).fadeOut(fadeTiming.fadeOut);
       nextUI.addChild(screen2);
 
       if (andDispose) {

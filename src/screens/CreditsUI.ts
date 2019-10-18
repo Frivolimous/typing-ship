@@ -3,19 +3,23 @@ import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 
-const LABEL = 'CreditsUI';
 export class CreditsUI extends BaseUI {
+  private title: PIXI.Text;
+  private muter: MuterOverlay;
+
   constructor() {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+    super({bgColor: 0x666666});
+
+    this.title = new PIXI.Text('CreditsUI', { fontSize: 30, fill: 0x3333ff });
+    this.addChild(this.title);
 
     let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
     this.addChild(_button);
 
-    let muter = new MuterOverlay();
-    muter.x = this.getWidth() - muter.getWidth();
-    muter.y = this.getHeight() - muter.getHeight();
-    this.addChild(muter);
+    this.muter = new MuterOverlay();
+    this.addChild(this.muter);
 
     let s = `
       Programmer: Jeremy Moshe
@@ -36,7 +40,14 @@ export class CreditsUI extends BaseUI {
     text.position.set(50, 50);
   }
 
-  public navMenu = () => {
+  protected positionElements = (e: IResizeEvent) => {
+    this.title.x = (e.innerBounds.width - this.title.width) / 2;
+    this.title.y = 50;
+    this.muter.x = e.outerBounds.right - this.muter.getWidth();
+    this.muter.y = e.outerBounds.bottom - this.muter.getHeight();
+  }
+
+  private navMenu = () => {
     this.navBack();
   }
 }

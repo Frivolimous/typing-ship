@@ -6,11 +6,17 @@ import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { ILevelInstance } from '../data/LevelInstance';
 import { SaveData } from '../utils/SaveData';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 
-const LABEL = 'LossUI';
 export class LossUI extends BaseUI {
+  private title: PIXI.Text;
+  private muter: MuterOverlay;
+
   constructor(instance: ILevelInstance) {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+    super({bgColor: 0x666666});
+
+    this.title = new PIXI.Text('LossUI', { fontSize: 30, fill: 0x3333ff });
+    this.addChild(this.title);
 
     let extrinsic = SaveData.getExtrinsic();
     let currentLevel = extrinsic.data.levels[instance.level] || {};
@@ -34,13 +40,18 @@ export class LossUI extends BaseUI {
     let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
     this.addChild(_button);
 
-    let muter = new MuterOverlay();
-    muter.x = this.getWidth() - muter.getWidth();
-    muter.y = this.getHeight() - muter.getHeight();
-    this.addChild(muter);
+    this.muter = new MuterOverlay();
+    this.addChild(this.muter);
   }
 
-  public navMenu = () => {
+  protected positionElements = (e: IResizeEvent) => {
+    this.title.x = (e.innerBounds.width - this.title.width) / 2;
+    this.title.y = 50;
+    this.muter.x = e.outerBounds.right - this.muter.getWidth();
+    this.muter.y = e.outerBounds.bottom - this.muter.getHeight();
+  }
+
+  private navMenu = () => {
     this.navBack();
   }
 }

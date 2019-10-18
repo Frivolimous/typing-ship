@@ -12,6 +12,7 @@ import { TypingTestUI } from './TypingTestUI';
 import { StringData } from '../data/StringData';
 import { Colors } from '../data/Colors';
 import { TooltipReader } from '../JMGE/TooltipReader';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -31,7 +32,7 @@ export class LevelSelectUI extends BaseUI {
   private recommended: JMBUI.BasicElement;
 
   constructor() {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666 });
+    super({ bgColor: 0x666666 });
 
     let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
     this.addChild(_button);
@@ -59,12 +60,21 @@ export class LevelSelectUI extends BaseUI {
     this.addChild(_button);
 
     this.muter = new MuterOverlay();
-    this.muter.x = this.getWidth() - this.muter.getWidth();
-    this.muter.y = this.getHeight() - this.muter.getHeight();
     this.addChild(this.muter);
   }
 
-  public resetLevelStuff = () => {
+  public navIn = () => {
+    this.resetLevelStuff();
+    this.muter.reset();
+    SoundData.playMusic(0);
+  }
+
+  protected positionElements = (e: IResizeEvent) => {
+    this.muter.x = e.outerBounds.right - this.muter.getWidth();
+    this.muter.y = e.outerBounds.bottom - this.muter.getHeight();
+  }
+
+  private resetLevelStuff = () => {
     let extrinsics = SaveData.getExtrinsic();
     let wpm = extrinsics.data.wpm;
     let recommended = extrinsics.data.recommended;
@@ -102,7 +112,7 @@ export class LevelSelectUI extends BaseUI {
     }
   }
 
-  public changeLevelAndStartGame = (level: number, button: LevelButton) => {
+  private changeLevelAndStartGame = (level: number, button: LevelButton) => {
     console.log(level);
     this.currentLevel = level;
     if (this.difficultyPopup) {
@@ -115,12 +125,12 @@ export class LevelSelectUI extends BaseUI {
     // this.startGame();
   }
 
-  public changeDifficultyAndStartGame = (difficulty: number) => {
+  private changeDifficultyAndStartGame = (difficulty: number) => {
     this.currentDifficulty = difficulty;
     this.startGame();
   }
 
-  public startGame = () => {
+  private startGame = () => {
     console.log(this.currentDifficulty);
     this.navForward(new GameUI(this.currentLevel, this.currentDifficulty));
     if (this.difficultyPopup) {
@@ -129,17 +139,11 @@ export class LevelSelectUI extends BaseUI {
     }
   }
 
-  public leave = () => {
+  private leave = () => {
     this.navBack();
   }
 
-  public navIn = () => {
-    this.resetLevelStuff();
-    this.muter.reset();
-    SoundData.playMusic(0);
-  }
-
-  public navTypingTest = () => {
+  private navTypingTest = () => {
     this.navForward(new TypingTestUI());
   }
 }

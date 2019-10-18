@@ -8,11 +8,18 @@ import { SaveData } from '../utils/SaveData';
 import { ImageRepo, TextureData } from '../utils/TextureData';
 import { TooltipReader } from '../JMGE/TooltipReader';
 import { StringData } from '../data/StringData';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 
 const LABEL = 'WinUI';
 export class WinUI extends BaseUI {
+  private title: PIXI.Text;
+  private muter: MuterOverlay;
+
   constructor(instance: ILevelInstance) {
-    super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: LABEL, labelStyle: { fontSize: 30, fill: 0x3333ff } });
+    super({bgColor: 0x666666});
+
+    this.title = new PIXI.Text('WinUI', { fontSize: 30, fill: 0x3333ff });
+    this.addChild(this.title);
 
     this.calcNewScoreAndDisplay(instance);
 
@@ -20,13 +27,18 @@ export class WinUI extends BaseUI {
     this.addChild(_button);
 
     let muter = new MuterOverlay();
-    muter.x = this.getWidth() - muter.getWidth();
-    muter.y = this.getHeight() - muter.getHeight();
     this.addChild(muter);
   }
 
   public navMenu = () => {
     this.navBack();
+  }
+
+  protected positionElements = (e: IResizeEvent) => {
+    this.title.x = (e.innerBounds.width - this.title.width) / 2;
+    this.title.y = 50;
+    this.muter.x = e.outerBounds.right - this.muter.getWidth();
+    this.muter.y = e.outerBounds.bottom - this.muter.getHeight();
   }
 
   private calcNewScoreAndDisplay(instance: ILevelInstance) {

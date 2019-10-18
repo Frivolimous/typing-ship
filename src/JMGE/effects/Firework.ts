@@ -15,12 +15,11 @@ interface IFirework {
 }
 
 export class Firework {
-  static TEXTURE: PIXI.Texture;
-  static particles: Array<FireworkParticle> = [];
-  static initialized: Boolean = false;
+  public static TEXTURE: PIXI.Texture;
+  private static particles: FireworkParticle[] = [];
+  private static initialized: boolean = false;
 
-
-  static initialize() {
+  private static initialize() {
     if (!this.initialized) {
       let firework = new PIXI.Graphics();
       firework.beginFill(0xffffff);
@@ -31,8 +30,8 @@ export class Firework {
     }
   }
 
-  static onTick() {
-    for (var i = 0; i < this.particles.length; i += 1) {
+  private static onTick() {
+    for (let i = 0; i < this.particles.length; i++) {
       this.particles[i].update();
       if (this.particles[i].alpha < 0.1) {
         this.particles[i].destroy();
@@ -40,7 +39,7 @@ export class Firework {
         i -= 1;
       }
     }
-    //if (this.particles.length>0) console.log(this.particles[0].x+" "+this.particles[0].y);
+    // if (this.particles.length>0) console.log(this.particles[0].x+" "+this.particles[0].y);
   }
 
   constructor(stage: PIXI.Container, x: number, y: number, count: number) {
@@ -55,9 +54,9 @@ export class Firework {
 }
 
 class FireworkParticle extends PIXI.Sprite {
-  fade: number = 0.01;
-  vX: number = 0.6;
-  vY: number = 0.6;
+  private fade: number = 0.01;
+  private vX: number = 0.6;
+  private vY: number = 0.6;
 
   constructor(x: number, y: number) {
     super(Firework.TEXTURE);
@@ -72,7 +71,7 @@ class FireworkParticle extends PIXI.Sprite {
     this.tint = 0xcccccc;
   }
 
-  update = () => {
+  public update = () => {
     this.x += this.vX;
     this.y += this.vY;
     this.alpha -= this.fade;

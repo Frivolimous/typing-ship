@@ -16,40 +16,39 @@ interface ITweenProperty {
   to?: number;
 }
 
-let running = false;
-let tweens: JMTween[] = [];
-
-let _add = (tween: JMTween) => {
-  tweens.push(tween);
-  _tryRun();
-};
-
-let _remove = (tween: JMTween) => {
-  let index = tweens.indexOf(tween);
-  if (index >= 0) {
-    tweens.splice(index, 1);
-  }
-};
-
-let _tryRun = () => {
-  if (!running && tweens.length > 0) {
-    running = true;
-    requestAnimationFrame(_tick);
-  }
-};
-
-let _tick = (time: number) => {
-  running = false;
-  tweens.forEach(tween => tween.tickThis(time));
-  if (!running && tweens.length > 0) {
-    running = true;
-    requestAnimationFrame(_tick);
-  }
-};
-
 export class JMTween<T = any> {
+  private static running = false;
+  private static tweens: JMTween[] = [];
+
+  private static _add = (tween: JMTween) => {
+    JMTween.tweens.push(tween);
+    JMTween._tryRun();
+  }
+
+  private static _remove = (tween: JMTween) => {
+    let index = JMTween.tweens.indexOf(tween);
+    if (index >= 0) {
+      JMTween.tweens.splice(index, 1);
+    }
+  }
+
+  private static _tryRun = () => {
+    if (!JMTween.running && JMTween.tweens.length > 0) {
+      JMTween.running = true;
+      requestAnimationFrame(JMTween._tick);
+    }
+  }
+  private static _tick = (time: number) => {
+    JMTween.running = false;
+    JMTween.tweens.forEach(tween => tween.tickThis(time));
+    if (!JMTween.running && JMTween.tweens.length > 0) {
+      JMTween.running = true;
+      requestAnimationFrame(JMTween._tick);
+    }
+  }
+
   public running = false;
-  public tickThis: (time: number) => void;
+  private tickThis: (time: number) => void;
 
   private onUpdateCallback: (object: T) => void;
   private onCompleteCallback: (object: T) => void;
@@ -57,6 +56,7 @@ export class JMTween<T = any> {
   private properties: ITweenProperty[] = [];
   private hasWait: boolean;
   private _Yoyo: boolean;
+  private _Loop: boolean;
 
   private nextTween: JMTween;
 
@@ -95,37 +95,17 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public stop = () => {
-    this.running = false;
-
-    _remove(this);
+  public loop = (b: boolean = true) => {
+    this._Loop = b;
 
     return this;
   }
 
-  public complete = (time: number) => {
-    this.properties.forEach(property => {
-      // @ts-ignore
-      this.object[property.key] = property.end;
-    });
+  public stop = () => {
+    this.running = false;
 
-    if (this._Yoyo) {
-      this.reverseProps();
-      this.startTime = time;
-      this.endTime = this.startTime + (this.totalTime || 0);
-    } else {
-      this.running = false;
+    JMTween._remove(this);
 
-      _remove(this);
-      this.tickThis = () => {};
-      if (this.onCompleteCallback) this.onCompleteCallback(this.object);
-
-      if (this.nextTween) {
-        this.nextTween.reset();
-        this.nextTween.start();
-        this.nextTween.tickThis(time);
-      }
-    }
     return this;
   }
 
@@ -175,7 +155,7 @@ export class JMTween<T = any> {
       this.object[property.key] = property.start;
     });
 
-    _add(this);
+    JMTween._add(this);
 
     return this;
   }
@@ -232,6 +212,36 @@ export class JMTween<T = any> {
     this.nextTween = tween;
 
     return tween;
+  }
+
+  private complete = (time: number) => {
+    this.properties.forEach(property => {
+      // @ts-ignore
+      this.object[property.key] = property.end;
+    });
+
+    if (this._Loop) {
+      this.reset();
+      this.startTime = time;
+      this.endTime = this.startTime + (this.totalTime || 0);
+    } else if (this._Yoyo) {
+      this.reverseProps();
+      this.startTime = time;
+      this.endTime = this.startTime + (this.totalTime || 0);
+    } else {
+      this.running = false;
+
+      JMTween._remove(this);
+      this.tickThis = () => {};
+      if (this.onCompleteCallback) this.onCompleteCallback(this.object);
+
+      if (this.nextTween) {
+        this.nextTween.reset();
+        this.nextTween.start();
+        this.nextTween.tickThis(time);
+      }
+    }
+    return this;
   }
 
   private firstTick = (time: number) => {

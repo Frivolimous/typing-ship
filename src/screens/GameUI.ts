@@ -34,7 +34,7 @@ export class GameUI extends BaseUI {
   };
 
   constructor(level: number, difficulty: number) {
-    super();
+    super({bgColor: 0x333333});
     let background = new PIXI.Graphics();
     background.beginFill(0).drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
     this.addChild(background);
@@ -81,12 +81,10 @@ export class GameUI extends BaseUI {
     this.addChild(this.healthBar);
 
     this.muter = new MuterOverlay(true);
-    this.muter.x = CONFIG.INIT.SCREEN_WIDTH - this.muter.getWidth();
-    this.muter.y = CONFIG.INIT.SCREEN_HEIGHT - this.muter.getHeight();
     this.addChild(this.muter);
 
     this.addChild(this.overlay);
-    
+
     GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
     GameEvents.NOTIFY_SET_SCORE.addListener(this.setScore);
@@ -97,27 +95,8 @@ export class GameUI extends BaseUI {
     SoundData.playMusicForLevel(level);
   }
 
-  public positionElements = (e: IResizeEvent) => {
-    console.log('draw', e);
-    this.overlay.clear();
-    this.overlay.beginFill(0x333333);
-    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.innerBounds.x - e.outerBounds.x, e.outerBounds.height);
-    this.overlay.drawRect(e.innerBounds.right, e.outerBounds.y, e.outerBounds.right - e.innerBounds.right, e.outerBounds.height);
-    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.outerBounds.width, e.innerBounds.y - e.outerBounds.y);
-    this.overlay.drawRect(e.outerBounds.x, e.innerBounds.bottom, e.outerBounds.width, e.outerBounds.bottom - e.innerBounds.bottom);
-  };
-
-  public navWin = (instance: ILevelInstance) => {
-    this.navForward(new WinUI(instance), this.previousUI, this.fadeTiming);
-  }
-
-  public navLoss = (instance: ILevelInstance) => {
-    this.navForward(new LossUI(instance), this.previousUI, this.fadeTiming);
-  }
-
   public navOut = () => {
     this.manager.running = false;
-    // GameEvents.clearAll();
   }
 
   public dispose = () => {
@@ -132,34 +111,53 @@ export class GameUI extends BaseUI {
     super.dispose();
   }
 
-  public updateProgress = (e: IProgressEvent) => {
+  public navWin = (instance: ILevelInstance) => {
+    this.navForward(new WinUI(instance), this.previousUI, this.fadeTiming);
+  }
+
+  public navLoss = (instance: ILevelInstance) => {
+    this.navForward(new LossUI(instance), this.previousUI, this.fadeTiming);
+  }
+
+  protected positionElements = (e: IResizeEvent) => {
+    this.muter.x = e.innerBounds.right - this.muter.getWidth();
+    this.muter.y = e.innerBounds.bottom - this.muter.getHeight();
+    this.overlay.clear();
+    this.overlay.beginFill(0x333333);
+    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.innerBounds.x - e.outerBounds.x, e.outerBounds.height);
+    this.overlay.drawRect(e.innerBounds.right, e.outerBounds.y, e.outerBounds.right - e.innerBounds.right, e.outerBounds.height);
+    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.outerBounds.width, e.innerBounds.y - e.outerBounds.y);
+    this.overlay.drawRect(e.outerBounds.x, e.innerBounds.bottom, e.outerBounds.width, e.outerBounds.bottom - e.innerBounds.bottom);
+  }
+
+  private updateProgress = (e: IProgressEvent) => {
     let progress = Math.min(100, Math.round(e.current / e.total * 100));
     this.progress.text = String(progress) + '%';
   }
 
-  public updateText = (e: IWordEvent) => {
+  private updateText = (e: IWordEvent) => {
     this.wordDisplay.text = e.word;
   }
 
-  public showMinusText = () => {
+  private showMinusText = () => {
     new FlyingText('-1', { fontFamily: 'Arial', fontSize: 14, fill: 0xff0000 }, this.wordDisplay.x + this.wordDisplay.width, this.wordDisplay.y, this);
   }
 
-  public setScore = (e: IScoreEvent) => {
+  private setScore = (e: IScoreEvent) => {
     this.score.text = String(e.newScore);
   }
 
-  public setPlayerHealth = (e: IHealthEvent) => {
+  private setPlayerHealth = (e: IHealthEvent) => {
     this.healthBar.setValue(e.newHealth, CONFIG.GAME.playerHealth);
   }
 
-  public addHealWord = (healWord: TextObject) => {
+  private addHealWord = (healWord: TextObject) => {
     this.addChild(healWord);
     healWord.x = this.healthBar.x + this.healthBar.getWidth();
     healWord.y = this.healthBar.y + this.healthBar.getHeight();
   }
 
-  public pauseGame = (e: IPauseEvent) => {
+  private pauseGame = (e: IPauseEvent) => {
     this.pauseOverlay.changeState(e.paused);
   }
 }

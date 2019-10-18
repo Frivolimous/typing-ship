@@ -14,7 +14,6 @@ import { ISpawnEvent } from '../data/LevelData';
 import { WordInput } from './engine/WordInput';
 import { TextObject } from './text/TextObject';
 import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from '../utils/GameEvents';
-import { JMInteractionEvents, IKeyboardEvent } from '../JMGE/events/JMInteractionEvents';
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
 import { GameSprite } from './objects/GameSprite';
@@ -74,7 +73,8 @@ export class GameManager {
     this.container.addObject(this.player, DisplayLayer.DEFAULT);
 
     GameEvents.ticker.add(this.onTick);
-    JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
+    // JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
+    window.addEventListener('keydown', this.keyDown);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
 
     GameEvents.REQUEST_HEAL_PLAYER.addListener(this.player.addHealth);
@@ -86,7 +86,7 @@ export class GameManager {
   public dispose = () => {
     console.log('dispose');
     GameEvents.ticker.remove(this.onTick);
-    JMInteractionEvents.KEY_DOWN.removeListener(this.keyDown);
+    window.removeEventListener('keydown', this.keyDown);
     GameEvents.NOTIFY_LETTER_DELETED.removeListener(this.onLetterDelete);
 
     GameEvents.REQUEST_HEAL_PLAYER.removeListener(this.player.addHealth);
@@ -99,7 +99,7 @@ export class GameManager {
     this.display.destroy();
   }
 
-  public keyDown = (e: IKeyboardEvent) => {
+  public keyDown = (e: KeyboardEvent) => {
     if (!this.running || !this.interactive) {
       if (e.key === ' ') {
         GameEvents.REQUEST_PAUSE_GAME.publish({paused: false});
