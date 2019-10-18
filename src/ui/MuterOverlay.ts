@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as JMBUI from '../JMGE/JMBUI';
 import { TextureData } from '../utils/TextureData';
-import { GameEvents, IPauseEvent } from '../game/engine/GameEvents';
+import { GameEvents, IPauseEvent } from '../utils/GameEvents';
 import { SaveData } from '../utils/SaveData';
 import { SoundData } from '../utils/SoundData';
 

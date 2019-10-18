@@ -3,7 +3,7 @@ import { GameSprite } from './GameSprite';
 import { ICommand } from '../../data/LevelData';
 import { CONFIG } from '../../Config';
 import { Scanner } from './Scanner';
-import { GameEvents } from '../engine/GameEvents';
+import { GameEvents } from '../../utils/GameEvents';
 import { GameManager } from '../GameManager';
 
 export class BossShip extends GameSprite {

@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { TextObject } from '../text/TextObject';
 import { DisplayLayer } from '../engine/ObjectManager';
-import * as JMBL from '../../JMGE/JMBL';
-import { GameEvents } from '../engine/GameEvents';
+import { GameEvents } from '../../utils/GameEvents';
 
 export class BaseObject extends PIXI.Container {
   public layer: DisplayLayer = DisplayLayer.DEFAULT;

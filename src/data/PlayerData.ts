@@ -2,8 +2,7 @@ export enum BadgeState {
   NONE,
   BRONZE,
   SILVER,
-  GOLD,
-  PLATINUM,
+  GOLD
 }
 
 export enum Badges {
@@ -34,6 +33,7 @@ export class ExtrinsicModel {
     if (!data) {
       this.data = {
         badges: [],
+        tutorials: [],
         levels: [
           // {score: 100, highestDifficulty: 0, killBadge: 0, healthBadge: 3},
           // {score: 100, highestDifficulty: 1, killBadge: 1, healthBadge: 2},
@@ -61,6 +61,7 @@ export class ExtrinsicModel {
 
 export interface IExtrinsicData {
   badges: boolean[];
+  tutorials: boolean[];
   levels: ILevelScores[];
   scores: {
     kills: number,

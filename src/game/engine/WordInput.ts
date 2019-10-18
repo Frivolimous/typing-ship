@@ -1,7 +1,5 @@
 import { TextObject } from '../text/TextObject';
-import * as JMBL from '../../JMGE/JMBL';
-import { PlayerShip } from '../objects/PlayerShip';
-import { GameEvents, IHealthEvent, IWordEvent } from './GameEvents';
+import { GameEvents, IHealthEvent, IWordEvent } from '../../utils/GameEvents';
 import { CONFIG } from '../../Config';
 
 export class WordInput {

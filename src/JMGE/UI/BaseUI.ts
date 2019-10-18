@@ -69,7 +69,7 @@ export class BaseUI extends JMBUI.BasicElement {
       this.parent.removeChild(this);
       nextUI.navIn();
       if (this.previousResize) {
-        nextUI.positionElements(this.previousResize);
+        nextUI.onResize(this.previousResize);
       }
       let screen2 = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).fadeOut(fadeTiming.fadeOut);
       nextUI.addChild(screen2);

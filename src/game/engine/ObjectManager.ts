@@ -7,7 +7,7 @@ import { Laser } from '../../JMGE/effects/Laser';
 import { CONFIG } from '../../Config';
 import { GameSprite } from '../objects/GameSprite';
 import { TextObject } from '../text/TextObject';
-import { GameEvents } from './GameEvents';
+import { GameEvents } from '../../utils/GameEvents';
 
 export enum DisplayLayer {
   DEFAULT,

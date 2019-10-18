@@ -1,6 +1,7 @@
-import { JMEventListener } from '../../JMGE/events/JMEventListener';
-import { BaseObject } from '../objects/BaseObject';
-import { JMTicker } from '../../JMGE/events/JMTicker';
+import { JMEventListener } from '../JMGE/events/JMEventListener';
+import { BaseObject } from '../game/objects/BaseObject';
+import { JMTicker } from '../JMGE/events/JMTicker';
+import { ILevelInstance } from '../data/LevelInstance';
 
 export const GameEvents = {
   ticker: JMTicker,
@@ -17,30 +18,10 @@ export const GameEvents = {
   NOTIFY_SET_PROGRESS: new JMEventListener<IProgressEvent>(),
   NOTIFY_SET_HEALTH: new JMEventListener<IHealthEvent>(),
   NOTIFY_BOSS_DAMAGED: new JMEventListener<IHealthEvent>(),
-  NOTIFY_COMMANDS_COMPLETE: new JMEventListener<IObjectEvent>(),
+  NOTIFY_ENEMY_ESCAPED: new JMEventListener<IObjectEvent>(),
   NOTIFY_ENEMY_DESTROYED: new JMEventListener<IObjectEvent>(),
   NOTIFY_TEST_COMPLETE: new JMEventListener<ITestEvent>(),
-  // NOTIFY_ACHIEVEMENT: new JMEventListener<{index: number}>(),
-
-  clearAll : () => {
-    JMTicker.clear(),
-    GameEvents.REQUEST_HEAL_PLAYER.clear();
-    GameEvents.REQUEST_PAUSE_GAME.clear();
-    GameEvents.REQUEST_MUTE_GAME.clear();
-    GameEvents.REQUEST_OVERFLOW_WORD.clear();
-    GameEvents.NOTIFY_UPDATE_INPUT_WORD.clear();
-    GameEvents.NOTIFY_LETTER_ADDED.clear();
-    GameEvents.NOTIFY_LETTER_DELETED.clear();
-    GameEvents.NOTIFY_WORD_COMPLETED.clear();
-    GameEvents.NOTIFY_OBJECT_WORD_COMPLETED.clear();
-    GameEvents.NOTIFY_SET_SCORE.clear();
-    GameEvents.NOTIFY_SET_PROGRESS.clear();
-    GameEvents.NOTIFY_SET_HEALTH.clear();
-    GameEvents.NOTIFY_BOSS_DAMAGED.clear();
-    GameEvents.NOTIFY_COMMANDS_COMPLETE.clear();
-    GameEvents.NOTIFY_ENEMY_DESTROYED.clear();
-    // GameEvents.NOTIFY_TEST_COMPLETE.clear();
-  },
+  NOTIFY_LEVEL_COMPLETED: new JMEventListener<ILevelEvent>(),
 };
 
 export interface IProgressEvent {
@@ -89,4 +70,11 @@ export interface ILetterEvent {
 
 export interface ITestEvent {
   wpm: number;
+}
+
+export interface ILevelEvent {
+  levelIndex: number;
+  difficulty: number;
+  levelInstance: ILevelInstance;
+  win: boolean;
 }

@@ -18,7 +18,7 @@ export class TypingTestResultUI extends PIXI.Container {
     frame.beginFill(diffColor);
     frame.drawRect(diffText.x - 5, diffText.y - 5, diffText.width + 10, diffText.height + 10);
 
-    this.addChild(frame, field, diffText);
+    this.addChild<PIXI.DisplayObject>(frame, field, diffText);
   }
 
   public getWidth = () => 400;

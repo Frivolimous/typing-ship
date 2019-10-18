@@ -5,16 +5,14 @@ import { WinUI } from './WinUI';
 import { LossUI } from './LossUI';
 import { Gauge } from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
-import { GameEvents, IHealthEvent, IScoreEvent, IWordEvent, IProgressEvent, IPauseEvent } from '../game/engine/GameEvents';
+import { GameEvents, IHealthEvent, IScoreEvent, IWordEvent, IProgressEvent, IPauseEvent } from '../utils/GameEvents';
 import { TextObject } from '../game/text/TextObject';
 import { FlyingText } from '../JMGE/effects/FlyingText';
-import { TutorialManager } from '../game/engine/TutorialManager';
-import { AchievementManager } from '../game/engine/AchievementManager';
 import { ILevelInstance } from '../data/LevelInstance';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
-import { PlayerShip } from '../game/objects/PlayerShip';
+import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -25,6 +23,7 @@ export class GameUI extends BaseUI {
   private wordDisplay: PIXI.Text;
   private progress: PIXI.Text;
   private score: PIXI.Text;
+  private overlay: PIXI.Graphics = new PIXI.Graphics();
 
   private fadeTiming: IFadeTiming = {
     color: 0xffffff,
@@ -48,10 +47,6 @@ export class GameUI extends BaseUI {
     this.pauseOverlay = new PauseOverlay(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT));
     this.addChild(this.pauseOverlay);
 
-    this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
-    this.wordDisplay.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
-    this.addChild(this.wordDisplay);
-
     let UILayer = new PIXI.Graphics();
     UILayer.beginFill(0x002233);
     // UILayer.drawRect(0, CONFIG.INIT.SCREEN_HEIGHT - 120, CONFIG.INIT.SCREEN_WIDTH, 120);
@@ -66,6 +61,10 @@ export class GameUI extends BaseUI {
                         0, CONFIG.INIT.SCREEN_HEIGHT,
                       ]);
     this.addChild(UILayer);
+
+    this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
+    this.wordDisplay.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
+    this.addChild(this.wordDisplay);
 
     this.progress = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
     this.progress.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
@@ -86,15 +85,8 @@ export class GameUI extends BaseUI {
     this.muter.y = CONFIG.INIT.SCREEN_HEIGHT - this.muter.getHeight();
     this.addChild(this.muter);
 
-    let BUFFER = CONFIG.INIT.STAGE_BUFFER * 2;
-    let overlay = new PIXI.Graphics();
-    overlay.beginFill(0x333333);
-    overlay.drawRect(0, 0, -BUFFER, CONFIG.INIT.SCREEN_HEIGHT);
-    overlay.drawRect(CONFIG.INIT.SCREEN_WIDTH, 0, BUFFER, CONFIG.INIT.SCREEN_HEIGHT);
-    overlay.drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, -BUFFER);
-    overlay.drawRect(0, CONFIG.INIT.SCREEN_HEIGHT, CONFIG.INIT.SCREEN_WIDTH, BUFFER);
-    this.addChild(overlay);
-
+    this.addChild(this.overlay);
+    
     GameEvents.NOTIFY_UPDATE_INPUT_WORD.addListener(this.updateText);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.showMinusText);
     GameEvents.NOTIFY_SET_SCORE.addListener(this.setScore);
@@ -104,6 +96,16 @@ export class GameUI extends BaseUI {
 
     SoundData.playMusicForLevel(level);
   }
+
+  public positionElements = (e: IResizeEvent) => {
+    console.log('draw', e);
+    this.overlay.clear();
+    this.overlay.beginFill(0x333333);
+    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.innerBounds.x - e.outerBounds.x, e.outerBounds.height);
+    this.overlay.drawRect(e.innerBounds.right, e.outerBounds.y, e.outerBounds.right - e.innerBounds.right, e.outerBounds.height);
+    this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.outerBounds.width, e.innerBounds.y - e.outerBounds.y);
+    this.overlay.drawRect(e.outerBounds.x, e.innerBounds.bottom, e.outerBounds.width, e.outerBounds.bottom - e.innerBounds.bottom);
+  };
 
   public navWin = (instance: ILevelInstance) => {
     this.navForward(new WinUI(instance), this.previousUI, this.fadeTiming);

@@ -6,10 +6,12 @@ import { MenuUI } from './screens/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
 import { TooltipReader } from './JMGE/TooltipReader';
-import { TutorialManager } from './game/engine/TutorialManager';
-import { AchievementManager } from './game/engine/AchievementManager';
 import { JMRect } from './JMGE/others/JMRect';
 import { JMInteractionEvents } from './JMGE/events/JMInteractionEvents';
+import { ATSManager } from './utils/ATSManager';
+import { genAchievements, genTutorials, genScores } from './data/ATSData';
+import { AchievementPopup } from './ui/AchievementPopup';
+import { TutorialPopup } from './ui/TutorialPopup';
 // import { ScoreTracker } from './utils/ScoreTracker';
 
 new class Facade {
@@ -23,8 +25,7 @@ new class Facade {
   // public currentModule: any;
 
   private tooltipReader: TooltipReader;
-  private tutorials: TutorialManager;
-  private achievements: AchievementManager;
+  private ats: ATSManager;
 
   // windowToLocal=(e:any):PIXI.Point=>{
   // 	return new PIXI.Point((e.x+this.stageBorders.x)*this._Resolution,(e.y+this.stageBorders.y)*this._Resolution);
@@ -114,7 +115,7 @@ new class Facade {
     this.innerBorders = new JMRect(0, 0, CONFIG.STAGE.SCREEN_WIDTH, CONFIG.STAGE.SCREEN_HEIGHT);
 
     finishResize();
-    this.tooltipReader = new TooltipReader(this.app.stage, this.stageBorders);
+    this.tooltipReader = new TooltipReader(this.screen, this.stageBorders);
     JMBL.init(this.app);
     TextureData.init(this.app.renderer);
     // new ScoreTracker();
@@ -126,8 +127,15 @@ new class Facade {
     // this will happen after 'preloader'
 
     SaveData.init().then(() => {
-      this.tutorials = new TutorialManager(this.app.stage);
-      this.achievements = new AchievementManager(this.app.stage);
+      let extrinsic = SaveData.getExtrinsic();
+      this.ats = new ATSManager({
+        Achievements: genAchievements(),
+        Tutorials: genTutorials(),
+        Scores: genScores(),
+        achievementPopup: AchievementPopup,
+        tutorialPopup: TutorialPopup,
+        canvas: this.screen,
+      });
 
       let menu = new MenuUI();
       this.screen.addChild(menu);

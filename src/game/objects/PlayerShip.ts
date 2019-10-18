@@ -1,7 +1,7 @@
 import { GameSprite } from './GameSprite';
 import { Charge } from '../../JMGE/effects/Charge';
 import { ImageRepo } from '../../utils/TextureData';
-import { IHealEvent, GameEvents } from '../engine/GameEvents';
+import { IHealEvent, GameEvents } from '../../utils/GameEvents';
 import { CONFIG } from '../../Config';
 
 export class PlayerShip extends GameSprite {
@@ -28,7 +28,7 @@ export class PlayerShip extends GameSprite {
     // this.addChild(graphics,this.charge);
 
     this.makeDisplay(ImageRepo.player, 0.1);
-    this.addChild(this.laserCharge, this.empCharge, this.shieldView);
+    this.addChild<PIXI.DisplayObject>(this.laserCharge, this.empCharge, this.shieldView);
 
     this.shieldView.scale.set(0.35, 0.35);
     this.firePoint.set(0, -20);

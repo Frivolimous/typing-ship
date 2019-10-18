@@ -6,8 +6,7 @@ import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { TextureData } from '../utils/TextureData';
 import { JMTween } from '../JMGE/JMTween';
-import { StringData } from '../data/StringData';
-import { GameEvents } from '../game/engine/GameEvents';
+import { GameEvents } from '../utils/GameEvents';
 import { SaveData } from '../utils/SaveData';
 import { TypingTestResultUI } from '../ui/TypingTestResultUI';
 

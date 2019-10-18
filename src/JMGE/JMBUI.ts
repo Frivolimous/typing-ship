@@ -106,7 +106,7 @@ export class BasicElement extends PIXI.Container {
 }
 
 export class InteractiveElement extends BasicElement {
-  downFunction: Function;
+  downFunction: (e: any) => void;
   overlay: PIXI.Graphics;
   displayState: DisplayState;
   disabled: boolean;
@@ -665,7 +665,7 @@ export interface GraphicOptions {
   labelStyle?: PIXI.TextStyleOptions,
 
   output?: Function,
-  downFunction?: Function,
+  downFunction?: (e: any) => void,
   onOver?: Function,
   onOut?: Function,
   displayState?: DisplayState,

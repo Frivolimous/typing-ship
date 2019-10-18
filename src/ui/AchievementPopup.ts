@@ -18,7 +18,7 @@ export class AchievementPopup extends PIXI.Container {
 
     let field = new PIXI.Text(text, {fill: 0xffffff, fontSize: 11});
 
-    this.addChild(background, titleField, field);
+    this.addChild<PIXI.DisplayObject>(background, titleField, field);
     titleField.position.set((300 - titleField.width) / 2, 5);
     field.position.set(5, 20);
     new JMTween<AchievementPopup>(this, 200).from({alpha: 0}).start().chain(this, 1000).to({alpha: 0}).wait(5000).onComplete(() => {

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { ExtrinsicModel } from '../data/PlayerData';
 
 export class SaveData {
@@ -13,6 +14,7 @@ export class SaveData {
           SaveData.loadExtrinsic().then(extrinsic => {
             if (extrinsic) {
               SaveData.extrinsic = extrinsic;
+              SaveData._Extrinsic = _.cloneDeep(SaveData.extrinsic);
             } else {
               SaveData.confirmReset();
             }
@@ -32,7 +34,7 @@ export class SaveData {
       return SaveData.extrinsic;
     }
   }
-
+  
   public static async saveExtrinsic(extrinsic?: ExtrinsicModel): Promise<ExtrinsicModel> {
     return new Promise((resolve) => {
       extrinsic = extrinsic || this.extrinsic;
@@ -48,10 +50,12 @@ export class SaveData {
   }
 
   private static extrinsic: ExtrinsicModel;
+  private static _Extrinsic: ExtrinsicModel;
   private static VERSION = 8;
 
   private static confirmReset = () => {
     SaveData.extrinsic = new ExtrinsicModel();
+    SaveData._Extrinsic = _.cloneDeep(SaveData.extrinsic);
   }
   
   private static saveExtrinsicToLocal(extrinsic?: ExtrinsicModel) {

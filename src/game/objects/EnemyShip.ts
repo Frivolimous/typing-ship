@@ -4,9 +4,7 @@ import { Charge } from '../../JMGE/effects/Charge';
 import { IEnemyConfig, EnemyData } from '../../data/EnemyData';
 import { ActionType } from '../../data/Types';
 import { Turret } from './Turret';
-import * as JMBL from '../../JMGE/JMBL';
-import { CONFIG } from '../../Config';
-import { GameEvents } from '../engine/GameEvents';
+import { GameEvents } from '../../utils/GameEvents';
 import { JMTween, JMEasing } from '../../JMGE/JMTween';
 
 interface IEnemyCallbacks {
@@ -148,7 +146,7 @@ export class EnemyShip extends GameSprite {
       if (this.callbacks.onFinishCommands) {
         this.callbacks.onFinishCommands(this);
       }
-      GameEvents.NOTIFY_COMMANDS_COMPLETE.publish({object: this});
+      GameEvents.NOTIFY_ENEMY_ESCAPED.publish({object: this});
       return;
     }
     command = this.config.commands[0];

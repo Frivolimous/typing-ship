@@ -13,7 +13,7 @@ import { ActionControl } from './engine/ActionControl';
 import { ISpawnEvent } from '../data/LevelData';
 import { WordInput } from './engine/WordInput';
 import { TextObject } from './text/TextObject';
-import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from './engine/GameEvents';
+import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from '../utils/GameEvents';
 import { JMInteractionEvents, IKeyboardEvent } from '../JMGE/events/JMInteractionEvents';
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
@@ -36,7 +36,7 @@ export class GameManager {
   public levelInstance: ILevelInstance;
   // distanceRate:number=.0002;
 
-  constructor(level: number = 0, difficulty: number = 1, private ui: GameUI) {
+  constructor(private levelIndex: number = 0, private difficulty: number = 1, private ui: GameUI) {
     let gameSpeed = difficulty * 0.5;
 
     this.starfield = new Starfield(CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
@@ -44,10 +44,10 @@ export class GameManager {
     this.actionC.missileRate = 0.4;
 
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
-    this.levelEvents.loadLevel(level, gameSpeed);
+    this.levelEvents.loadLevel(levelIndex, gameSpeed);
 
     this.levelInstance = {
-      level,
+      level: levelIndex,
       difficulty,
       score: 0,
       gameSpeed,
@@ -70,7 +70,7 @@ export class GameManager {
     this.player.setHealth(CONFIG.GAME.playerHealth);
     this.setScore(0);
 
-    this.display.addChild(this.starfield, this.container);
+    this.display.addChild<PIXI.DisplayObject>(this.starfield, this.container);
     this.container.addObject(this.player, DisplayLayer.DEFAULT);
 
     GameEvents.ticker.add(this.onTick);
@@ -140,6 +140,7 @@ export class GameManager {
       this.interactive = false;
       this.container.makeExplosionAt(this.player.x, this.player.y, 50);
       this.player.visible = false;
+      GameEvents.NOTIFY_LEVEL_COMPLETED.publish({levelIndex: this.levelIndex, difficulty: this.difficulty, win: false, levelInstance: this.levelInstance});
       this.ui.navLoss(this.levelInstance);
     }
   }
@@ -148,6 +149,7 @@ export class GameManager {
     if (!this.levelInstance.levelEnded) {
       if (this.container.numObjects() <= 1) {
         this.levelInstance.levelEnded = true;
+        GameEvents.NOTIFY_LEVEL_COMPLETED.publish({levelIndex: this.levelIndex, difficulty: this.difficulty, win: true, levelInstance: this.levelInstance});
         this.ui.navWin(this.levelInstance);
       }
     }
@@ -189,6 +191,7 @@ export class GameManager {
       console.log('not enemy');
     }
     this.addScore(enemy.value);
+    GameEvents.NOTIFY_ENEMY_DESTROYED.publish({object: enemy});
   }
 
   public addScore = (add: number) => {

@@ -14,7 +14,7 @@ export class PauseOverlay extends PIXI.Container {
 
     let text = new PIXI.Text('- PAUSED -', {fill: 0xffff00, fontSize: 30, fontWeight: 'bold'});
     text.position.set((bounds.width - text.width) / 2, (bounds.height - text.height) / 2);
-    this.addChild(background, text);
+    this.addChild<PIXI.DisplayObject>(background, text);
     // this.visible = false;
     this.alpha = 0;
   }

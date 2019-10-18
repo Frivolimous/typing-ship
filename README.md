@@ -12,7 +12,6 @@ TO-DO:
 
 #Game UI
 - RESPONSIVE LAYOUT
-- RESPONSIVE "MASKING"
 
 #Menu UI
 - Badges - INIT
@@ -20,15 +19,14 @@ TO-DO:
 - RESPONSIVE LAYOUT
 
 #Systems
-- Achievements - BASICS
-- Tutorials - BASICS
+- Achievements - FINISH POPULATING
+- Tutorials - FINISH POPULATING? - DECIDE WHAT / IF?
 - Sound FX - IMPLEMENT
 - Online Saves
 - Level Gen - change timing to SECONDS instead of ???
 
 #Save System
-- Achievements
-- Tutorial Progress
+- Tutorial Progress 
 
 #Outsourcing
 - New Graphics
@@ -46,12 +44,12 @@ TO-DO:
 - Typing Test UI
 
 
-#Mobile
+#Mobile???
 - Tooltip - Tap
 - Mobile Keyboard
 
 #Stack
 - Cordova
 - Package for Steam
-- Package for Mobile
+- Package for Mobile???
 - External Achievements

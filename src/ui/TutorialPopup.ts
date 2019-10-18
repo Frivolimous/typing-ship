@@ -9,7 +9,7 @@ export class TutorialPopup extends PIXI.Container {
 
     let field = new PIXI.Text(text);
 
-    this.addChild(background, field);
+    this.addChild<PIXI.DisplayObject>(background, field);
   }
 }
 
