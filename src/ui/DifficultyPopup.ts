@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { StringData } from '../data/StringData';
 import { Colors } from '../data/Colors';
+import { Button } from './buttons/Button';
 
 export class DifficultyPopup extends PIXI.Container {
   constructor(highscore: number, private callback: (i: number) => void) {
@@ -28,8 +28,9 @@ export class DifficultyPopup extends PIXI.Container {
 
   }
 
-  public makeButton(text: string, index: number, y: number, bgColor: number) {
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 70, height: 30, x: 5, y, label: text, output: () => this.callback(index), bgColor });
-    this.addChild(_button);
+  public makeButton(text: string, index: number, y: number, color: number) {
+    let button = new Button({ width: 70, height: 30, label: text, onClick: () => this.callback(index), color });
+    button.position.set(5, y);
+    this.addChild(button);
   }
 }

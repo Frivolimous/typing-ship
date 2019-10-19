@@ -1,11 +1,10 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { GameUI } from './GameUI';
 import { DifficultyPopup } from '../ui/DifficultyPopup';
 import { SaveData } from '../utils/SaveData';
-import { LevelButton } from '../ui/LevelButton';
+import { LevelButton } from '../ui/buttons/LevelButton';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { SoundData } from '../utils/SoundData';
 import { TypingTestUI } from './TypingTestUI';
@@ -13,6 +12,8 @@ import { StringData } from '../data/StringData';
 import { Colors } from '../data/Colors';
 import { TooltipReader } from '../JMGE/TooltipReader';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
+import { BasicElement } from '../ui/BasicElement';
 
 export class LevelSelectUI extends BaseUI {
   public currentLevel: number = 0;
@@ -20,24 +21,28 @@ export class LevelSelectUI extends BaseUI {
 
   public NUMSHOWN: number = 3;
   public C_SHOWN: number = 0;
-  public nextB: JMBUI.Button;
-  public prevB: JMBUI.Button;
+  public nextB: Button;
+  public prevB: Button;
   public difficultyPopup: DifficultyPopup;
   public muter: MuterOverlay;
 
   public levelButtons: LevelButton[] = [];
-  private typingTestButton: JMBUI.Button;
+  private typingTestButton: Button;
   private wpmText: PIXI.Text;
   private recommendedSuper: PIXI.Text;
-  private recommended: JMBUI.BasicElement;
+  private recommended: BasicElement;
 
   constructor() {
     super({ bgColor: 0x666666 });
 
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 50, label: 'Menu', output: this.leave });
+    let _button: Button = new Button({ width: 100, height: 30, label: 'Menu', onClick: this.leave });
+    _button.x = 20;
+    _button.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(_button);
 
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Typing Test', output: this.navTypingTest });
+    _button = new Button({ width: 100, height: 30, label: 'Typing Test', onClick: this.navTypingTest });
+    _button.x = 20;
+    _button.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
     this.addChild(_button);
     this.typingTestButton = _button;
 
@@ -56,7 +61,9 @@ export class LevelSelectUI extends BaseUI {
       }
     });
 
-    _button = new JMBUI.Button({ width: 100, height: 30, x: 20, y: CONFIG.INIT.SCREEN_HEIGHT - 150, label: 'TEST LEVEL', output: () => (this.currentLevel = -2, this.startGame()) });
+    _button = new Button({ width: 100, height: 30, label: 'TEST LEVEL', onClick: () => (this.currentLevel = -2, this.startGame()) });
+    _button.x = 20;
+    _button.y = CONFIG.INIT.SCREEN_HEIGHT - 150;
     this.addChild(_button);
 
     this.muter = new MuterOverlay();
@@ -93,7 +100,9 @@ export class LevelSelectUI extends BaseUI {
     }
 
     if (recommended) {
-      this.recommended = new JMBUI.BasicElement({label: StringData.DIFFICULTY[recommended], bgColor: Colors.DIFFICULTY[recommended], width: 100, height: 30, y: this.typingTestButton.y, x: this.typingTestButton.x + this.typingTestButton.getWidth() + 10});
+      this.recommended = new BasicElement({label: StringData.DIFFICULTY[recommended], color: Colors.DIFFICULTY[recommended], width: 100, height: 30});
+      this.recommended.x = this.typingTestButton.x + this.typingTestButton.getWidth() + 10;
+      this.recommended.y = this.typingTestButton.y;
       TooltipReader.addTooltip(this.recommended, {title: StringData.RECOMMENDED_TITLE, description: StringData.RECOMMENDED_DESC});
       this.addChild(this.recommended);
       if (!this.wpmText) {

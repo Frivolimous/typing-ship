@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { JMTextureCache } from '../JMGE/others/JMTextureCache';
+import { JMTextureCache, sharedTextureCache } from '../JMGE/others/JMTextureCache';
 import { Colors } from '../data/Colors';
 
 export const ImageRepo = {
@@ -37,8 +37,8 @@ export class TextureData {
   public static noSound: PIXI.Texture;
   public static bigX: PIXI.Texture;
 
-  public static init = (renderer: any) => {
-    TextureData.cache = new JMTextureCache(renderer);
+  public static init = () => {
+    TextureData.cache = sharedTextureCache;
 
     let _graphic = new PIXI.Graphics();
     _graphic.beginFill(0xffffff);

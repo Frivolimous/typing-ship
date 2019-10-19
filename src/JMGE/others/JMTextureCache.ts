@@ -1,5 +1,15 @@
 import * as PIXI from 'pixi.js';
 
+let initialized: boolean = false;
+export let sharedTextureCache: JMTextureCache;
+
+export function initSharedCache(app: PIXI.Application) {
+  if (!initialized) {
+    sharedTextureCache = new JMTextureCache(app.renderer);
+    initialized = true;
+  }
+}
+
 export class JMTextureCache {
   private cache: { [key: string]: PIXI.Texture } = {};
 

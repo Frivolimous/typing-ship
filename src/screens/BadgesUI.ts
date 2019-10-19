@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
 import { SaveData } from '../utils/SaveData';
 import { BadgeState } from '../data/PlayerData';
@@ -8,6 +7,9 @@ import { BaseUI } from '../JMGE/UI/BaseUI';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { genAchievements } from '../data/ATSData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
+import { MaskedWindow } from '../ui/elements/MaskedWindow';
+import { Scrollbar } from '../ui/elements/Scrollbar';
 
 export class BadgesUI extends BaseUI {
   private muter: MuterOverlay;
@@ -28,11 +30,15 @@ export class BadgesUI extends BaseUI {
     ttb.drawRect(395, 45, 355, 45);
     ttb.drawRect(395, 95, 355, 305);
 
-    let _button: JMBUI.Button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.leave });
+    let _button = new Button({ width: 100, height: 30, label: 'Menu', onClick: this.leave });
+    _button.position.set(CONFIG.INIT.SCREEN_WIDTH - 150, CONFIG.INIT.SCREEN_HEIGHT - 100);
     this.addChild(_button);
-    let scrollCanvas = new PIXI.Container();
-    let scroll = new JMBUI.MaskedWindow(scrollCanvas, { x: 20, y: 20, width: 300, height: CONFIG.INIT.SCREEN_HEIGHT - 40, autoSort: true });
-    let scrollbar = new JMBUI.Scrollbar({ height: CONFIG.INIT.SCREEN_HEIGHT - 40, x: 320, y: 20 });
+
+    let scroll = new MaskedWindow({ width: 300, height: CONFIG.INIT.SCREEN_HEIGHT - 40, autoSort: true });
+    scroll.position.set(20, 20);
+
+    let scrollbar = new Scrollbar({ width: 10, height: CONFIG.INIT.SCREEN_HEIGHT - 40, bgColor: 0x333333, moverColor: 0x999999});
+    scrollbar.position.set(320, 20);
     scroll.addScrollbar(scrollbar);
     this.addChild<PIXI.DisplayObject>(scroll, scrollbar);
 

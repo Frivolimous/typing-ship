@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
 
 export class CreditsUI extends BaseUI {
   private title: PIXI.Text;
@@ -15,7 +15,8 @@ export class CreditsUI extends BaseUI {
     this.title = new PIXI.Text('CreditsUI', { fontSize: 30, fill: 0x3333ff });
     this.addChild(this.title);
 
-    let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
+    let _button = new Button({ width: 100, height: 30, label: 'Menu', onClick: this.navMenu });
+    _button.position.set(CONFIG.INIT.SCREEN_WIDTH - 150, CONFIG.INIT.SCREEN_HEIGHT - 100);
     this.addChild(_button);
 
     this.muter = new MuterOverlay();

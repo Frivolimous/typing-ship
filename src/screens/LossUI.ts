@@ -1,12 +1,11 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
-
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { ILevelInstance } from '../data/LevelInstance';
 import { SaveData } from '../utils/SaveData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
 
 export class LossUI extends BaseUI {
   private title: PIXI.Text;
@@ -37,7 +36,8 @@ export class LossUI extends BaseUI {
     this.addChild(text);
     text.position.set(50, 50);
 
-    let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
+    let _button = new Button({ width: 100, height: 30, label: 'Menu', onClick: this.navMenu });
+    _button.position.set(CONFIG.INIT.SCREEN_WIDTH - 150, CONFIG.INIT.SCREEN_HEIGHT - 100);
     this.addChild(_button);
 
     this.muter = new MuterOverlay();

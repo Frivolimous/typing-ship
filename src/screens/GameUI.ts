@@ -3,7 +3,6 @@ import { BaseUI, IFadeTiming } from '../JMGE/UI/BaseUI';
 import { GameManager } from '../game/GameManager';
 import { WinUI } from './WinUI';
 import { LossUI } from './LossUI';
-import { Gauge } from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
 import { GameEvents, IHealthEvent, IScoreEvent, IWordEvent, IProgressEvent, IPauseEvent } from '../utils/GameEvents';
 import { TextObject } from '../game/text/TextObject';
@@ -13,6 +12,7 @@ import { MuterOverlay } from '../ui/MuterOverlay';
 import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Gauge } from '../ui/elements/Gauge';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -75,8 +75,8 @@ export class GameUI extends BaseUI {
     this.score.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
     this.addChild(this.score);
 
-    this.healthBar = new Gauge(0xff0000);
-    this.healthBar.x = (CONFIG.INIT.SCREEN_WIDTH - this.healthBar.getWidth()) / 2;
+    this.healthBar = new Gauge({color: 0xff0000, bgColor: 0x660000, width: 100, height: 20, rounding: 10});
+    this.healthBar.x = (CONFIG.INIT.SCREEN_WIDTH - 100) / 2;
     this.healthBar.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.healthBar);
 

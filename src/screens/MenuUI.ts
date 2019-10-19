@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { LevelSelectUI } from './LevelSelectUI';
 import { CONFIG } from '../Config';
@@ -14,6 +13,7 @@ import { StringData } from '../data/StringData';
 import { TooltipReader } from '../JMGE/TooltipReader';
 import { JMRect } from '../JMGE/others/JMRect';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
 // import { GameManager } from '../TDDR/GameManager';
 // import { facade };
 
@@ -22,21 +22,24 @@ export class MenuUI extends BaseUI {
 
   private title: PIXI.Text;
 
-  private startB: JMBUI.Button;
-  private typingTestB: JMBUI.Button;
-  private badgeB: JMBUI.Button;
-  private creditsB: JMBUI.Button;
+  private startB: Button;
+  private typingTestB: Button;
+  private badgeB: Button;
+  private creditsB: Button;
 
   constructor() {
     super({bgColor: 0x666666});
     this.title = new PIXI.Text('Millenium Typer', { fontSize: 30, fill: 0x3333ff });
     this.addChild(this.title);
 
-    this.startB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
-    this.typingTestB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 240, label: 'Typing Test', output: this.navTypingTest });
-    // this.highScoreB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
-    this.badgeB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 340, label: 'View Badges', output: this.navBadges });
-    this.creditsB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: this.navCredits });
+    this.startB = new Button({ width: 100, height: 30, label: 'Start', onClick: this.startGame });
+    this.startB.position.set(150, 200);
+    this.typingTestB = new Button({ width: 100, height: 30, label: 'Typing Test', onClick: this.navTypingTest });
+    this.typingTestB.position.set(150, 240);
+    this.badgeB = new Button({ width: 100, height: 30, label: 'View Badges', onClick: this.navBadges });
+    this.badgeB.position.set(150, 340);
+    this.creditsB = new Button({ width: 100, height: 30, label: 'Credits', onClick: this.navCredits });
+    this.creditsB.position.set(150, 380);
     this.addChild(this.startB, this.typingTestB, this.badgeB, this.creditsB);
 
     this.muter = new MuterOverlay();

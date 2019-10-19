@@ -104,7 +104,7 @@
         },
         "ordered-imports": false,
         "prefer-const": false,
-        "prefer-for-of": true,
+        "prefer-for-of": false,
         "quotemark": {
             "options": ["single", "avoid-escape"]
         },

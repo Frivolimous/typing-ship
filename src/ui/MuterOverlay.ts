@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { TextureData } from '../utils/TextureData';
 import { GameEvents, IPauseEvent } from '../utils/GameEvents';
 import { SaveData } from '../utils/SaveData';
 import { SoundData } from '../utils/SoundData';
+import { ClearButton } from './buttons/ClearButton';
 
 export class MuterOverlay extends PIXI.Graphics {
   private pause: PIXI.Sprite;
@@ -38,7 +38,7 @@ export class MuterOverlay extends PIXI.Graphics {
       this.pause.position.set(0, 5);
       this.play.position.set(0, 5);
       this.addChild(this.pause, this.play);
-      let pauseB = new JMBUI.ClearButton({x: 0, y: 0, width: 30, height: 50, downFunction: () => GameEvents.REQUEST_PAUSE_GAME.publish({paused: !this.paused})});
+      let pauseB = new ClearButton({width: 30, height: 50, onClick: () => GameEvents.REQUEST_PAUSE_GAME.publish({paused: !this.paused})});
       this.addChild(pauseB);
       this.togglePause({paused: false});
       GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
@@ -53,7 +53,8 @@ export class MuterOverlay extends PIXI.Graphics {
     this.addChild(this.sound, this.noSound);
     this.toggleSound(this.options.muted);
 
-    let soundB = new JMBUI.ClearButton({x: 45, y: 0, width: 30, height: 50, downFunction: () => this.toggleSound()});
+    let soundB = new ClearButton({width: 30, height: 50, onClick: () => this.toggleSound()});
+    soundB.x = 45;
     this.addChild(soundB);
   }
 

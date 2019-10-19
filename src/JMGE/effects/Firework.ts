@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import * as JMBL from '../JMBL';
 import { JMTicker } from '../events/JMTicker';
+import { sharedTextureCache } from '../others/JMTextureCache';
 
 interface IFirework {
   x?: number;
@@ -24,7 +24,7 @@ export class Firework {
       let firework = new PIXI.Graphics();
       firework.beginFill(0xffffff);
       firework.drawCircle(0, 0, 5);
-      Firework.TEXTURE = JMBL.sharedTextureCache.addTextureFromGraphic('firework', firework);
+      Firework.TEXTURE = sharedTextureCache.addTextureFromGraphic('firework', firework);
       JMTicker.add(this.onTick.bind(this));
       this.initialized = true;
     }

@@ -1,22 +1,22 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
-import { Colors } from '../data/Colors';
-import { ILevelScores } from '../data/PlayerData';
-import { TextureData } from '../utils/TextureData';
-import { TooltipReader } from '../JMGE/TooltipReader';
-import { StringData } from '../data/StringData';
+import { Colors } from '../../data/Colors';
+import { ILevelScores } from '../../data/PlayerData';
+import { TextureData } from '../../utils/TextureData';
+import { TooltipReader } from '../../JMGE/TooltipReader';
+import { StringData } from '../../data/StringData';
+import { Button } from './Button';
 
 export class LevelButton extends PIXI.Container {
   public data: ILevelScores;
 
-  private button: JMBUI.Button;
+  private button: Button;
   private killBadge: PIXI.Sprite;
   private healthBadge: PIXI.Sprite;
 
-  constructor(i: number, output: () => void) {
+  constructor(i: number, onClick: () => void) {
     super();
 
-    this.button = new JMBUI.Button({width: 50, height: 30, x: 0, y: 0, label: 'Level ' + i, output});
+    this.button = new Button({width: 50, height: 30, label: 'Level ' + i, color: 0xffffff, onClick});
     this.addChild(this.button);
 
     this.killBadge = new PIXI.Sprite(TextureData.kills);
@@ -37,10 +37,10 @@ export class LevelButton extends PIXI.Container {
     if (data) {
       if (data.highestDifficulty || data.highestDifficulty === 0) {
         let color = Colors.DIFFICULTY[data.highestDifficulty];
-        this.button.graphics.tint = color;
+        this.button.background.tint = color;
       } else {
         let color = 0x999999;
-        this.button.graphics.tint = color;
+        this.button.background.tint = color;
       }
 
       switch (data.killBadge) {

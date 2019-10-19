@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import * as JMBUI from '../JMGE/JMBUI';
 import { BaseUI } from '../JMGE/UI/BaseUI';
 import { CONFIG } from '../Config';
 import { MuterOverlay } from '../ui/MuterOverlay';
@@ -9,6 +8,7 @@ import { ImageRepo, TextureData } from '../utils/TextureData';
 import { TooltipReader } from '../JMGE/TooltipReader';
 import { StringData } from '../data/StringData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { Button } from '../ui/buttons/Button';
 
 const LABEL = 'WinUI';
 export class WinUI extends BaseUI {
@@ -23,11 +23,12 @@ export class WinUI extends BaseUI {
 
     this.calcNewScoreAndDisplay(instance);
 
-    let _button = new JMBUI.Button({ width: 100, height: 30, x: CONFIG.INIT.SCREEN_WIDTH - 150, y: CONFIG.INIT.SCREEN_HEIGHT - 100, label: 'Menu', output: this.navMenu });
+    let _button = new Button({ width: 100, height: 30, label: 'Menu', onClick: this.navMenu });
+    _button.position.set(CONFIG.INIT.SCREEN_WIDTH - 150, CONFIG.INIT.SCREEN_HEIGHT - 100);
     this.addChild(_button);
 
-    let muter = new MuterOverlay();
-    this.addChild(muter);
+    this.muter = new MuterOverlay();
+    this.addChild(this.muter);
   }
 
   public navMenu = () => {
