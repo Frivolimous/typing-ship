@@ -14,6 +14,7 @@ export interface IAchievement {
   caption: string;
   listener?: (e: any) => void;
   active?: boolean;
+  prev?: number;
 }
 
 export interface ITutorial {
@@ -44,7 +45,7 @@ export interface IATSManager {
   canvas: PIXI.Container;
 }
 
-export class ATSManager { //Achievement, Tutorial, Score
+export class ATSManager { // Achievement, Tutorial, Score
   private extrinsic: ExtrinsicModel;
 
   private currentTutorial: TutorialPopup;
@@ -75,7 +76,7 @@ export class ATSManager { //Achievement, Tutorial, Score
       let listener = (e: any) => this.testScore(score, e);
       score.listener = listener;
       score.emitter.addListener(listener);
-    })
+    });
 
     GameEvents.REQUEST_PAUSE_GAME.addListener(this.onPause);
   }
@@ -106,7 +107,7 @@ export class ATSManager { //Achievement, Tutorial, Score
 
   private testScore = (score: IScore, e: any) => {
     if (score.condition(this.extrinsic, e)) {
-      switch(score.type) {
+      switch (score.type) {
         case '++': this.incrementExtrinsicValue(score.prop, 1); break;
         case '=': this.setExtrinsicValue(score.prop, e); break;
       }

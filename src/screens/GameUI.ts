@@ -13,6 +13,7 @@ import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Gauge } from '../ui/elements/Gauge';
+import { ImageRepo } from '../utils/TextureData';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -47,22 +48,13 @@ export class GameUI extends BaseUI {
     this.pauseOverlay = new PauseOverlay(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT));
     this.addChild(this.pauseOverlay);
 
-    let UILayer = new PIXI.Graphics();
-    UILayer.beginFill(0x002233);
-    // UILayer.drawRect(0, CONFIG.INIT.SCREEN_HEIGHT - 120, CONFIG.INIT.SCREEN_WIDTH, 120);
-    // UILayer.moveTo(0, CONFIG.INIT.SCREEN_HEIGHT - 120).lineTo()
-    UILayer.drawPolygon([0, CONFIG.INIT.SCREEN_HEIGHT - 120,
-                        CONFIG.INIT.SCREEN_WIDTH / 4, CONFIG.INIT.SCREEN_HEIGHT - 120,
-                        CONFIG.INIT.SCREEN_WIDTH / 3, CONFIG.INIT.SCREEN_HEIGHT - 80,
-                        CONFIG.INIT.SCREEN_WIDTH * 2 / 3, CONFIG.INIT.SCREEN_HEIGHT - 80,
-                        CONFIG.INIT.SCREEN_WIDTH * 3 / 4, CONFIG.INIT.SCREEN_HEIGHT - 120,
-                        CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT - 120,
-                        CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT,
-                        0, CONFIG.INIT.SCREEN_HEIGHT,
-                      ]);
+    let UILayer = PIXI.Sprite.from(ImageRepo.hud);
+    UILayer.scale.set(8.2 / 5);
+    UILayer.position.set(-10, CONFIG.INIT.SCREEN_HEIGHT - (90 * 8.2 / 5));
     this.addChild(UILayer);
 
     this.wordDisplay = new PIXI.Text('', { fontSize: 16, fontFamily: 'Arial', fill: 0xffaaaa, stroke: 0, strokeThickness: 2 });
+    this.wordDisplay.x = 20;
     this.wordDisplay.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.wordDisplay);
 
@@ -72,7 +64,8 @@ export class GameUI extends BaseUI {
     this.addChild(this.progress);
 
     this.score = new PIXI.Text('0', { fontSize: 16, fontFamily: 'Arial', fill: 0xaaffaa, stroke: 0, strokeThickness: 2 });
-    this.score.y = CONFIG.INIT.SCREEN_HEIGHT - 100;
+    this.score.x = 20;
+    this.score.y = CONFIG.INIT.SCREEN_HEIGHT - 120;
     this.addChild(this.score);
 
     this.healthBar = new Gauge({color: 0xff0000, bgColor: 0x660000, width: 100, height: 20, rounding: 10});
@@ -80,7 +73,7 @@ export class GameUI extends BaseUI {
     this.healthBar.y = CONFIG.INIT.SCREEN_HEIGHT - 50;
     this.addChild(this.healthBar);
 
-    this.muter = new MuterOverlay(true);
+    this.muter = new MuterOverlay(true, false);
     this.addChild(this.muter);
 
     this.addChild(this.overlay);
@@ -108,7 +101,7 @@ export class GameUI extends BaseUI {
     GameEvents.REQUEST_PAUSE_GAME.removeListener(this.pauseGame);
     this.manager.dispose();
     this.muter.dispose();
-    super.dispose();
+    // super.dispose();
   }
 
   public navWin = (instance: ILevelInstance) => {
@@ -121,7 +114,7 @@ export class GameUI extends BaseUI {
 
   protected positionElements = (e: IResizeEvent) => {
     this.muter.x = e.innerBounds.right - this.muter.getWidth();
-    this.muter.y = e.innerBounds.bottom - this.muter.getHeight();
+    this.muter.y = e.innerBounds.bottom - this.muter.getHeight() - 10;
     this.overlay.clear();
     this.overlay.beginFill(0x333333);
     this.overlay.drawRect(e.outerBounds.x, e.outerBounds.y, e.innerBounds.x - e.outerBounds.x, e.outerBounds.height);

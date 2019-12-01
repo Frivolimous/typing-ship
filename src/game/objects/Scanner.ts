@@ -18,6 +18,7 @@ export class Scanner extends GameSprite {
     this.addChild(this.graphic);
     this.redrawCircle();
     this.onWordComplete = this.scan;
+    this.wordOffset = new PIXI.Point(5, 10);
   }
 
   public scan() {

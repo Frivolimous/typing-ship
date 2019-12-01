@@ -91,8 +91,7 @@ export class GameSprite extends BaseObject {
 
   public moveTo = (target: {x?: number, y?: number}, speed: number) => {
     this.rotateTo(target, speed);
-    let aMult = speed;
-    let accel = aMult * this.a;
+    let accel = this.a * speed;
 
     if (this.vT < accel) {
       this.vT += accel;

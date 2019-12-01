@@ -18,6 +18,8 @@ import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../screens/GameUI';
 import { GameSprite } from './objects/GameSprite';
 import { SoundData } from '../utils/SoundData';
+import { ImageRepo } from '../utils/TextureData';
+import { JMTween } from '../JMGE/JMTween';
 
 export class GameManager {
   public running = true;
@@ -43,7 +45,7 @@ export class GameManager {
     this.actionC.missileRate = 0.4;
 
     this.levelEvents = new EventInterpreter(this.addEnemy, this.addBoss);
-    this.levelEvents.loadLevel(levelIndex, gameSpeed);
+    this.levelEvents.loadLevel(levelIndex, difficulty);
 
     this.levelInstance = {
       level: levelIndex,
@@ -65,7 +67,7 @@ export class GameManager {
     // console.log('game speed', gameSpeed, difficulty);
 
     this.player.x = (CONFIG.INIT.SCREEN_WIDTH + CONFIG.INIT.STAGE_BUFFER) / 2;
-    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 120;
+    this.player.y = CONFIG.INIT.SCREEN_HEIGHT - 160;
     this.player.setHealth(CONFIG.GAME.playerHealth);
     this.setScore(0);
 
@@ -73,7 +75,6 @@ export class GameManager {
     this.container.addObject(this.player, DisplayLayer.DEFAULT);
 
     GameEvents.ticker.add(this.onTick);
-    // JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
     window.addEventListener('keydown', this.keyDown);
     GameEvents.NOTIFY_LETTER_DELETED.addListener(this.onLetterDelete);
 
@@ -81,6 +82,11 @@ export class GameManager {
     GameEvents.REQUEST_PAUSE_GAME.addListener(this.togglePause);
     GameEvents.NOTIFY_LETTER_ADDED.addListener(this.onLetterAdded);
     GameEvents.NOTIFY_SET_HEALTH.addListener(this.onHealthChange);
+
+    this.wordInput.addSpecialWord('pause', () => this.togglePause({paused: true}));
+    this.wordInput.addSpecialWord('kamikaze', this.runKamikaze);
+    this.wordInput.addSpecialWord('chameleon', this.runChameleon);
+    this.wordInput.addSpecialWord('superman', this.runSuperman);
   }
 
   public dispose = () => {
@@ -227,5 +233,30 @@ export class GameManager {
     }
     this.container.addObject(boss, DisplayLayer.DEFAULT);
     return boss;
+  }
+
+  public runKamikaze = () => {
+    let ticks = 0;
+    this.container.forEach(enemy => {
+      console.log('destroy!', enemy);
+      GameEvents.ticker.addOnce(() => this.actionC.enemyDestroyed(enemy as GameSprite), ticks);
+      ticks += 3;
+      // this.actionC.enemyDestroyed(enemy as GameSprite);
+    }, DisplayLayer.ENEMIES);
+    GameEvents.ticker.addOnce(() => this.killPlayer(), ticks);
+  }
+
+  public runChameleon = () => {
+    this.player.display.tint = Math.round(Math.random() * 0xffffff);
+  }
+
+  public runSuperman = () => {
+    let superman = PIXI.Sprite.from(ImageRepo.superman);
+    superman.position.set((Math.random() * 0.8 + 0.1) * CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
+    superman.scale.set(0.5);
+    this.container.addChild(superman);
+    new JMTween(superman, 1500).to({y: 0}).start().onComplete(() => {
+      superman.destroy();
+    });
   }
 }

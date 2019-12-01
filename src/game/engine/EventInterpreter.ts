@@ -14,17 +14,18 @@ export class EventInterpreter {
 
   }
 
-  public loadLevel(level: number, gameSpeed: number) {
+  public loadLevel(level: number, difficulty: number) {
     this.level = level;
-    this.data = getLevel(level, gameSpeed);
+    this.data = getLevel(level, difficulty);
+    console.log(this.data);
     this.finalDistance = this.data[this.data.length - 1].distance;
     this.distance = 0;
     // console.log('level', this.data);
     // console.log('time', this.finalDistance);
   }
 
-  public loadBossLoop(bossType: number, gameSpeed: number) {
-    this.data = getBossLoop(bossType, gameSpeed);
+  public loadBossLoop(bossType: number) {
+    this.data = getBossLoop(bossType);
     this.data.forEach(event => event.distance += this.distance);
   }
 
@@ -52,7 +53,7 @@ export class EventInterpreter {
         this.data = [];
       } else {
         if (this.data.length === 0 && this.boss.commands.length === 0) {
-          this.loadBossLoop(this.boss.bossType, gameSpeed);
+          this.loadBossLoop(this.boss.bossType);
         }
       }
     }

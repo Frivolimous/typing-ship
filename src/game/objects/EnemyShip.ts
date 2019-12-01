@@ -104,13 +104,6 @@ export class EnemyShip extends GameSprite {
         this.moveTo(this.config.commands[0], speed);
       } else if (this.config.commands[0].x !== undefined && this.config.commands[0].y !== undefined) {
         this.rotateTo(this.config.commands[0], speed);
-        // this.rotateTo({x: CONFIG.INIT.STAGE_WIDTH / 2, y: CONFIG.INIT.STAGE_HEIGHT - 150}, speed);
-        // console.log(this.n, this.rotation);
-        // let angle = Math.atan2(this.config.commands[0].y - this.y, this.config.commands[0].x - this.x);
-        // this.rotation = angle + Math.PI / 2;
-      } else {
-    //     this.player.x = CONFIG.INIT.STAGE_WIDTH / 2;
-    // this.player.y = CONFIG.INIT.STAGE_HEIGHT - 150;
       }
 
       if (this.turret) {

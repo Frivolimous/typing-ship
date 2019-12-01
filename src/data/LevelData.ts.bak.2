@@ -32,8 +32,6 @@ export interface ICommand {
 export function getLevel(level: number, difficulty: number): ILevelEvent[] {
   let pack = new MethodPack();
 
-  let hard = (difficulty > 2);
-
   switch (level) {
     case -2:
       pack.missile('sn', 0.01, 2, 0, 2, 8, 2, 0);
@@ -50,72 +48,47 @@ export function getLevel(level: number, difficulty: number): ILevelEvent[] {
       pack.boss(0.01, 0);
       break;
     case 0:
-      pack.missile('sn', 0.03, 5, 0, 5, 6, 4, 12);
+      pack.missile('sn', 0.05, 5, 0, 5, 6, 4, 12);
       pack.mirror();
-      pack.wait(0.15); // 2
 
+      pack.wait(0.15);
       pack.missile('sn', 0, 0, 3, 7, 3, 12, 3);
       pack.missile('sn', 0.01, 12, 6, 5, 6, 0, 6);
-      if (hard) {
-        pack.repeat(0.01, 2, 2);
-        pack.wait(0.22); // 8
-      } else {
-        pack.repeat(0.01, 1, 2);
-        pack.wait(0.1); // 6
-      }
+      pack.repeat(0.01, 3, 2);
 
+      pack.wait(0.1);
       pack.laser('sn', 0, 6, 0);
-      pack.wait(0.15); // 1
 
+      pack.wait(0.1);
       pack.missile('sn', 0, 3, 0, 7, 5, 4, 5, 7, 0);
-      if (hard) {
-        pack.repeat(0.02, 3);
-        pack.laser('sn', 0, 12, 5);
-        pack.wait(0.15); // 7
-      } else {
-        pack.repeat(0.02, 1);
-        pack.laser('sn', 0.01, 12, 5);
-        pack.wait(0.05); // 5
-      }
+      pack.repeat(0.01, 5);
+      pack.laser('sn', 0, 12, 5);
 
+      pack.wait(0.13);
       pack.missile('sn', 0, 2, 0, 2, 4, 12, 9);
-      if (hard) {
-        pack.repeat(0.02, 4, 1, true);
-        pack.laser('sn', 0, 0, 6);
-        pack.insert(-3);
-        pack.laser('sn', 0, 12, 6);
-        pack.insert(-2);
-        pack.wait(0.2); // 7
-      } else {
-        pack.repeat(0.02, 2, 1, true);
-        pack.laser('sn', 0, 0, 6);
-        pack.laser('sn', 0, 12, 6);
-        pack.insert(-2);
-        pack.wait(0.1); // 5
-      }
+      pack.repeat(0.01, 7, 1, true);
+      pack.laser('sn', 0, 0, 6);
+      pack.insert(-4);
+      pack.laser('sn', 0, 12, 6);
+      pack.insert(-4);
 
+      pack.wait(0.15);
       pack.laser('sn', 0, 0, 3);
-      pack.laser('sn', 0.008, 12, 3);
-      pack.laser('sn', 0.008, 0, 6);
-      if (hard) {
-        pack.laser('sn', 0.008, 12, 6);
-        pack.wait(0.15); // 4
-      } else {
-        pack.wait(0.1); // 3
-      }
+      pack.laser('sn', 0.005, 12, 3);
+      pack.laser('sn', 0.005, 0, 6);
+      pack.laser('sn', 0.005, 12, 6);
 
+      pack.wait(0.13);
       pack.missile('sn', 0, 3, 0, 4, 4, 7, 0);
       pack.missile('sn', 0.01, 12, 5, 7, 6, 0, 5);
-      if (hard) {
-        pack.repeat(0.02, 2, 2);
-        pack.laser('sn', 0.05, 12, 4);
-        pack.laser('sn', 0.01, 6, 0);
-        pack.laser('sn', 0.02, 0, 4); // 9
-      } else {
-        pack.repeat(0.02, 1, 2);
-        pack.laser('sn', 0.04, 12, 4);
-        pack.laser('sn', 0.02, 0, 4); // 9
-      }
+      pack.repeat(0.02, 4, 2);
+      pack.laser('sn', 0.04, 0, 2);
+      pack.laser('sn', 0.01, 12, 2);
+      pack.laser('sn', 0.02, 0, 4);
+      pack.laser('sn', 0.01, 12, 4);
+      pack.missile('sn', 0.07, 9, 0, 8, 4, 5, 0);
+      pack.missile('sn', 0.01, 0, 5, 5, 6, 12, 5);
+      pack.repeat(0.02, 4, 2);
       break;
 
     case 1:

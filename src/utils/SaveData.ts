@@ -34,7 +34,7 @@ export class SaveData {
       return SaveData.extrinsic;
     }
   }
-  
+
   public static async saveExtrinsic(extrinsic?: ExtrinsicModel): Promise<ExtrinsicModel> {
     return new Promise((resolve) => {
       extrinsic = extrinsic || this.extrinsic;
@@ -57,7 +57,7 @@ export class SaveData {
     SaveData.extrinsic = new ExtrinsicModel();
     SaveData._Extrinsic = _.cloneDeep(SaveData.extrinsic);
   }
-  
+
   private static saveExtrinsicToLocal(extrinsic?: ExtrinsicModel) {
     extrinsic = extrinsic || this.extrinsic;
     if (typeof Storage !== undefined) {

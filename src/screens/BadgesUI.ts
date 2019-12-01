@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as _ from 'lodash';
 import { CONFIG } from '../Config';
 import { SaveData } from '../utils/SaveData';
 import { BadgeState } from '../data/PlayerData';
@@ -10,6 +11,7 @@ import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Button } from '../ui/buttons/Button';
 import { MaskedWindow } from '../ui/elements/MaskedWindow';
 import { Scrollbar } from '../ui/elements/Scrollbar';
+import { IAchievement } from '../utils/ATSManager';
 
 export class BadgesUI extends BaseUI {
   private muter: MuterOverlay;
@@ -47,9 +49,15 @@ export class BadgesUI extends BaseUI {
     let badgeInfo = genAchievements();
     for (let i = 0; i < badgeInfo.length; i++) {
       let info = badgeInfo[i];
-      let badge = new BadgeLine({title: info.title, description: info.caption, fixedPosition: this.tooltipPosition}, badges[i] ? BadgeState.GOLD : BadgeState.NONE);
-      badge.interactive = true;
-      scroll.addObject(badge);
+      let prevIndex: number;
+      if (info.prev) {
+        prevIndex = _.findIndex(badgeInfo, {id: info.prev});
+      }
+      if (!info.prev || badges[prevIndex]) {
+        let badge = new BadgeLine({title: info.title, description: info.caption}, badges[i] ? BadgeState.GOLD : BadgeState.NONE);
+        badge.interactive = true;
+        scroll.addObject(badge);
+      }
     }
     this.tooltipTitle = new PIXI.Text('', {fontSize: 30});
     this.tooltipCaption = new PIXI.Text('', {wordWrap: true, wordWrapWidth: 350});

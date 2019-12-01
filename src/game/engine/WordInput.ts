@@ -10,6 +10,9 @@ export class WordInput {
     this.healWord.dispose();
     GameEvents.REQUEST_HEAL_PLAYER.publish({amount: 1});
   });
+
+  public specialWords: [string, () => void][] = [];
+
   public overflow: [string, number][] = [];
 
   private overflowTimer: number = 0;
@@ -27,6 +30,10 @@ export class WordInput {
     GameEvents.NOTIFY_SET_HEALTH.removeListener(this.checkHealth);
     GameEvents.REQUEST_OVERFLOW_WORD.removeListener(this.addOverflow);
     GameEvents.ticker.remove(this.update);
+  }
+
+  public addSpecialWord(word: string, callback: () => void) {
+    this.specialWords.push([word, callback]);
   }
 
   public addLetter(letter: string) {
@@ -52,11 +59,14 @@ export class WordInput {
           return;
         }
       }
-      if (this.testWord('pause')) {
-        this.removeWord('pause');
-        GameEvents.REQUEST_PAUSE_GAME.publish({paused: true});
-        this.finishAddLetter();
-        return;
+      for (let i = 0; i < this.specialWords.length; i++) {
+        let word = this.specialWords[i][0];
+        if (this.testWord(word)) {
+          this.removeWord(word);
+          this.specialWords[i][1]();
+          this.finishAddLetter();
+          return;
+        }
       }
     }
     this.finishAddLetter();
@@ -106,6 +116,7 @@ export class WordInput {
 
   private removeWord(word: string) {
     GameEvents.NOTIFY_WORD_COMPLETED.publish({word});
+    console.log('word completed', {word});
     this.text = this.text.substr(0, this.text.length - word.length);
   }
 

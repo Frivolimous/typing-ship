@@ -12,12 +12,23 @@ export const JMTicker = {
     }
   },
 
-  addOnce: (output: (ms?: number) => void) => {
-    let m = () => {
-      JMTicker.remove(m);
-      output();
-    };
-    JMTicker.tickEvents.push(m);
+  addOnce: (output: (ms?: number) => void, delay: number = 0) => {
+    if (delay > 0) {
+      let m = () => {
+        delay--;
+        if (delay === 0) {
+          JMTicker.remove(m);
+          output();
+        }
+      };
+      JMTicker.tickEvents.push(m);
+    } else {
+      let m = () => {
+        JMTicker.remove(m);
+        output();
+      };
+      JMTicker.tickEvents.push(m);
+    }
   },
 
   remove: (output: (ms?: number) => void) => {

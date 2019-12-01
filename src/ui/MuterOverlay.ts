@@ -16,11 +16,13 @@ export class MuterOverlay extends PIXI.Graphics {
 
   private options: {muted: boolean};
 
-  constructor(private showPause?: boolean) {
+  constructor(private showPause?: boolean, hasBackground = true) {
     super();
-    this.beginFill(0x666666);
-    this.lineStyle(2);
-    this.drawRect(0, 0, 100, 50);
+    if (hasBackground) {
+      this.beginFill(0x666666);
+      this.lineStyle(2);
+      this.drawRect(0, 0, 100, 50);
+    }
 
     let extrinsic = SaveData.getExtrinsic();
     this.options = extrinsic.data.options;

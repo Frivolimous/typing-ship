@@ -27,7 +27,7 @@ export class PlayerShip extends GameSprite {
     // graphics.drawCircle(0,0,30);
     // this.addChild(graphics,this.charge);
 
-    this.makeDisplay(ImageRepo.player, 0.1);
+    this.makeDisplay(ImageRepo.player, 1);
     this.addChild<PIXI.DisplayObject>(this.laserCharge, this.empCharge, this.shieldView);
 
     this.shieldView.scale.set(0.35, 0.35);

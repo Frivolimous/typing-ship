@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { ExtrinsicModel } from './PlayerData';
 import { IAchievement, ITutorial, IScore } from '../utils/ATSManager';
-import { GameEvents, ILevelEvent } from '../utils/GameEvents';
+import { GameEvents, ILevelEvent, IWordEvent } from '../utils/GameEvents';
 
 enum AchievementId {
   SOLDIER_BRONZE, SOLDIER_SILVER, SOLDIER_GOLD,
@@ -28,6 +28,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.SOLDIER_SILVER,
+      prev: AchievementId.SOLDIER_BRONZE,
       title: 'Silver Soldier',
       caption: 'Destroy 100 enemy ships!',
       emitter: GameEvents.NOTIFY_ENEMY_DESTROYED,
@@ -35,6 +36,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.SOLDIER_GOLD,
+      prev: AchievementId.SOLDIER_SILVER,
       title: 'Gold Soldier',
       caption: 'Destroy 1000 enemy ships!',
       emitter: GameEvents.NOTIFY_ENEMY_DESTROYED,
@@ -49,6 +51,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.CONQUEROR_SILVER,
+      prev: AchievementId.CONQUEROR_BRONZE,
       title: 'Silver Conqueror',
       caption: 'Complete level 6',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
@@ -56,6 +59,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.CONQUEROR_GOLD,
+      prev: AchievementId.CONQUEROR_SILVER,
       title: 'Gold Conqueror',
       caption: 'Complete the game',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
@@ -70,6 +74,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.DEFENDER_SILVER,
+      prev: AchievementId.DEFENDER_BRONZE,
       title: 'Silver Defender',
       caption: 'Complete 3 levels with perfect health',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
@@ -77,6 +82,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.DEFENDER_GOLD,
+      prev: AchievementId.DEFENDER_SILVER,
       title: 'Gold Defender',
       caption: 'Completed 10 levels with perfect health',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
@@ -91,6 +97,7 @@ export function genAchievements() {
     },
     {
       id: AchievementId.PERFECTION_SILVER,
+      prev: AchievementId.PERFECTION_BRONZE,
       title: 'Silver Perfection',
       caption: 'Complete 3 levels with perfect score',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
@@ -98,12 +105,35 @@ export function genAchievements() {
     },
     {
       id: AchievementId.PERFECTION_GOLD,
+      prev: AchievementId.PERFECTION_SILVER,
       title: 'Gold Perfection',
       caption: 'Complete 10 levels with perfect score',
       emitter: GameEvents.NOTIFY_LEVEL_COMPLETED,
       condition: (extrinsic, e: ILevelEvent) => (_.filter(extrinsic.data.levels, {killBadge: 3}).length >= 10),
     },
-  //   RIDDLER_BRONZE, RIDDLER_SILVER, RIDDLER_GOLD,
+    {
+      id: AchievementId.RIDDLER_BRONZE,
+      title: 'Bronze Riddler',
+      caption: "It's a bird, it's a plane, it's...",
+      emitter: GameEvents.NOTIFY_WORD_COMPLETED,
+      condition: (extrinsic, e: IWordEvent) => e.word === 'superman',
+    },
+    {
+      id: AchievementId.RIDDLER_SILVER,
+      prev: AchievementId.RIDDLER_BRONZE,
+      title: 'Silver Riddler',
+      caption: "Boy George's Karma ...",
+      emitter: GameEvents.NOTIFY_WORD_COMPLETED,
+      condition: (extrinsic, e: IWordEvent) => e.word === 'chameleon',
+    },
+    {
+      id: AchievementId.RIDDLER_GOLD,
+      prev: AchievementId.RIDDLER_SILVER,
+      title: 'Gold Riddler',
+      caption: "Fighter Pilot's Suicide",
+      emitter: GameEvents.NOTIFY_WORD_COMPLETED,
+      condition: (extrinsic, e: IWordEvent) => e.word === 'kamikaze',
+    },
   // EXPLORER_BRONZE, EXPLORER_SILVER, EXPLORER_GOLD,
   ];
   return ACHIEVEMENTS;

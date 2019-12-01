@@ -61,7 +61,7 @@ export class ObjectManager extends PIXI.Container {
       this.layers[layer].addChildAt(object, 0);
     }
     this.objects.push(object);
-    this.objectsByLayer[object.layer].push(object);
+    this.objectsByLayer[layer].push(object);
     object.layer = layer;
 
     return object;
@@ -155,7 +155,8 @@ export class ObjectManager extends PIXI.Container {
     return m;
   }
 
-  public forEach(_function: (object: BaseObject, index?: number, array?: BaseObject[]) => void, layer = -1) {
+  public forEach(_function: (object: BaseObject, index?: number, array?: BaseObject[]) => void, layer: DisplayLayer = -1) {
+    console.log('foreach', layer, this.objectsByLayer[layer]);
     if (layer >= 0) {
       this.objectsByLayer[layer].forEach(_function);
     } else {
@@ -204,7 +205,8 @@ export class ObjectManager extends PIXI.Container {
   }
 
   public makeExplosionAt(x: number, y: number, size: number = 40) {
-    new Firework(this.layers[DisplayLayer.EXPLOSIONS], x, y, size);
+    // new Firework(this.layers[DisplayLayer.EXPLOSIONS], x, y, size);
+    Firework.makeExplosion(this.layers[DisplayLayer.EXPLOSIONS], {x, y, count: size});
   }
 
   public makeLaser(origin: {x: number, y: number}, target: {x: number, y: number}, color: number) {

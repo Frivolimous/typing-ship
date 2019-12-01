@@ -7,23 +7,23 @@ TO-DO:
 - Diff Timing (Shorter levels at Easy)
 - Speed Adjust
 
-- Check all bosses to make sure working
-- Secret Commands
+#Visuals
+- Boss Visuals and Alignment
+- Overall animation pass
 
 #Game UI
 - RESPONSIVE LAYOUT
 
 #Menu UI
-- Badges - INIT
-
 - RESPONSIVE LAYOUT
 
 #Systems
 - Achievements - FINISH POPULATING
-- Tutorials - FINISH POPULATING? - DECIDE WHAT / IF?
 - Sound FX - IMPLEMENT
-- Online Saves
 - Level Gen - change timing to SECONDS instead of ???
+
+- Tutorials - FINISH POPULATING? - DECIDE WHAT / IF?
+- Online Saves
 
 #Save System
 - Tutorial Progress 

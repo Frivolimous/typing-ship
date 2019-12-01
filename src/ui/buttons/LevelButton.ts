@@ -57,7 +57,8 @@ export class LevelButton extends PIXI.Container {
       }
 
     } else {
-      this.button.disabled = true;
+      // this.button.disabled = true;
+      this.data = {};
       this.killBadge.tint = 0;
       this.healthBadge.tint = 0;
     }

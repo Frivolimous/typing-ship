@@ -15,6 +15,7 @@ export class BossShip2 extends BossShip {
 
     this.makeDisplay(ImageRepo.boss2, 0.5);
     this.hitBounds = new PIXI.Rectangle(-150, -30, 300, 60);
+    this.overOffset.set(-275, 95);
   }
 
   public addPlayerShield = () => {
@@ -43,14 +44,26 @@ export class BossShip2 extends BossShip {
         case 205: this.makeCounter(30, -20); break;
         case 200: this.makeCounter(-75, -20); break;
         case 180:
+          this.display.texture = PIXI.Texture.from(ImageRepo.boss2a);
           // view.bitmapData=SpriteSheets.bRes[2][0][1];
           // Facade.soundC.sound(SoundControl.BOSS_CHARGE);
           break;
         case 140:
+          this.display.texture = PIXI.Texture.from(ImageRepo.boss2b);
           // view.bitmapData=SpriteSheets.bRes[2][0][2];
           // Facade.soundC.sound(SoundControl.BOSS_CHARGE);
           break;
         case 100:
+          this.display.texture = PIXI.Texture.from(ImageRepo.boss2c);
+          if (!this.over) {
+            this.over = new PIXI.Sprite(this.getShieldTexture(-1));
+            this.over.scale.set(1, 1.2);
+            this.parent.addChild(this.over);
+            console.log('ADD OVER', this.over);
+          }
+          if (this.shieldCount > 0) {
+            this.over.texture = this.getShieldTexture(0);
+          }
           // Facade.gameUI.bossV.addChildAt(over,0);
           // if (count>0){
           //   over.bitmapData=SpriteSheets.bRes[index][1][1];
@@ -61,8 +74,10 @@ export class BossShip2 extends BossShip {
           if (this.delay < 75) {
             if (this.delay % 5 === 0) {
               if (this.shieldCount === 0) {
+                this.over.texture = this.getShieldTexture(-1);
                 // explode
               } else {
+                this.over.texture = this.getShieldTexture(Math.floor(this.delay / 5) % 3);
                 // over.bitmapData=SpriteSheets.bRes[index][1][(Math.floor(delay/5)%3)+1];
               }
             }
@@ -74,6 +89,7 @@ export class BossShip2 extends BossShip {
                 this.shieldCount--;
                 if (this.shieldCount === 0) {
                   this.manager.player.removeShield();
+                  this.over.texture = this.getShieldTexture(-1);
                   // over.bitmapData=SpriteSheets.bRes[index][1][0];
                 } else {
                   this.manager.player.shieldTo(this.shieldCount * 0.2);
@@ -84,6 +100,9 @@ export class BossShip2 extends BossShip {
             }
             if (this.delay === 0) {
               this.manager.player.removeShield();
+              this.display.texture = PIXI.Texture.from(ImageRepo.boss2);
+              this.over.destroy();
+              this.over = null;
               // this.over.parent.removeChild(over);
               // view.bitmapData=SpriteSheets.boss[2];
               while (this.objects.length > 0) {
@@ -94,6 +113,15 @@ export class BossShip2 extends BossShip {
       }
       // console.log(this.delay,speed);
       this.delay -= 0.5;
+    }
+  }
+
+  public getShieldTexture(i: number) {
+    switch (i) {
+      case -1: return PIXI.Texture.from(ImageRepo.boss2Over0);
+      case 0: return PIXI.Texture.from(ImageRepo.boss2Over1a);
+      case 1: return PIXI.Texture.from(ImageRepo.boss2Over1b);
+      case 2: return PIXI.Texture.from(ImageRepo.boss2Over1c);
     }
   }
 
