@@ -1,3 +1,5 @@
+package-lock.json
+dist/assets
 node_modules/
 tslint.json
 Deploy/

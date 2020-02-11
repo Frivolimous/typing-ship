@@ -15,7 +15,7 @@ import { WordInput } from './engine/WordInput';
 import { TextObject } from './text/TextObject';
 import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } from '../utils/GameEvents';
 import { ILevelInstance } from '../data/LevelInstance';
-import { GameUI } from '../screens/GameUI';
+import { GameUI } from '../ui/GameUI';
 import { GameSprite } from './objects/GameSprite';
 import { SoundData } from '../utils/SoundData';
 import { ImageRepo } from '../utils/TextureData';
@@ -71,7 +71,7 @@ export class GameManager {
     this.player.setHealth(CONFIG.GAME.playerHealth);
     this.setScore(0);
 
-    this.display.addChild<PIXI.DisplayObject>(this.starfield, this.container);
+    this.display.addChild(this.starfield, this.container);
     this.container.addObject(this.player, DisplayLayer.DEFAULT);
 
     GameEvents.ticker.add(this.onTick);

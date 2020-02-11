@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { JMTween } from '../../JMGE/JMTween';
+import { Colors } from '../../data/Colors';
 
 export class Shield extends PIXI.Graphics {
   private tween: JMTween;
@@ -9,7 +10,7 @@ export class Shield extends PIXI.Graphics {
     this.beginFill(0xffffff, 0.5);
     this.drawCircle(0, 0, 100);
     this.alpha = 0;
-    this.tint = 0x00aaff;
+    this.tint = Colors.GAME.SHIELD;
   }
 
   public fadeIn(alpha: number = 1) {

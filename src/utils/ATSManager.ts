@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { ExtrinsicModel } from '../data/PlayerData';
 import { SaveData } from './SaveData';
 import { JMEventListener } from '../JMGE/events/JMEventListener';
-import { TutorialPopup } from '../ui/TutorialPopup';
+import { TutorialPopup } from '../ui/windows/TutorialPopup';
 import { GameEvents, IPauseEvent } from './GameEvents';
 
 export interface IAchievement {

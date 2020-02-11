@@ -7,6 +7,7 @@ import { ActionType } from '../../data/Types';
 import { GameManager } from '../GameManager';
 import { Turret } from '../objects/Turret';
 import { JMTween } from '../../JMGE/JMTween';
+import { Colors } from '../../data/Colors';
 
 export class ActionControl {
   public missileCount: number = 0;
@@ -62,7 +63,7 @@ export class ActionControl {
   public shootPlayerLaser(origin: PlayerShip, target: GameSprite) {
     origin.laserCharge.startCharge(() => {
       if (target && target.parent) {
-        this.manager.container.makeLaser(origin.getFirePoint(), target, 0x00ffff);
+        this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.PLAYER_LASER);
         this.enemyDestroyed(target);
         // soundC.sound(SoundControl.LASER);
       }
@@ -73,7 +74,7 @@ export class ActionControl {
     origin.laserCharge.startCharge(() => {
       if (target && target.parent) {
         let position = {x: target.x + target.ship.x, y: target.y + target.ship.y};
-        this.manager.container.makeLaser(origin.getFirePoint(), position, 0x00ffff);
+        this.manager.container.makeLaser(origin.getFirePoint(), position, Colors.GAME.PLAYER_LASER);
         this.manager.container.makeExplosionAt(position.x, position.y, 10);
         this.manager.container.makeScoreDisplay(position.x, position.y, target.value);
         target.ship.removeTurret();
@@ -93,7 +94,7 @@ export class ActionControl {
 
   public fireTurret = (missile: Missile, turret: Turret) => {
     let origin = {x: turret.x + turret.ship.x, y: turret.y + turret.ship.y};
-    this.manager.container.makeLaser(origin, missile, 0xff0000);
+    this.manager.container.makeLaser(origin, missile, Colors.GAME.ENEMY_LASER);
     this.manager.container.makeExplosionAt(missile.x, missile.y, 20);
   }
 
@@ -120,7 +121,7 @@ export class ActionControl {
 
   public shootEnemyLaser(origin: EnemyShip, target: PlayerShip, instant?: boolean) {
     if (instant) {
-      this.manager.container.makeLaser(origin.getFirePoint(), target, 0xff0000);
+      this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.ENEMY_LASER);
       this.damagePlayer();
       // soundC.sound(SoundControl.LASER);
       origin.priority = 0;
@@ -128,7 +129,7 @@ export class ActionControl {
       origin.priority = 2;
       // soundC.sound(SoundControl.CHARGE);
       origin.startCharge(() => {
-        this.manager.container.makeLaser(origin.getFirePoint(), target, 0xff0000);
+        this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.ENEMY_LASER);
         this.damagePlayer();
         // soundC.sound(SoundControl.LASER);
         origin.priority = 0;

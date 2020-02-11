@@ -3,6 +3,7 @@ import { Charge } from '../../JMGE/effects/Charge';
 import { ImageRepo } from '../../utils/TextureData';
 import { IHealEvent, GameEvents } from '../../utils/GameEvents';
 import { CONFIG } from '../../Config';
+import { Colors } from '../../data/Colors';
 
 export class PlayerShip extends GameSprite {
   public injured: boolean;
@@ -10,25 +11,14 @@ export class PlayerShip extends GameSprite {
   public animA: string[] = [];
   public targetA: GameSprite[] = [];
 
-  public empCharge = new Charge(20, 5, 0xcccccc);
-  public laserCharge = new Charge(10, 5, 0x00ffff);
+  public empCharge = new Charge(20, 5, Colors.GAME.PLAYER_EMP);
+  public laserCharge = new Charge(10, 5, Colors.GAME.PLAYER_LASER);
 
   constructor() {
     super();
 
-    // scale=1;
-    // charge=new Charge(0,-20,5,0xffffff,ActionControl.EMP);
-
-    // frame=0;
-    // cAnim="KERBLA!";
-
-    // let graphics=new PIXI.Graphics;
-    // graphics.beginFill(0x00aaaa);
-    // graphics.drawCircle(0,0,30);
-    // this.addChild(graphics,this.charge);
-
     this.makeDisplay(ImageRepo.player, 1);
-    this.addChild<PIXI.DisplayObject>(this.laserCharge, this.empCharge, this.shieldView);
+    this.addChild(this.laserCharge, this.empCharge, this.shieldView);
 
     this.shieldView.scale.set(0.35, 0.35);
     this.firePoint.set(0, -20);

@@ -47,6 +47,10 @@ export class JMEventListener<T = any> {
   private process = () => {
     this.active = false;
 
+    if (this.onlyLastEvent) {
+      this.events = [this.events.pop()];
+    }
+
     while (this.events.length > 0) {
       let event = this.events.shift();
 

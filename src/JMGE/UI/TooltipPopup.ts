@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Fonts } from '../../data/Fonts';
 
 export class TooltipPopup extends PIXI.Container {
   private titleField: PIXI.Text;
@@ -10,8 +11,8 @@ export class TooltipPopup extends PIXI.Container {
 
     // this.interactive = true;
 
-    this.titleField = new PIXI.Text(title, { fontSize: 13 });
-    this.descriptionField = new PIXI.Text(description, { fontSize: 13, wordWrap: true, wordWrapWidth: 300 });
+    this.titleField = new PIXI.Text(title, { fontSize: 13, fontFamily: Fonts.UI });
+    this.descriptionField = new PIXI.Text(description, { fontSize: 13, fontFamily: Fonts.UI, wordWrap: true, wordWrapWidth: 300 });
     this.titleField.position.set(5, 5);
     this.descriptionField.position.set(5, this.titleField.height + 15);
 

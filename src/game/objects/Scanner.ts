@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { GameSprite } from './GameSprite';
 import { BossShip } from './BossShip';
+import { Colors } from '../../data/Colors';
 
 export class Scanner extends GameSprite {
   public STARTING_COUNT: number = 300;
@@ -44,7 +45,7 @@ export class Scanner extends GameSprite {
 
   public redrawCircle() {
     this.graphic.clear();
-    this.graphic.lineStyle(3, 0xff5500);
+    this.graphic.lineStyle(3, Colors.GAME.SCANNER);
     this.graphic.drawCircle(0, 0, this.count);
     this.graphic.drawCircle(0, 0, 1);
   }

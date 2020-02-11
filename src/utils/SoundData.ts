@@ -98,51 +98,51 @@ export class SoundData {
   private static muted: boolean = false;
 
   private static typing = new Howl({
-    src: ['./Audio/Sounds/Y_Keyboard.mp3'],
+    src: ['./assets/Audio/Sounds/Y_Keyboard.mp3'],
     volume: 1,
   });
   private static click = new Howl({
-    src: ['./Audio/Sounds/Y_Click.ogg'],
+    src: ['./assets/Audio/Sounds/Y_Click.ogg'],
     volume: 1,
   });
   private static score = new Howl({
-    src: ['./Audio/Sounds/Cash_Edit.mp3'],
+    src: ['./assets/Audio/Sounds/Cash_Edit.mp3'],
     volume: 1,
   });
   private static laser = new Howl({
-    src: ['./Audio/Sounds/Y_LaserShot.mp3'],
+    src: ['./assets/Audio/Sounds/Y_LaserShot.mp3'],
     volume: 0.3,
   });
   private static explodeSS = new Howl({
-    src: ['./Audio/Sounds/A_Explode_Small.mp3'],
+    src: ['./assets/Audio/Sounds/A_Explode_Small.mp3'],
     volume: 0.4,
   });
   private static explodeBS = new Howl({
-    src: ['./Audio/Sounds/Explode_Large_Edit.mp3'],
+    src: ['./assets/Audio/Sounds/Explode_Large_Edit.mp3'],
     volume: 0.3,
   });
   private static charge = new Howl({
-    src: ['./Audio/Sounds/Y_Charge.mp3'],
+    src: ['./assets/Audio/Sounds/Y_Charge.mp3'],
     volume: 1,
   });
   private static heal = new Howl({
-    src: ['./Audio/Sounds/Y_Heal.mp3'],
+    src: ['./assets/Audio/Sounds/Y_Heal.mp3'],
     volume: 1.5,
   });
   private static emp = new Howl({
-    src: ['./Audio/Sounds/Y_EMP.mp3'],
+    src: ['./assets/Audio/Sounds/Y_EMP.mp3'],
     volume: 1.3,
   });
   private static bossCharge = new Howl({
-    src: ['./Audio/Sounds/Y_BossCharge.mp3'],
+    src: ['./assets/Audio/Sounds/Y_BossCharge.mp3'],
     volume: 0.75,
   });
   private static bossLaser = new Howl({
-    src: ['./Audio/Sounds/Y_BossFire.mp3'],
+    src: ['./assets/Audio/Sounds/Y_BossFire.mp3'],
     volume: 1,
   });
   private static superman = new Howl({
-    src: ['./Audio/Sounds/Superman.mp3'],
+    src: ['./assets/Audio/Sounds/Superman.mp3'],
     volume: 0.5,
   });
 
@@ -150,31 +150,31 @@ export class SoundData {
 
   private static music = [
     new Howl({
-      src: ['./Audio/Music/Binyamin track 0.mp3'],
+      src: ['./assets/Audio/Music/Binyamin track 0.mp3'],
       html5: true,
       loop: true,
       volume: MUSIC_VOLUME,
     }),
     new Howl({
-      src: ['./Audio/Music/Binyamin track 1.mp3'],
+      src: ['./assets/Audio/Music/Binyamin track 1.mp3'],
       html5: true,
       loop: true,
       volume: MUSIC_VOLUME,
     }),
     new Howl({
-      src: ['./Audio/Music/Binyamin track 2.mp3'],
+      src: ['./assets/Audio/Music/Binyamin track 2.mp3'],
       html5: true,
       loop: true,
       volume: MUSIC_VOLUME,
     }),
     new Howl({
-      src: ['./Audio/Music/Binyamin track 3.mp3'],
+      src: ['./assets/Audio/Music/Binyamin track 3.mp3'],
       html5: true,
       loop: true,
       volume: MUSIC_VOLUME,
     }),
     new Howl({
-      src: ['./Audio/Music/Binyamin track 4.mp3'],
+      src: ['./assets/Audio/Music/Binyamin track 4.mp3'],
       html5: true,
       loop: true,
       volume: MUSIC_VOLUME,

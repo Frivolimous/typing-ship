@@ -16,10 +16,6 @@ export class Turret extends GameSprite {
     this.wordOffset.set(-10, 5);
 
     this.makeDisplay(ImageRepo.turret, 0.2);
-    // let graphic = new PIXI.Graphics();
-    // this.addChild(graphic);
-    // graphic.beginFill(0xff00ff);
-    // graphic.drawCircle(0, 0, 2);
     this.display.anchor.set(0.46, 0.67);
   }
 

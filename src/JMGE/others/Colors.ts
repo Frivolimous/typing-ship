@@ -29,25 +29,20 @@ export class ColorGradient {
 
 /**
  * @function multiply all color channels by a specified value
- * @param hex the color to multiply
+ * @param color the color to multiply
  * @param lum amount to multiply by (ie 0.2 = 20% Lighter, -0.2 = 20% darker)
  */
-export function colorLuminance(hex: string, lum: number = 0): string {
-  // to be used like this: ColorLuminance("6699CC", 0.2);    // "#7ab8f5" - 20% lighter
-  // validate hex string
-  hex = String(hex).replace(/[^0-9a-f]/gi, '');
+export function colorLuminance(color: number, lum: number = 0): number {
+  // lum: 1 is color, less for darker and more for lighter
+  let r = Math.floor(color / 0x010000);
+  let g = Math.floor((color % 0x010000) / 0x000100);
+  let b = color % 0x000100;
 
-  // convert to decimal and change luminosity
-  let rgb = '#';
-  let c;
-  let i;
-  for (i = 0; i < 3; i++) {
-    c = parseInt(hex.substr(i * 2, 2), 16);
-    c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-    rgb += ('00' + c).substr(c.length);
-  }
+  r = Math.min(Math.max(Math.round(r * lum), 0), 255);
+  g = Math.min(Math.max(Math.round(g * lum), 0), 255);
+  b = Math.min(Math.max(Math.round(b * lum), 0), 255);
 
-  return rgb;
+  return r * 0x010000 + g * 0x000100 + b;
 }
 
 /**

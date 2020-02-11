@@ -82,7 +82,7 @@
         "no-trailing-whitespace": true,
         "no-unnecessary-initializer": true,
         "no-unsafe-finally": true,
-        "no-unused-expression": [true, "allow-new"],
+        "no-unused-expression": [true, "allow-new", "allow-fast-null-checks"],
         "no-use-before-declare": false,
         "no-var-keyword": true,
         "no-var-requires": true,

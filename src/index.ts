@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
 import { TextureData } from './utils/TextureData';
-import { MenuUI } from './screens/MenuUI';
+import { MenuUI } from './ui/MenuUI';
 import { CONFIG } from './Config';
 import { SaveData } from './utils/SaveData';
 import { TooltipReader } from './JMGE/TooltipReader';
@@ -9,10 +9,11 @@ import { JMRect } from './JMGE/others/JMRect';
 import { JMInteractionEvents } from './JMGE/events/JMInteractionEvents';
 import { ATSManager } from './utils/ATSManager';
 import { genAchievements, genTutorials, genScores } from './data/ATSData';
-import { AchievementPopup } from './ui/AchievementPopup';
-import { TutorialPopup } from './ui/TutorialPopup';
+import { AchievementPopup } from './ui/windows/AchievementPopup';
+import { TutorialPopup } from './ui/windows/TutorialPopup';
 import { initSharedCache } from './JMGE/others/JMTextureCache';
-// import { ScoreTracker } from './utils/ScoreTracker';
+import { Fonts } from './data/Fonts';
+import { loadFonts } from './utils/loadFonts';
 
 export let interactionMode: 'desktop'|'mobile' = 'desktop';
 
@@ -23,21 +24,8 @@ new class Facade {
   public innerBorders: JMRect;
   public screen: PIXI.Container;
   public border: PIXI.Graphics;
-  // public currentModule: any;
 
   private element: HTMLCanvasElement;
-
-  // windowToLocal=(e:any):PIXI.Point=>{
-  // 	return new PIXI.Point((e.x+this.stageBorders.x)*this._Resolution,(e.y+this.stageBorders.y)*this._Resolution);
-  // }
-
-  // disableGameInput(b:Boolean=true){
-  // 	if (b){
-  // 		this.inputM.mouseEnabled=false;
-  // 	}else{
-  // 		this.inputM.mouseEnabled=true;
-  // 	}
-  // }
 
   constructor() {
     if (Facade.exists) throw new Error('Cannot instatiate more than one Facade Singleton.');
@@ -60,16 +48,9 @@ new class Facade {
     });
     this.element.append(this.app.view);
 
-    // if (this.app){
-    // 	let test=PIXI.Sprite.from('./Bitmaps/a ship sprite sheet.png')
-    // 	this.app.stage.addChild(test);
-    // 	return;
-    // }
-
     this.app.stage.scale.x = 1 / CONFIG.INIT.RESOLUTION;
     this.app.stage.scale.y = 1 / CONFIG.INIT.RESOLUTION;
-    // this.stageBorders.x = this.app.view.offsetLeft;
-    // this.stageBorders.y = this.app.view.offsetTop;
+
     this.app.stage.interactive = true;
     this.screen = new PIXI.Container();
     this.app.stage.addChild(this.screen);
@@ -90,7 +71,8 @@ new class Facade {
     let finishResize = _.debounce(this.finishResize, 500);
     window.addEventListener('resize', finishResize);
 
-    window.requestAnimationFrame(this.init);
+    let fonts: string[] = _.map(Fonts);
+    window.requestAnimationFrame(() => loadFonts(fonts).then(this.init));
   }
 
   public init = () => {

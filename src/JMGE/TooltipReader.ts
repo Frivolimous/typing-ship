@@ -7,9 +7,9 @@ export interface ITooltip {
 }
 
 export class TooltipReader {
-  public static addTooltip(object: any, tooltip: ITooltip) {
+  public static addTooltip(object: PIXI.DisplayObject, tooltip: ITooltip) {
     object.interactive = true;
-    object.tooltip = tooltip;
+    (object as any).tooltip = tooltip;
   }
 
   private currentTarget: any;

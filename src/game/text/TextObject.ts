@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import * as WordList from '../../data/WordList';
 import { Fonts } from '../../data/Fonts';
 import { BaseObject } from '../objects/BaseObject';
+import { Colors } from '../../data/Colors';
 
 export class TextObject extends PIXI.Container {
   public static allTextObjects: TextObject[] = [];
@@ -12,7 +13,7 @@ export class TextObject extends PIXI.Container {
   constructor(wordSize: number = 0, priority: number = 0, public following?: BaseObject, private onWordComplete?: (word: string) => void) {
     super();
 
-    this.frontText = new PIXI.Text('', { fontSize: 14, fill: 0xffffff, fontFamily: Fonts.WORD_FONT, stroke: 0, strokeThickness: 2 });
+    this.frontText = new PIXI.Text('', { fontSize: 20, fill: 0xffffff, fontFamily: Fonts.WORD, stroke: 0, strokeThickness: 2 });
     this.addChild(this.frontText);
     this.setPriority(priority);
 
@@ -48,15 +49,10 @@ export class TextObject extends PIXI.Container {
   }
 
   public setPriority(i: number) {
+    i = Math.max(Math.min(i, 3), 0);
     if (i === this.priority) return;
     this.priority = i;
-
-    switch (i) {
-      case 0: this.frontText.tint = 0xffffff; break;
-      case 1: this.frontText.tint = 0xffff99; break;
-      case 2: this.frontText.tint = 0xffbb99; break;
-      case 3: this.frontText.tint = 0xff8877; break;
-    }
+    this.frontText.tint = Colors.GAME.PRIORITY[i];
   }
 
   public update() {

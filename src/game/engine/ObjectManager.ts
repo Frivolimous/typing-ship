@@ -8,6 +8,8 @@ import { CONFIG } from '../../Config';
 import { GameSprite } from '../objects/GameSprite';
 import { TextObject } from '../text/TextObject';
 import { GameEvents } from '../../utils/GameEvents';
+import { Colors } from '../../data/Colors';
+import { Fonts } from '../../data/Fonts';
 
 export enum DisplayLayer {
   DEFAULT,
@@ -198,9 +200,9 @@ export class ObjectManager extends PIXI.Container {
 
   public makeScoreDisplay(x: number, y: number, value: number) {
     if (value > 0) {
-      new FlyingText('+' + String(value), { fontFamily: 'Arial', fontSize: 14 + value / 20, fill: 0x00ff00 }, x, y, this.layers[DisplayLayer.TEXT]);
+      new FlyingText('+' + String(value), { fontFamily: Fonts.SCORE, fontSize: 14 + value / 20, fill: Colors.GAME.SCORE_PLUS }, x, y, this.layers[DisplayLayer.TEXT]);
     } else if (value < 0) {
-      new FlyingText(String(value), { fontFamily: 'Arial', fontSize: 14 - value / 20, fill: 0xff0000 }, x, y, this.layers[DisplayLayer.TEXT]);
+      new FlyingText(String(value), { fontFamily: Fonts.SCORE, fontSize: 14 - value / 20, fill: Colors.GAME.SCORE_MINUS }, x, y, this.layers[DisplayLayer.TEXT]);
     }
   }
 
@@ -214,7 +216,7 @@ export class ObjectManager extends PIXI.Container {
   }
 
   public makeEMP(origin: GameSprite, target: GameSprite) {
-    new Laser(origin.getFirePoint(), target, 0x99ffff, 3, this.layers[DisplayLayer.PROJECTILES]);
+    new Laser(origin.getFirePoint(), target, Colors.GAME.PLAYER_EMP, 3, this.layers[DisplayLayer.PROJECTILES]);
   }
 }
 

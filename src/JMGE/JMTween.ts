@@ -57,6 +57,7 @@ export class JMTween<T = any> {
   private hasWait: boolean;
   private _Yoyo: boolean;
   private _Loop: boolean;
+  private _Repeat: number;
 
   private nextTween: JMTween;
 
@@ -89,22 +90,28 @@ export class JMTween<T = any> {
     return this;
   }
 
-  public yoyo = (b: boolean = true) => {
+  public yoyo = (b: boolean = true, repeat: number = 1) => {
     this._Yoyo = b;
+    this._Repeat = repeat - 0.5;
 
     return this;
   }
 
-  public loop = (b: boolean = true) => {
+  public loop = (b: boolean = true, repeat: number = Infinity) => {
     this._Loop = b;
+    this._Repeat = repeat;
 
     return this;
   }
 
-  public stop = () => {
-    this.running = false;
+  public stop = (andComplete?: boolean) => {
+    if (andComplete) {
+      this.complete(this.endTime);
+    } else {
+      this.running = false;
 
-    JMTween._remove(this);
+      JMTween._remove(this);
+    }
 
     return this;
   }
@@ -220,11 +227,13 @@ export class JMTween<T = any> {
       this.object[property.key] = property.end;
     });
 
-    if (this._Loop) {
+    if (this._Loop && this._Repeat > 0) {
+      this._Repeat--;
       this.reset();
       this.startTime = time;
       this.endTime = this.startTime + (this.totalTime || 0);
-    } else if (this._Yoyo) {
+    } else if (this._Yoyo && this._Repeat > 0) {
+      this._Repeat -= 0.5;
       this.reverseProps();
       this.startTime = time;
       this.endTime = this.startTime + (this.totalTime || 0);
