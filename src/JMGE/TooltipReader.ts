@@ -1,12 +1,14 @@
 import * as PIXI from 'pixi.js';
-import { TooltipPopup } from './UI/TooltipPopup';
+import { TooltipPopup, ITooltipPopup } from './UI/TooltipPopup';
 
 export interface ITooltip {
   title: string;
   description: string;
+  config?: ITooltipPopup;
 }
 
 export class TooltipReader {
+
   public static addTooltip(object: PIXI.DisplayObject, tooltip: ITooltip) {
     object.interactive = true;
     (object as any).tooltip = tooltip;
@@ -16,7 +18,7 @@ export class TooltipReader {
 
   private currentTooltip: TooltipPopup;
 
-  constructor(private stage: PIXI.Container, private borders: PIXI.Rectangle) {
+  constructor(private stage: PIXI.Container, private borders: PIXI.Rectangle, private tooltipConfig: ITooltipPopup) {
     stage.addListener('mousemove', this.mouseMove);
   }
 
@@ -34,7 +36,7 @@ export class TooltipReader {
 
       if (target.tooltip) {
         let tooltip: ITooltip = target.tooltip;
-        this.currentTooltip = new TooltipPopup(tooltip.title, tooltip.description);
+        this.currentTooltip = new TooltipPopup(tooltip.title, tooltip.description, tooltip.config || this.tooltipConfig);
         this.stage.addChild(this.currentTooltip);
 
         let position = this.stage.toLocal(target, target.parent);

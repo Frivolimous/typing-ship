@@ -5,6 +5,7 @@ import { ClearObject } from './ClearObject';
 import { GameSprite } from './GameSprite';
 import { ImageRepo } from '../../utils/TextureData';
 import { GameManager } from '../GameManager';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 export class BossShip2 extends BossShip {
   public objects: GameSprite[] = [];
@@ -46,12 +47,12 @@ export class BossShip2 extends BossShip {
         case 180:
           this.display.texture = PIXI.Texture.from(ImageRepo.boss2a);
           // view.bitmapData=SpriteSheets.bRes[2][0][1];
-          // Facade.soundC.sound(SoundControl.BOSS_CHARGE);
+          SoundData.playSound(SoundIndex.BOSS_CHARGE);
           break;
         case 140:
           this.display.texture = PIXI.Texture.from(ImageRepo.boss2b);
           // view.bitmapData=SpriteSheets.bRes[2][0][2];
-          // Facade.soundC.sound(SoundControl.BOSS_CHARGE);
+          SoundData.playSound(SoundIndex.BOSS_CHARGE);
           break;
         case 100:
           this.display.texture = PIXI.Texture.from(ImageRepo.boss2c);
@@ -64,11 +65,7 @@ export class BossShip2 extends BossShip {
           if (this.shieldCount > 0) {
             this.over.texture = this.getShieldTexture(0);
           }
-          // Facade.gameUI.bossV.addChildAt(over,0);
-          // if (count>0){
-          //   over.bitmapData=SpriteSheets.bRes[index][1][1];
-          // }
-          // Facade.soundC.sound(SoundControl.BOSS_FIRE);
+          SoundData.playSound(SoundIndex.BOSS_LASER);
           break;
         default:
           if (this.delay < 75) {
@@ -78,19 +75,17 @@ export class BossShip2 extends BossShip {
                 // explode
               } else {
                 this.over.texture = this.getShieldTexture(Math.floor(this.delay / 5) % 3);
-                // over.bitmapData=SpriteSheets.bRes[index][1][(Math.floor(delay/5)%3)+1];
               }
             }
             if (this.delay % 20 === 0) {
               if (this.delay > 0) {
-                // Facade.soundC.sound(SoundControl.BOSS_FIRE);
+                SoundData.playSound(SoundIndex.BOSS_LASER);
               }
               if (this.shieldCount > 0) {
                 this.shieldCount--;
                 if (this.shieldCount === 0) {
                   this.manager.player.removeShield();
                   this.over.texture = this.getShieldTexture(-1);
-                  // over.bitmapData=SpriteSheets.bRes[index][1][0];
                 } else {
                   this.manager.player.shieldTo(this.shieldCount * 0.2);
                 }
@@ -129,7 +124,7 @@ export class BossShip2 extends BossShip {
     this.shieldCount = 0;
     this.delay = 220;
     // view.bitmapData=SpriteSheets.bRes[2][0][0];
-    // Facade.soundC.sound(SoundControl.BOSS_CHARGE);
+    SoundData.playSound(SoundIndex.BOSS_CHARGE);
   }
 
   public newCommands() {

@@ -2,36 +2,36 @@
 
 TO-DO:
 
-#Game
+# Game
 - Adjust Level Length (Length: 1-5 min)
 - Diff Timing (Shorter levels at Easy)
 - Speed Adjust
+- Boss 2 Timing
 
-#Visuals
+# Visuals
 - Boss Visuals and Alignment
 - Overall animation pass
 
-#Game UI
+# Game UI
 - RESPONSIVE LAYOUT
 
-#Menu UI
+# Menu UI
 - RESPONSIVE LAYOUT
 
-#Systems
-- Achievements - FINISH POPULATING
-- Sound FX - IMPLEMENT
+# Systems
+- Sound FX - Reinitialize
 - Level Gen - change timing to SECONDS instead of ???
 
 - Tutorials - FINISH POPULATING? - DECIDE WHAT / IF?
 - Online Saves
 
-#Save System
+# Save System
 - Tutorial Progress 
 
-#Outsourcing
+# Outsourcing
 - New Graphics
 
-#Menus - FUNCTIONALLY COMPLETE
+# Menus - FUNCTIONALLY COMPLETE
 - Title
 - Difficulty Select (Popup)
 - Game UI
@@ -44,11 +44,11 @@ TO-DO:
 - Typing Test UI
 
 
-#Mobile???
+# Mobile???
 - Tooltip - Tap
 - Mobile Keyboard
 
-#Stack
+# Stack
 - Cordova
 - Package for Steam
 - Package for Mobile???

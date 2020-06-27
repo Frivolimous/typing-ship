@@ -1,6 +1,7 @@
 import { TextObject } from '../text/TextObject';
 import { GameEvents, IHealthEvent, IWordEvent } from '../../utils/GameEvents';
 import { CONFIG } from '../../Config';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 export class WordInput {
   public static OVERFLOW_DURATION: number = 100;
@@ -8,6 +9,7 @@ export class WordInput {
   public text: string = '';
   public healWord: TextObject = new TextObject(0, 0, null, () => {
     this.healWord.dispose();
+    SoundData.playSound(SoundIndex.HEAL);
     GameEvents.REQUEST_HEAL_PLAYER.publish({amount: 1});
   });
 

@@ -10,8 +10,8 @@ import { StringData } from '../data/StringData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Button } from '../JMGE/UI/Button';
 import { Fonts } from '../data/Fonts';
+import { SoundData, SoundIndex } from '../utils/SoundData';
 
-const LABEL = 'WinUI';
 export class WinUI extends BaseUI {
   private title: PIXI.Text;
   private muter: MuterOverlay;
@@ -87,6 +87,7 @@ export class WinUI extends BaseUI {
       currentLevel.highestDifficulty = instance.difficulty;
     }
 
+    SoundData.playSound(SoundIndex.SCORE);
     SaveData.saveExtrinsic();
 
     let text = new PIXI.Text(s, {fontFamily: Fonts.UI});

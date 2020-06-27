@@ -10,6 +10,7 @@ import { TextObject } from '../text/TextObject';
 import { GameEvents } from '../../utils/GameEvents';
 import { Colors } from '../../data/Colors';
 import { Fonts } from '../../data/Fonts';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 export enum DisplayLayer {
   DEFAULT,
@@ -207,7 +208,11 @@ export class ObjectManager extends PIXI.Container {
   }
 
   public makeExplosionAt(x: number, y: number, size: number = 40) {
-    // new Firework(this.layers[DisplayLayer.EXPLOSIONS], x, y, size);
+    if (size <= 20) {
+      SoundData.playSound(SoundIndex.EXPLODE_SS);
+    } else {
+      SoundData.playSound(SoundIndex.EXPLODE_BS);
+    }
     Firework.makeExplosion(this.layers[DisplayLayer.EXPLOSIONS], {x, y, count: size});
   }
 

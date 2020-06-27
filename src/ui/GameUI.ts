@@ -12,9 +12,9 @@ import { MuterOverlay } from './windows/MuterOverlay';
 import { PauseOverlay } from './windows/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
-import { Gauge } from './elements/Gauge';
 import { ImageRepo } from '../utils/TextureData';
 import { Fonts } from '../data/Fonts';
+import { Gauge } from '../JMGE/UI/Gauge';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -142,7 +142,7 @@ export class GameUI extends BaseUI {
   }
 
   private setPlayerHealth = (e: IHealthEvent) => {
-    this.healthBar.setValue(e.newHealth, CONFIG.GAME.playerHealth);
+    this.healthBar.setFraction(e.newHealth, CONFIG.GAME.playerHealth);
   }
 
   private addHealWord = (healWord: TextObject) => {

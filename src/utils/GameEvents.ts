@@ -22,6 +22,7 @@ export const GameEvents = {
   NOTIFY_ENEMY_DESTROYED: new JMEventListener<IObjectEvent>(),
   NOTIFY_TEST_COMPLETE: new JMEventListener<ITestEvent>(),
   NOTIFY_LEVEL_COMPLETED: new JMEventListener<ILevelEvent>(),
+  NOTIFY_CREDITS_VIEWED: new JMEventListener<null>(),
 };
 
 export interface IProgressEvent {

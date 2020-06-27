@@ -1,12 +1,16 @@
 import * as PIXI from 'pixi.js';
 import { Fonts } from '../../data/Fonts';
 
+export interface ITooltipPopup {
+  backgroundColor: number;
+}
+
 export class TooltipPopup extends PIXI.Container {
   private titleField: PIXI.Text;
   private descriptionField: PIXI.Text;
   private background: PIXI.Graphics;
 
-  constructor(title: string, description: string) {
+  constructor(title: string, description: string, config: ITooltipPopup) {
     super();
 
     // this.interactive = true;

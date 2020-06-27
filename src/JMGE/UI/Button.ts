@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { colorLuminance } from '../others/Colors';
 import { Fonts } from '../../data/Fonts';
 import { JMTween } from '../JMTween';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 const defaultConfig: Partial<IButton> = { width: 200, height: 50, rounding: 8, color: 0x77ccff };
 
@@ -34,7 +35,7 @@ export class Button extends PIXI.Container {
 
   constructor(protected config: IButton) {
     super();
-    config = _.defaults(config, defaultConfig);
+    this.config = config = _.defaults(config, defaultConfig);
     this.color = config.color;
 
     this.hitArea = new PIXI.Rectangle(0, 0, config.width, config.height);
@@ -79,6 +80,7 @@ export class Button extends PIXI.Container {
     this.addListener('pointerdown', () => {
       this.background.tint = colorLuminance(this.color, 0.8);
       this.inner.scale.set(0.9);
+      SoundData.playSound(SoundIndex.CLICK);
     });
   }
 
@@ -132,8 +134,8 @@ export class Button extends PIXI.Container {
       this._Highlight = new PIXI.Graphics();
       this._Highlight.lineStyle(3, 0xffff00);
       this._Highlight.drawRoundedRect(0, 0, this.getWidth(), this.getHeight(), this.config.rounding);
-      this._HighlightTween = new JMTween(this._Highlight, 500).to({alpha: 0}).yoyo().start();
-      this.addChild(this._Highlight);
+      this._HighlightTween = new JMTween(this._Highlight, 500).to({alpha: 0}).yoyo(true, Infinity).start();
+      this.inner.addChild(this._Highlight);
     } else {
       if (this._HighlightTween) {
         this._HighlightTween.stop();

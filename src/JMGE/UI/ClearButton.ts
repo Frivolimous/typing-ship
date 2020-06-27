@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 export interface IClearButton {
   width: number;
@@ -16,7 +17,7 @@ export class ClearButton extends PIXI.Container {
 
     this.interactive = true;
     this.buttonMode = true;
-    this.addListener('pointerdown', config.onClick);
+    this.addListener('pointerdown', () => (SoundData.playSound(SoundIndex.CLICK), config.onClick));
   }
 
   public getWidth() {

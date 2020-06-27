@@ -6,6 +6,8 @@ import { ActionType } from '../../data/Types';
 import { Turret } from './Turret';
 import { GameEvents } from '../../utils/GameEvents';
 import { JMTween, JMEasing } from '../../JMGE/JMTween';
+import { Colors } from '../../data/Colors';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 interface IEnemyCallbacks {
   onFire?: (enemy: EnemyShip, fires: ActionType) => void;
@@ -17,7 +19,7 @@ interface IEnemyCallbacks {
 export class EnemyShip extends GameSprite {
   public killBy: ActionType;
   public fires: ActionType;
-  public charge: Charge = new Charge();
+  public charge: Charge = new Charge(10, 30, Colors.GAME.ENEMY_LASER);
 
   constructor(public config: ISpawnEvent, public callbacks: IEnemyCallbacks) {
     super();
@@ -89,6 +91,7 @@ export class EnemyShip extends GameSprite {
   }
 
   public startCharge(callback: () => void) {
+    SoundData.playSound(SoundIndex.CHARGE);
     this.charge.startCharge(callback);
   }
 

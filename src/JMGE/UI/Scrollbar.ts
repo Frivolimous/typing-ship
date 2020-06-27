@@ -44,26 +44,6 @@ export class Scrollbar extends PIXI.Container {
     this.bottomY = this.back.height - this.mover.height;
   }
 
-  public startMove = (e: PIXI.interaction.InteractionEvent) => {
-    let pos = e.data.getLocalPosition(this);
-    this.offsetY = pos.y - this.y - this.mover.y;
-  }
-
-  public mouseMove = (e: PIXI.interaction.InteractionEvent) => {
-    if (this.offsetY !== null) {
-      let pos = e.data.getLocalPosition(this);
-      let _y = pos.y - this.y - this.offsetY;
-      _y = Math.max(_y, 0);
-      _y = Math.min(_y, this.bottomY);
-      this.mover.y = _y;
-      this.scrollCallback && this.scrollCallback(this.getPosition());
-    }
-  }
-
-  public endMove = (e: PIXI.interaction.InteractionEvent) => {
-    this.offsetY = null;
-  }
-
   public setPosition = (p: number, andCallback: boolean = true) => {
     // p===0-1
     p = Math.min(Math.max(p, 0), 1);
@@ -75,5 +55,25 @@ export class Scrollbar extends PIXI.Container {
   public getPosition = () => {
     // returns 0-1
     return this.mover.y / this.bottomY;
+  }
+
+  private startMove = (e: PIXI.interaction.InteractionEvent) => {
+    let pos = e.data.getLocalPosition(this);
+    this.offsetY = pos.y - this.y - this.mover.y;
+  }
+
+  private mouseMove = (e: PIXI.interaction.InteractionEvent) => {
+    if (this.offsetY !== null) {
+      let pos = e.data.getLocalPosition(this);
+      let _y = pos.y - this.y - this.offsetY;
+      _y = Math.max(_y, 0);
+      _y = Math.min(_y, this.bottomY);
+      this.mover.y = _y;
+      this.scrollCallback && this.scrollCallback(this.getPosition());
+    }
+  }
+
+  private endMove = (e: PIXI.interaction.InteractionEvent) => {
+    this.offsetY = null;
   }
 }

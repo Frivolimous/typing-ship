@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { BaseWindow } from './_BaseWindow';
-import { Colors } from '../../../data/colors';
 import { Button } from '../Button';
 import { JMTween, JMEasing } from '../../JMTween';
 import { Fonts } from '../../../data/Fonts';

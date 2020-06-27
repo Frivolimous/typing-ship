@@ -8,6 +8,7 @@ import { GameManager } from '../GameManager';
 import { Turret } from '../objects/Turret';
 import { JMTween } from '../../JMGE/JMTween';
 import { Colors } from '../../data/Colors';
+import { SoundData, SoundIndex } from '../../utils/SoundData';
 
 export class ActionControl {
   public missileCount: number = 0;
@@ -65,7 +66,7 @@ export class ActionControl {
       if (target && target.parent) {
         this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.PLAYER_LASER);
         this.enemyDestroyed(target);
-        // soundC.sound(SoundControl.LASER);
+        SoundData.playSound(SoundIndex.LASER);
       }
     });
   }
@@ -80,7 +81,7 @@ export class ActionControl {
         target.ship.removeTurret();
         this.manager.enemyDestroyed(target);
       }
-    })
+    });
   }
 
   public enemyFires = (player: PlayerShip, enemy: EnemyShip) => {
@@ -123,24 +124,25 @@ export class ActionControl {
     if (instant) {
       this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.ENEMY_LASER);
       this.damagePlayer();
-      // soundC.sound(SoundControl.LASER);
+      SoundData.playSound(SoundIndex.LASER);
       origin.priority = 0;
     } else {
       origin.priority = 2;
-      // soundC.sound(SoundControl.CHARGE);
+      SoundData.playSound(SoundIndex.CHARGE);
       origin.startCharge(() => {
         this.manager.container.makeLaser(origin.getFirePoint(), target, Colors.GAME.ENEMY_LASER);
         this.damagePlayer();
-        // soundC.sound(SoundControl.LASER);
+        SoundData.playSound(SoundIndex.LASER);
         origin.priority = 0;
       });
     }
   }
 
   public shootEMP(origin: PlayerShip, target: GameSprite) {
+    SoundData.playSound(SoundIndex.CHARGE);
     origin.empCharge.startCharge(() => {
       this.manager.container.makeEMP(origin, target);
-      // soundC.sound(SoundControl.EMP);
+      SoundData.playSound(SoundIndex.EMP);
       target.removeShield();
     });
   }

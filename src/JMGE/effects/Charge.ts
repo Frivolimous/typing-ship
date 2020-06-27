@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { ColorGradient } from '../others/Colors';
-import { Colors } from '../../data/Colors';
 
 export class Charge extends PIXI.Graphics {
   public running: boolean = false;
@@ -10,7 +9,7 @@ export class Charge extends PIXI.Graphics {
   private gradient2: ColorGradient;
   private callback: () => void;
 
-  constructor(public endRadius: number = 10, public time: number = 30, color: number = Colors.GAME.ENEMY_LASER) {
+  constructor(public endRadius: number, public time: number, color: number) {
     super();
     this.gradient1 = new ColorGradient(0, color);
     this.gradient2 = new ColorGradient(0xffffff, color);

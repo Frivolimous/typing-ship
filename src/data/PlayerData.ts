@@ -2,7 +2,7 @@ export enum BadgeState {
   NONE,
   BRONZE,
   SILVER,
-  GOLD
+  GOLD,
 }
 
 export enum Badges {

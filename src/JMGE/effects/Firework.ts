@@ -44,7 +44,6 @@ export class Firework {
         fade: config.fade,
       };
       Firework.particles.push(particle);
-      console.log(particle);
     }
   }
 

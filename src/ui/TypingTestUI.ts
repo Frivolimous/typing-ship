@@ -11,6 +11,7 @@ import { TypingTestResultUI } from './elements/TypingTestResultUI';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Button } from '../JMGE/UI/Button';
 import { Fonts } from '../data/Fonts';
+import { SoundData, SoundIndex } from '../utils/SoundData';
 
 const LABEL = 'TypingTest';
 // const CONTENT = 'An evil galactic emperor.';
@@ -70,6 +71,7 @@ export class TypingTestUI extends BaseUI {
     let letter = e.key;
     if (letter.length === 1) {
       this.update(letter);
+      SoundData.playSound(SoundIndex.TYPING);
     }
   }
 

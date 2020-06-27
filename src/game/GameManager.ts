@@ -17,7 +17,7 @@ import { GameEvents, IPauseEvent, IDeleteEvent, ILetterEvent, IHealthEvent } fro
 import { ILevelInstance } from '../data/LevelInstance';
 import { GameUI } from '../ui/GameUI';
 import { GameSprite } from './objects/GameSprite';
-import { SoundData } from '../utils/SoundData';
+import { SoundData, SoundIndex } from '../utils/SoundData';
 import { ImageRepo } from '../utils/TextureData';
 import { JMTween } from '../JMGE/JMTween';
 
@@ -115,8 +115,8 @@ export class GameManager {
     switch (e.key) {
       case 'Escape': this.ui.navBack(); break;
       case ' ': GameEvents.REQUEST_PAUSE_GAME.publish({paused: true}); break;
-      case 'Backspace': this.wordInput.deleteLetters(1); break;
-      default: this.wordInput.addLetter(e.key); break;
+      case 'Backspace': this.wordInput.deleteLetters(1); SoundData.playSound(SoundIndex.TYPING); break;
+      default: this.wordInput.addLetter(e.key); SoundData.playSound(SoundIndex.TYPING); break;
     }
   }
 
@@ -255,6 +255,7 @@ export class GameManager {
     superman.position.set((Math.random() * 0.8 + 0.1) * CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
     superman.scale.set(0.5);
     this.container.addChild(superman);
+    SoundData.playSound(SoundIndex.SUPERMAN);
     new JMTween(superman, 1500).to({y: 0}).start().onComplete(() => {
       superman.destroy();
     });

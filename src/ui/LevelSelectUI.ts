@@ -13,7 +13,7 @@ import { Colors } from '../data/Colors';
 import { TooltipReader } from '../JMGE/TooltipReader';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Button } from '../JMGE/UI/Button';
-import { BasicElement } from './elements/BasicElement';
+import { BasicElement } from '../JMGE/UI/BasicElement';
 import { Fonts } from '../data/Fonts';
 
 export class LevelSelectUI extends BaseUI {
@@ -101,7 +101,7 @@ export class LevelSelectUI extends BaseUI {
     }
 
     if (recommended) {
-      this.recommended = new BasicElement({label: StringData.DIFFICULTY[recommended], color: Colors.DIFFICULTY[recommended], width: 100, height: 30});
+      this.recommended = new BasicElement({label: StringData.DIFFICULTY[recommended], labelStyle: {fill: 0, fontFamily: Fonts.UI}, color: Colors.DIFFICULTY[recommended], width: 100, height: 30});
       this.recommended.x = this.typingTestButton.x + this.typingTestButton.getWidth() + 10;
       this.recommended.y = this.typingTestButton.y;
       TooltipReader.addTooltip(this.recommended, {title: StringData.RECOMMENDED_TITLE, description: StringData.RECOMMENDED_DESC});

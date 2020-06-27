@@ -63,7 +63,7 @@ new class Facade {
     this.stageBorders = new JMRect();
     this.innerBorders = new JMRect(0, 0, CONFIG.STAGE.SCREEN_WIDTH, CONFIG.STAGE.SCREEN_HEIGHT);
 
-    new TooltipReader(this.screen, this.stageBorders);
+    new TooltipReader(this.screen, this.stageBorders, {backgroundColor: 0xff0000});
     initSharedCache(this.app);
     TextureData.init();
     // new ScoreTracker();

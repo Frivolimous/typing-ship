@@ -15,18 +15,18 @@ export enum SoundIndex {
   SUPERMAN,
 }
 
-const MUSIC_VOLUME = 0.5;
-
 export class SoundData {
+  public static musicVolume = 0.5;
+
   public static setMute = (b: boolean) => {
     SoundData.muted = b;
     if (b) {
       if (SoundData.musicPlaying) {
-        SoundData.musicPlaying.fade(MUSIC_VOLUME, 0, 500);
+        SoundData.musicPlaying.fade(SoundData.musicVolume, 0, 500);
       }
     } else {
       if (SoundData.musicPlaying) {
-        SoundData.musicPlaying.fade(0, MUSIC_VOLUME, 500);
+        SoundData.musicPlaying.fade(0, SoundData.musicVolume, 500);
       }
     }
   }
@@ -49,8 +49,6 @@ export class SoundData {
   }
 
   public static playMusic = (i: number) => {
-    return;
-
     let nextTrack: Howl = SoundData.music[i];
     if (SoundData.musicPlaying === nextTrack) {
       return;
@@ -66,11 +64,10 @@ export class SoundData {
     } else {
       if (SoundData.musicPlaying) {
         let prev = SoundData.musicPlaying;
-        prev.fade(MUSIC_VOLUME, 0, 1000);
+        prev.fade(SoundData.musicVolume, 0, 1000);
         prev.once('fade', () => prev.stop());
       }
-      nextTrack.fade(0, MUSIC_VOLUME, 1000);
-      // nextTrack.on('fade', () => {});
+      nextTrack.fade(0, SoundData.musicVolume, 1000);
       nextTrack.play();
       SoundData.musicPlaying = nextTrack;
     }
@@ -83,15 +80,15 @@ export class SoundData {
       case SoundIndex.TYPING: SoundData.typing.play(); break;
       case SoundIndex.CLICK: SoundData.click.play(); break;
       case SoundIndex.SCORE: SoundData.score.play(); break;
-      case SoundIndex.LASER: SoundData.laser.play(); break;
-      case SoundIndex.EXPLODE_SS: SoundData.explodeSS.play(); break;
-      case SoundIndex.EXPLODE_BS: SoundData.explodeBS.play(); break;
       case SoundIndex.CHARGE: SoundData.charge.play(); break;
-      case SoundIndex.HEAL: SoundData.heal.play(); break;
       case SoundIndex.EMP: SoundData.emp.play(); break;
+      case SoundIndex.LASER: SoundData.laser.play(); break;
       case SoundIndex.BOSS_CHARGE: SoundData.bossCharge.play(); break;
       case SoundIndex.BOSS_LASER: SoundData.bossLaser.play(); break;
+      case SoundIndex.EXPLODE_SS: SoundData.explodeSS.play(); break;
+      case SoundIndex.EXPLODE_BS: SoundData.explodeBS.play(); break;
       case SoundIndex.SUPERMAN: SoundData.superman.play(); break;
+      case SoundIndex.HEAL: SoundData.heal.play(); break;
     }
   }
 
@@ -153,31 +150,31 @@ export class SoundData {
       src: ['./assets/Audio/Music/Binyamin track 0.mp3'],
       html5: true,
       loop: true,
-      volume: MUSIC_VOLUME,
+      volume: SoundData.musicVolume,
     }),
     new Howl({
       src: ['./assets/Audio/Music/Binyamin track 1.mp3'],
       html5: true,
       loop: true,
-      volume: MUSIC_VOLUME,
+      volume: SoundData.musicVolume,
     }),
     new Howl({
       src: ['./assets/Audio/Music/Binyamin track 2.mp3'],
       html5: true,
       loop: true,
-      volume: MUSIC_VOLUME,
+      volume: SoundData.musicVolume,
     }),
     new Howl({
       src: ['./assets/Audio/Music/Binyamin track 3.mp3'],
       html5: true,
       loop: true,
-      volume: MUSIC_VOLUME,
+      volume: SoundData.musicVolume,
     }),
     new Howl({
       src: ['./assets/Audio/Music/Binyamin track 4.mp3'],
       html5: true,
       loop: true,
-      volume: MUSIC_VOLUME,
+      volume: SoundData.musicVolume,
     }),
   ];
 }

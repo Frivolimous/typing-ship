@@ -5,6 +5,7 @@ import { MuterOverlay } from './windows/MuterOverlay';
 import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
 import { Fonts } from '../data/Fonts';
 import { Button } from '../JMGE/UI/Button';
+import { GameEvents } from '../utils/GameEvents';
 
 export class CreditsUI extends BaseUI {
   private title: PIXI.Text;
@@ -40,6 +41,8 @@ export class CreditsUI extends BaseUI {
     let text = new PIXI.Text(s, {fontFamily: Fonts.UI});
     this.addChild(text);
     text.position.set(50, 50);
+
+    GameEvents.NOTIFY_CREDITS_VIEWED.publish();
   }
 
   protected positionElements = (e: IResizeEvent) => {

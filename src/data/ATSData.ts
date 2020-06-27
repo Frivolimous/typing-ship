@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { ExtrinsicModel } from './PlayerData';
 import { IAchievement, ITutorial, IScore } from '../utils/ATSManager';
-import { GameEvents, ILevelEvent, IWordEvent } from '../utils/GameEvents';
+import { GameEvents, ILevelEvent, IWordEvent, ITestEvent } from '../utils/GameEvents';
 
 enum AchievementId {
   SOLDIER_BRONZE, SOLDIER_SILVER, SOLDIER_GOLD,
@@ -134,7 +134,27 @@ export function genAchievements() {
       emitter: GameEvents.NOTIFY_WORD_COMPLETED,
       condition: (extrinsic, e: IWordEvent) => e.word === 'kamikaze',
     },
-  // EXPLORER_BRONZE, EXPLORER_SILVER, EXPLORER_GOLD,
+    {
+      id: AchievementId.EXPLORER_BRONZE,
+      title: 'Bronze Explorer',
+      caption: 'Complete the Typing Test',
+      emitter: GameEvents.NOTIFY_TEST_COMPLETE,
+      condition: (extrinsic, e: ITestEvent) => true,
+    },
+    {
+      id: AchievementId.EXPLORER_SILVER,
+      title: 'Silver Explorer',
+      caption: 'Pause the game without clicking',
+      emitter: GameEvents.NOTIFY_WORD_COMPLETED,
+      condition: (extrinsic, e: IWordEvent) => e.word === 'pause',
+    },
+    {
+      id: AchievementId.EXPLORER_GOLD,
+      title: 'Gold Explorer',
+      caption: 'See who made the game',
+      emitter: GameEvents.NOTIFY_CREDITS_VIEWED,
+      condition: (extrinsic, e: null) => true,
+    },
   ];
   return ACHIEVEMENTS;
 }

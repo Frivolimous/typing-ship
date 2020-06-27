@@ -2,14 +2,18 @@ import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
 import { ScreenCover } from '../effects/ScreenCover';
 import { JMInteractionEvents, IResizeEvent } from '../events/JMInteractionEvents';
+import { BaseWindow } from './windows/_BaseWindow';
 
 export interface IBaseUI {
   bgColor: number;
 }
 
-export class BaseUI extends PIXI.Container {
+export abstract class BaseUI extends PIXI.Container {
   protected previousUI: BaseUI;
   protected previousResize: IResizeEvent;
+
+  protected dialogueWindow: BaseWindow;
+
   private saveCallback?: (finishNav: () => void) => void;
 
   private background: PIXI.Graphics;
@@ -26,9 +30,9 @@ export class BaseUI extends PIXI.Container {
 
   public navOut = () => { };
 
-  public dispose = () => {
+  public destroy() {
     JMInteractionEvents.WINDOW_RESIZE.removeListener(this.onResize);
-    this.destroy();
+    super.destroy();
   }
 
   public navBack = (fadeTiming?: IFadeTiming) => {
@@ -59,11 +63,26 @@ export class BaseUI extends PIXI.Container {
     }
   }
 
+  protected addDialogueWindow(window: BaseWindow, delay: number = 0) {
+    this.dialogueWindow = window;
+
+    this.dialogueWindow.position.set(this.previousResize.outerBounds.width / 2, this.previousResize.innerBounds.height / 2);
+    this.dialogueWindow.updatePosition(this.previousResize.outerBounds);
+
+    this.addChild(this.dialogueWindow);
+    this.dialogueWindow.startAnimation(delay);
+  }
+
   private onResize = (e: IResizeEvent) => {
     this.previousResize = e;
     if (this.parent) {
       this.redrawBase(e);
       this.positionElements(e);
+
+      if (this.dialogueWindow) {
+        this.dialogueWindow.updatePosition(e.outerBounds);
+        this.dialogueWindow.position.set(e.outerBounds.width / 2, e.outerBounds.height / 2);
+      }
     }
   }
 
@@ -71,7 +90,7 @@ export class BaseUI extends PIXI.Container {
     this.background.clear().beginFill(this.config.bgColor).drawShape(e.outerBounds);
   }
 
-  private finishNav = (nextUI: BaseUI, fadeTiming: IFadeTiming, andDispose?: boolean) => {
+  private finishNav = (nextUI: BaseUI, fadeTiming: IFadeTiming, andDestroy?: boolean) => {
     fadeTiming = _.defaults(fadeTiming || {}, dFadeTiming);
 
     let screen = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).onFadeComplete(() => {
@@ -85,8 +104,8 @@ export class BaseUI extends PIXI.Container {
       let screen2 = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).fadeOut(fadeTiming.fadeOut);
       nextUI.addChild(screen2);
 
-      if (andDispose) {
-        this.dispose();
+      if (andDestroy) {
+        this.destroy();
       }
     }).fadeIn(fadeTiming.fadeIn, fadeTiming.delay, fadeTiming.delayBlank);
     this.addChild(screen);
